@@ -1,0 +1,264 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 32px 2fr 1fr 4fr 4fr 1fr;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.header-cell, .body-cell {
+    border-left: 1px solid black;
+}
+
+.header-cell {
+    height: 62px;
+    background-color: white;
+    border-bottom: 1px solid black;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.body-cell {
+    border-top: none;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 62px); /* Adjusting for header height */
+    padding: 0;
+    margin: 0;
+}
+
+.header-cell.empty-header {
+    border-left: none;
+}
+
+.column:first-child .header-cell,
+.column:first-child .body-cell {
+    border-left: none;
+}
+
+.logo-text {
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 32px;
+    text-align: left;
+    margin-top: 0px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.section-a, .section-b, .section-c {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: sticky; /* Sticky positioning */
+}
+
+.section-a {
+    justify-content: flex-start;
+    top: 62px; /* Sticky from the top of header */
+}
+
+.section-b {
+    justify-content: flex-end;
+    bottom: 0; /* Sticky from the bottom */
+    margin-bottom: 16px;
+}
+
+.section-c {
+    flex: 0 0 32px;
+}
+
+.menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu li {
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 32px;
+    text-align: left;
+    margin: 0px 0;
+}
+
+.card {
+    color: red;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 32px;
+    text-align: left;
+    margin: 0;
+}
+
+.language {
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 32px;
+    text-align: left;
+    margin: 0;
+}
+
+.header {
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 32px;
+    text-align: left;
+    margin: 0;
+}
+
+.marquee {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    overflow: hidden;
+}
+
+.marquee-content {
+    display: flex;
+    align-items: center;
+    font-size: 56px;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    animation: scroll 10s linear infinite;
+    white-space: nowrap;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateY(100%);
+    }
+    100% {
+        transform: translateY(-100%);
+    }
+}
+
+.empty {
+    border-left: none;
+}
+
+.scroll-container {
+    height: 100%;
+    overflow-y: auto;
+    padding: 0px;
+}
+
+/* Blog Styles */
+
+.blog {
+    padding: 0px;
+    font-family: Arial, sans-serif;
+    font-size: 28px;
+    line-height: 32px;
+}
+
+.blog .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0px;
+}
+
+.blog .blog-post {
+    margin-bottom: 0px;
+    width: 400px; /* сделать так чтоб эта величина менялась в зависимости от размера ячейки */
+    box-sizing: border-box;
+    padding: 0px;
+    background: white;
+}
+
+.blog .blog-post .blog-element {
+    overflow: hidden;
+    text-align: center;
+    width: 100%;
+    position: relative;
+}
+
+.blog .blog-post .blog-element img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.blog .blog-post .blog-content {
+    padding: 0px;
+    margin-bottom: 32px;
+}
+
+.blog .blog-post .blog-content h3 {
+    color: black;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    margin: 0;  /* Убирает отступы между блоками */
+    font-size: 28px;  /* Устанавливает размер текста */
+}
+
+.blog .blog-post .blog-content p {
+    margin: 0;  /* Убирает отступы между блоками */
+}
+
+.continue {
+    margin-top: 0px;
+}
+
+.continue a {
+    padding: 0px;
+    background: 0;
+    color: black;
+    text-decoration: none;
+    text-align: left;
+}
+
+.continue a:hover {
+    color: #00FF26;
+}
+
+
+/* Hide scrollbar for a specific element */
+.scroll-container {
+    overflow: auto; /* Ensures scrolling is enabled */
+}
+
+/* WebKit-based browsers (Chrome, Safari) */
+.scroll-container::-webkit-scrollbar {
+    width: 0; /* Hides the scrollbar */
+}
+
+/* For Firefox */
+.scroll-container {
+    scrollbar-width: none; /* Hides the scrollbar */
+}
+
+/* Hide scrollbar for the entire page */
+::-webkit-scrollbar {
+    width: 0; /* Hides the scrollbar */
+}
+
+/* For Firefox */
+html {
+    scrollbar-width: none; /* Hides the scrollbar */
+}
+
+/* For IE and Edge */
+body {
+    overflow: -ms-autohiding-scrollbar; /* Hides the scrollbar in IE/Edge */
+}

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMPRUM</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Open+Sans|Lobster|Monoton|Pacifico&display=swap">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="column">
+            <div class="header-cell empty-header"></div>
+            <div class="body-cell empty"></div>
+        </div>
+        <div class="column">
+            <div class="header-cell logo">
+                <div class="logo-text">UMPRUM<br/>TYPE</div>
+            </div>
+            <div class="body-cell logo">
+                <div class="menu">
+                    <div class="section-a">
+                        <ul>
+                            <li>MAIN</li>
+                            <li>EVENTS</li>
+                            <li>FONTS</li>
+                            <li>PROJECTS</li>
+                            <li>SHOP</li>
+                            <li>ABOUT</li>
+                        </ul>
+                    </div>
+                    <div class="section-c"></div>
+                    <div class="section-b">
+                        <div class="card">CARD</div>
+                        <div class="language">EN / CZ</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="header-cell">
+                <div class="header">RECENT<br/>FONTS</div>
+            </div>
+            <div class="body-cell recent-fonts">
+                <div class="marquee">
+                    <div class="marquee-content">
+                        <span style="font-family: 'Roboto';">Roboto</span> |
+                        <span style="font-family: 'Open Sans';">Open Sans</span> |
+                        <span style="font-family: 'Lobster';">Lobster</span> |
+                        <span style="font-family: 'Monoton';">Monoton</span> |
+                        <span style="font-family: 'Pacifico';">Pacifico</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="header-cell">
+                <div class="header">RECENT PROJECTS</div>
+            </div>
+            <div class="body-cell recent-projects">
+                <div class="scroll-container">
+                    <!-- Content for recent projects -->
+                   
+                   projects with separate scrolling
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="header-cell">
+                <div class="header">RECENT NEWS</div>
+            </div>
+            <div class="body-cell recent-news">
+                    <!-- Content for recent news -->
+                    <section id="blog" class="section blog">
+                      <div class="container">
+                        <div id="blogContent" class="section-content">
+                          <div id="jsonContent" class="blog"></div>
+                        </div>
+                      </div>
+                    </section>
+            </div>
+        </div>
+        <div class="column">
+            <div class="header-cell empty-header"></div>
+            <div class="body-cell empty"></div>
+        </div>
+    </div>
+    <script>
+        $(function() {
+            var $content = $('#jsonContent');
+            var apiKey = '4t7uUNbPNa5nZnZxaICHOe9O1WXfeL4J2lN0UosLNv0PLhEsXZ';
+            var blogUrl = 'https://api.tumblr.com/v2/blog/saltivkatype.tumblr.com/posts?api_key=' + apiKey;
+
+            function loadPosts() {
+                $.get(blogUrl, function(response) {
+                    if (response.meta.status == 200) {
+                        var output = '';
+                        var posts = response.response.posts;
+
+                        $.each(posts, function(k, item) {
+                            var src = item.photos ? item.photos[0].original_size.url : '';
+
+                            output += '<div class="blog-post">';
+                            if (src) {
+                                output += '<div class="blog-element"><img class="img-responsive" src="' + src + '"></div>';
+                            }
+                            output += '<div class="blog-content"><h3>' + item.summary + '</h3>';
+
+                            var yourString = item.summary;
+                            var maxLength = 100;
+                            var trimmedString = yourString.substr(0, maxLength);
+                            trimmedString = trimmedString.substr(0, Math.min(trimmedString.length, trimmedString.lastIndexOf(" ")));
+
+                            output += '<p>' + trimmedString + '...</p>';
+                            output += '<p class="continue"><a href="' + item.post_url + '" target="_blank"> Continue Reading </a></p>';
+                            output += '</div></div>';
+                        });
+
+                        $content.html(output);
+                    } else {
+                        console.log('Error receiving data:', response);
+                        $content.html('<p>Error receiving data from server.</p>');
+                    }
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.log('The request failed:', textStatus, errorThrown);
+                    $content.html('<p>Error connecting to server.</p>');
+                });
+            }
+            loadPosts();
+            setInterval(loadPosts, 300000);
+        });
+    </script>
+</body>
+</html>
