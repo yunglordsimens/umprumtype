@@ -49,6 +49,12 @@ body {
     border-left: none;
 }
 
+/* Обводка для последнего столбца */
+.column:last-child .header-cell, 
+.column:last-child .body-cell {
+    border-right: 2px solid black;
+}
+
 .logo-text {
     font-size: 28px;
     font-weight: bold;
