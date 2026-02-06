@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Umprum Type Playground – Interactive Typography Explorer">
+    <title>Playground – Umprum Type</title>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    
+    <!-- jsPDF for PDF exports -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- p5.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+    
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="play-style.css">
+</head>
+<body class="playground">
+
+    <div id="loader">Loading Umprum Type Playground</div>
+    <div id="toast-container"></div>
+    <div id="performance-indicator">FPS: 60</div>
+    <div id="shortcuts-hint">Press ? for shortcuts</div>
+
+    <!-- Updated Header -->
+    <div class="headerMenuWrapper">
+        <div class="headerMenu">
+            <div class="homeItem">
+                <a href="../index.html">UMPRUM TYPE</a>
+            </div>
+            <div class="menuItem"><a href="../index.html">Home</a></div>
+            <div class="menuItem"><a href="../typefaces.html">Typefaces</a></div>
+            <div class="menuItem"><a href="#" id="shortcuts-btn">Shortcuts</a></div>
+            <div class="menuItem"><a href="mailto:info@typoumprum.cz?subject=Playground%20Feedback">Feedback</a></div>
+        </div>
+    </div>
+
+    <div id="tools-panel">
+        <!-- TYPOGRAPHY -->
+        <div class="control-group">
+            <div class="control-group-title">
+                <span>Typography</span>
+            </div>
+            <label for="fontSelect">Typeface</label>
+            <div class="select-wrapper">
+                <select id="fontSelect" aria-label="Select font typeface"></select>
+            </div>
+            <label for="styleSelect">Style</label>
+            <div class="select-wrapper">
+                <select id="styleSelect" aria-label="Select font style"></select>
+            </div>
+        </div>
+
+        <!-- TEXT CONTENT -->
+        <div class="control-group">
+            <div class="control-group-title">
+                <span>Content</span>
+                <span id="char-count" style="font-size:9px; opacity:0.7;">0 chars</span>
+            </div>
+            <textarea id="customInput" placeholder="Enter your text here... (minimum 5 characters)" rows="3" aria-label="Enter custom text"></textarea>
+            <div class="button-group">
+                <button id="applyTextBtn">Update Text</button>
+                <button id="sample-text-btn">Sample</button>
+            </div>
+        </div>
+
+        <!-- CONTROLS -->
+        <div class="control-group">
+            <div class="control-group-title">
+                <span>Controls</span>
+            </div>
+            <label for="densitySlider">Density</label>
+            <input type="range" id="densitySlider" min="300" max="2500" value="1200" step="100" aria-label="Glyph density">
+            <div class="slider-value" id="densityValue">1200 glyphs</div>
+            
+            <label for="radiusSlider">Interaction Radius</label>
+            <input type="range" id="radiusSlider" min="100" max="800" value="280" step="10" aria-label="Interaction radius">
+            <div class="slider-value" id="radiusValue">280px</div>
+            
+            <label for="scaleSlider">Max Scale</label>
+            <input type="range" id="scaleSlider" min="1.0" max="6.0" value="3.5" step="0.1" aria-label="Maximum scale">
+            <div class="slider-value" id="scaleValue">3.5x</div>
+        </div>
+
+        <!-- TRENDY EFFECTS -->
+        <div class="control-group">
+            <div class="control-group-title">
+                <span>Modes</span>
+            </div>
+            <div class="mode-selector">
+                <label class="checkbox-row" for="waveToggle">
+                    <input type="checkbox" id="waveToggle">
+                    <span>Fluid Wave</span>
+                </label>
+                <label class="checkbox-row" for="bloomToggle">
+                    <input type="checkbox" id="bloomToggle">
+                    <span>Bloom Glow</span>
+                </label>
+                <label class="checkbox-row" for="scatterToggle">
+                    <input type="checkbox" id="scatterToggle">
+                    <span>Scatter</span>
+                </label>
+            </div>
+            <div class="mode-selector">
+                <label class="checkbox-row" for="darkToggle">
+                    <input type="checkbox" id="darkToggle">
+                    <span>Dark Mode</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="control-group" style="border: none; margin-top: auto;">
+            <div class="control-group-title">
+                <span>Export & Share</span>
+            </div>
+            <div class="button-group">
+                <button id="resetBtn">Reset All</button>
+                <button id="exportPngBtn">Export PNG</button>
+                <button id="exportPdfBtn">Export PDF</button>
+            </div>
+            <div class="button-group" style="margin-top: 10px;">
+                <button id="shareTweetBtn">Share on X</button>
+            </div>
+        </div>
+    </div>
+
+    <button id="mobile-toggle-btn" aria-label="Toggle tools panel">⚙️</button>
+
+    <div id="canvas-container"></div>
+
+<script type="module" src="js/main.js"></script>
+
+</body>
+</html>
