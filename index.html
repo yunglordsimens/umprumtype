@@ -2,238 +2,145 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Umprum Type Design Studio</title>
-    <link rel="stylesheet" href="/style.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <!-- Google Fonts for sample text placeholders -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Shared JS for mobile menu -->
-    <script src="/js/shared.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Umprum Type Playground – Interactive Typography Explorer">
+    <title>Playground – Umprum Type</title>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    
+    <!-- jsPDF for PDF exports -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- p5.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+    
+    <!-- FIXED: Use correct relative paths -->
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="play-style.css">
 </head>
-<body>
-    <!-- Header -->
+<body class="playground">
+
+    <div id="loader">Loading Umprum Type Playground</div>
+    <div id="toast-container"></div>
+    <div id="performance-indicator">FPS: 60</div>
+    <div id="shortcuts-hint">Press ? for shortcuts</div>
+
+    <!-- Updated Header -->
     <div class="headerMenuWrapper">
-        <div class="homeItem">
-            <a href="/index.html">UMPRUM TYPE</a>
-        </div>
         <div class="headerMenu">
-            <div class="menuItem"><a href="/index.html" class="active">Home</a></div>
-            <div class="menuItem"><a href="/typefaces.html">Typefaces</a></div>
-            <div class="menuItem"><a href="/play/index.html">Playground →</a></div>
-            <div class="menuItem"><a href="/info.html">Info</a></div>
-            <div class="menuItem"><a href="/projects.html">Projects</a></div>
-            <div class="menuItem"><a href="/journal.html">Journal</a></div>
-            <div class="menuItem"><a href="/store.html">Store</a></div>
+            <div class="homeItem">
+                <a href="../index.html">UMPRUM TYPE</a>
+            </div>
+            <div class="menuItem"><a href="../index.html">Home</a></div>
+            <div class="menuItem"><a href="../typefaces.html">Typefaces</a></div>
+            <div class="menuItem"><a href="#" id="shortcuts-btn">Shortcuts</a></div>
+            <div class="menuItem"><a href="mailto:info@typoumprum.cz?subject=Playground%20Feedback">Feedback</a></div>
         </div>
-        <button id="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
     </div>
 
-    <main>
-        <!-- HERO SECTION -->
-        <section class="hero">
-            <div class="container" style="max-width: 900px; padding: 0 20px;">
-                <h1>Umprum Type Design Studio</h1>
-                <p style="font-size: 18px; line-height: 1.6; margin: 0 auto 40px; max-width: 800px;">
-                    The Type Design Studio at UMPRUM explores graphic design with a focus on type and lettering, 
-                    blending classical and digital media through hands-on work in the school's workshops.
-                </p>
-                <a href="/play/index.html" class="button">Launch Umprum Type Playground →</a>
-                <p class="subtitle">Explore, interact with, and create using student typefaces</p>
+    <div id="tools-panel">
+        <!-- TYPOGRAPHY -->
+        <div class="control-group">
+            <div class="control-group-title">
+                <span>Typography</span>
             </div>
-        </section>
-
-        <!-- FONT GRID SECTION -->
-        <div class="container">
-            <h1 style="text-align: center; margin: 80px 0 40px;">Student Typefaces</h1>
-            
-            <div class="font-grid">
-                <!-- ===== 2025 HIGHLIGHTS ===== -->
-                
-                <!-- Ananas -->
-                <div class="font-card">
-                    <h2>Ananas (Jaromír Květoň, 2025)</h2>
-                    <div class="sample-text" style="font-family: 'Inter', sans-serif; font-weight: 600; font-size: 34px;">
-                        Imituje žhavý pohled, vítězně, jako kdyby vynalezla nějakou novou neřest.
-                    </div>
-                    <p>Serif counterpart to grotesque, simplified dynamic forms for readability. Contains regular and italic styles.</p>
-                    <div style="margin-top: 25px;">
-                        <a href="/typefaces.html#ananas" class="button">Details →</a>
-                        <a href="/play/index.html?font=Ananas" class="button">Try in Playground →</a>
-                    </div>
-                </div>
-
-                <!-- Chlebiczech -->
-                <div class="font-card">
-                    <h2>Chlebiczech (Žofia Kosová, 2025)</h2>
-                    <div class="sample-text" style="font-family: 'Playfair Display', serif; font-size: 32px; font-style: italic;">
-                        Jeho jméno jsem zapomněl, prý provádí nárazové obchody s nedorozuměním.
-                    </div>
-                    <p>Serif inspired by Czech bread lettering. Rustic forms with contemporary proportions.</p>
-                    <div style="margin-top: 25px;">
-                        <a href="/typefaces.html#chlebiczech" class="button">Details →</a>
-                        <a href="/play/index.html?font=Chlebiczech" class="button">Try in Playground →</a>
-                    </div>
-                </div>
-
-                <!-- Korchma -->
-                <div class="font-card">
-                    <h2>Korchma (Anna Sherlupenkova, 2025)</h2>
-                    <div class="sample-text" style="font-family: 'Inter', sans-serif; font-weight: 400; font-size: 34px; letter-spacing: -0.5px;">
-                        Вона імітує запальний погляд, перемагає, ніби винайшла якусь нову ваду.
-                    </div>
-                    <p>Book typeface with simplicity and readability, inspired by Renaissance proportions. Cyrillic and Latin.</p>
-                    <div style="margin-top: 25px;">
-                        <a href="/typefaces.html#korchma" class="button">Details →</a>
-                        <a href="/play/index.html?font=Korchma" class="button">Try in Playground →</a>
-                    </div>
-                </div>
-
-                <!-- März Grotesk -->
-                <div class="font-card">
-                    <h2>März Grotesk (Šimon Vlasák, 2025)</h2>
-                    <div class="sample-text" style="font-family: 'Inter', sans-serif; font-weight: 800; font-size: 32px;">
-                        During the Thirty Years' War, Prague withstood several sieges.
-                    </div>
-                    <p>Wide bold grotesque inspired by gravestone lettering. Strong presence for display use.</p>
-                    <div style="margin-top: 25px;">
-                        <a href="/typefaces.html#marz-grotesk" class="button">Details →</a>
-                        <a href="/play/index.html?font=MärzGrotesk" class="button">Try in Playground →</a>
-                    </div>
-                </div>
-
-                <!-- ===== 2024 FONTS ===== -->
-                
-                <!-- Walbert -->
-                <div class="font-card">
-                    <h2>Walbert (Pavla Nečásková, 2024)</h2>
-                    <div class="sample-text" style="font-family: 'Inter', sans-serif; font-weight: 500; font-size: 34px;">
-                        Dům, který nechal postavit, měl po stranách obrovské věže.
-                    </div>
-                    <p>Humanist sans with calligraphic details. Multiple weights from Light to Black.</p>
-                    <div style="margin-top: 25px;">
-                        <a href="/typefaces.html#walbert" class="button">Details →</a>
-                        <a href="/play/index.html?font=Walbert" class="button">Try in Playground →</a>
-                    </div>
-                </div>
-
-                <!-- Noiret -->
-                <div class="font-card">
-                    <h2>Noiret (Martin Hůla, 2024)</h2>
-                    <div class="sample-text" style="font-family: 'Inter', sans-serif; font-weight: 900; font-size: 32px;">
-                        Ve skutečnosti byl temný jako tma, která se blížila k zemi.
-                    </div>
-                    <p>Ultra-black display typeface. Extreme contrast for posters and headlines.</p>
-                    <div style="margin-top: 25px;">
-                        <a href="/typefaces.html#noiret" class="button">Details →</a>
-                        <a href="/play/index.html?font=Noiret" class="button">Try in Playground →</a>
-                    </div>
-                </div>
-
-                <!-- Termina -->
-                <div class="font-card">
-                    <h2>Termina (Tomáš Brousil, 2024)</h2>
-                    <div class="sample-text" style="font-family: 'Space Mono', monospace; font-size: 28px;">
-                        Vlak odjíždí ve 23:59 z nástupiště 9¾.
-                    </div>
-                    <p>Monospaced terminal-inspired typeface. Technical aesthetic with programming ligatures.</p>
-                    <div style="margin-top: 25px;">
-                        <a href="/typefaces.html#termina" class="button">Details →</a>
-                        <a href="/play/index.html?font=Termina" class="button">Try in Playground →</a>
-                    </div>
-                </div>
-
-                <!-- Prague Gothic -->
-                <div class="font-card">
-                    <h2>Prague Gothic (Eva Černá, 2024)</h2>
-                    <div class="sample-text" style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 30px;">
-                        Stínové písmo inspirované gotickou architekturou Prahy.
-                    </div>
-                    <p>Blackletter inspired by Prague architecture. Historical forms with modern readability.</p>
-                    <div style="margin-top: 25px;">
-                        <a href="/typefaces.html#prague-gothic" class="button">Details →</a>
-                        <a href="/play/index.html?font=PragueGothic" class="button">Try in Playground →</a>
-                    </div>
-                </div>
-
-                <!-- ===== OLDER FONTS ===== -->
-                
-                <!-- B-Rot -->
-                <div class="font-card">
-                    <h2>B-Rot (Jan Šerych, 2023)</h2>
-                    <div class="sample-text" style="font-family: 'Inter', sans-serif; font-weight: 600; font-size: 32px;">
-                        Rotunda modernized for digital screens.
-                    </div>
-                    <p>Rotunda style with geometric construction. Optimized for UI and small sizes.</p>
-                    <div style="margin-top: 25px;">
-                        <a href="/typefaces.html#b-rot" class="button">Details →</a>
-                        <a href="/play/index.html?font=BRot" class="button">Try in Playground →</a>
-                    </div>
-                </div>
-
-                <!-- Aft -->
-                <div class="font-card">
-                    <h2>Aft (Petr Bosák, 2023)</h2>
-                    <div class="sample-text" style="font-family: 'Inter', sans-serif; font-weight: 400; font-size: 34px; font-style: italic;">
-                        After many attempts, the forms settled into harmony.
-                    </div>
-                    <p>Text typeface with subtle modulation. Designed for extended reading.</p>
-                    <div style="margin-top: 25px;">
-                        <a href="/typefaces.html#aft" class="button">Details →</a>
-                        <a href="/play/index.html?font=Aft" class="button">Try in Playground →</a>
-                    </div>
-                </div>
-
-                <!-- Cirkev -->
-                <div class="font-card">
-                    <h2>Cirkev (Marek Pistora, 2022)</h2>
-                    <div class="sample-text" style="font-family: 'Playfair Display', serif; font-size: 32px;">
-                        Typography for ecclesiastical publications.
-                    </div>
-                    <p>Serif designed for religious texts. Traditional forms with contemporary spacing.</p>
-                    <div style="margin-top: 25px;">
-                        <a href="/typefaces.html#cirkev" class="button">Details →</a>
-                        <a href="/play/index.html?font=Cirkev" class="button">Try in Playground →</a>
-                    </div>
-                </div>
-
-                <!-- Dračí -->
-                <div class="font-card">
-                    <h2>Dračí (Klára Hájková, 2022)</h2>
-                    <div class="sample-text" style="font-family: 'Inter', sans-serif; font-weight: 700; font-size: 32px;">
-                        Dragon scales transformed into letterforms.
-                    </div>
-                    <p>Decorative display face inspired by mythology. Ornamental caps and numerals.</p>
-                    <div style="margin-top: 25px;">
-                        <a href="/typefaces.html#draci" class="button">Details →</a>
-                        <a href="/play/index.html?font=Draci" class="button">Try in Playground →</a>
-                    </div>
-                </div>
+            <label for="fontSelect">Typeface</label>
+            <div class="select-wrapper">
+                <select id="fontSelect" aria-label="Select font typeface"></select>
             </div>
-
-            <!-- VIEW ALL BUTTON -->
-            <div style="text-align: center; margin: 60px 0 40px;">
-                <a href="/typefaces.html" class="button" style="font-size: 16px; padding: 15px 40px;">View All Typefaces →</a>
-            </div>
-
-            <!-- BOTTOM CALL-TO-ACTION -->
-            <div style="text-align: center; margin: 80px 0 60px; padding: 60px 20px; border-top: 2px solid #000;">
-                <h2 style="margin-bottom: 30px;">Ready to experiment with type?</h2>
-                <p style="font-size: 18px; line-height: 1.6; max-width: 700px; margin: 0 auto 40px;">
-                    All student typefaces are available in our interactive playground. 
-                    Adjust density, apply visual effects, and create your own typographic compositions 
-                    in real-time.
-                </p>
-                <a href="/play/index.html" class="button">Launch Umprum Type Playground →</a>
+            <label for="styleSelect">Style</label>
+            <div class="select-wrapper">
+                <select id="styleSelect" aria-label="Select font style"></select>
             </div>
         </div>
-    </main>
 
-    <!-- Footer -->
-    <footer>
-        <p>Umprum Type Design Studio © 2026 · Prague</p>
-        <p><a href="mailto:info@typoumprum.cz">Contact</a> · <a href="https://www.instagram.com/umprumtype/">Instagram</a></p>
-        <p>Interactive Playground for exploring student typefaces</p>
-    </footer>
+        <!-- TEXT CONTENT -->
+        <div class="control-group">
+            <div class="control-group-title">
+                <span>Content</span>
+                <span id="char-count" style="font-size:9px; opacity:0.7;">0 chars</span>
+            </div>
+            <textarea id="customInput" placeholder="Enter your text here... (minimum 5 characters)" rows="3" aria-label="Enter custom text"></textarea>
+            <div class="button-group">
+                <button id="applyTextBtn">Update Text</button>
+                <button id="sample-text-btn">Sample</button>
+            </div>
+        </div>
+
+        <!-- CONTROLS -->
+        <div class="control-group">
+            <div class="control-group-title">
+                <span>Controls</span>
+            </div>
+            <label for="densitySlider">Density</label>
+            <input type="range" id="densitySlider" min="300" max="2500" value="1200" step="100" aria-label="Glyph density">
+            <div class="slider-value" id="densityValue">1200 glyphs</div>
+            
+            <label for="radiusSlider">Interaction Radius</label>
+            <input type="range" id="radiusSlider" min="100" max="800" value="280" step="10" aria-label="Interaction radius">
+            <div class="slider-value" id="radiusValue">280px</div>
+            
+            <label for="scaleSlider">Max Scale</label>
+            <input type="range" id="scaleSlider" min="1.0" max="6.0" value="3.5" step="0.1" aria-label="Maximum scale">
+            <div class="slider-value" id="scaleValue">3.5x</div>
+        </div>
+
+        <!-- TRENDY EFFECTS -->
+        <div class="control-group">
+            <div class="control-group-title">
+                <span>Modes</span>
+            </div>
+            <div class="mode-selector">
+                <label class="checkbox-row" for="waveToggle">
+                    <input type="checkbox" id="waveToggle">
+                    <span>Fluid Wave</span>
+                </label>
+                <label class="checkbox-row" for="bloomToggle">
+                    <input type="checkbox" id="bloomToggle">
+                    <span>Bloom Glow</span>
+                </label>
+                <label class="checkbox-row" for="scatterToggle">
+                    <input type="checkbox" id="scatterToggle">
+                    <span>Scatter</span>
+                </label>
+            </div>
+            <div class="mode-selector">
+                <label class="checkbox-row" for="darkToggle">
+                    <input type="checkbox" id="darkToggle">
+                    <span>Dark Mode</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="control-group" style="border: none; margin-top: auto;">
+            <div class="control-group-title">
+                <span>Export & Share</span>
+            </div>
+            <div class="button-group">
+                <button id="resetBtn">Reset All</button>
+                <button id="exportPngBtn">Export PNG</button>
+                <button id="exportPdfBtn">Export PDF</button>
+            </div>
+            <div class="button-group" style="margin-top: 10px;">
+                <button id="shareTweetBtn">Share on X</button>
+            </div>
+        </div>
+    </div>
+
+    <button id="mobile-toggle-btn" aria-label="Toggle tools panel">⚙️</button>
+
+    <div id="canvas-container"></div>
+
+<script type="module" src="js/main.js"></script>
+
 </body>
 </html>
