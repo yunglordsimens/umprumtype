@@ -1,0 +1,63 @@
+backend:
+  name: github
+  repo: yunglordsimens/umprumtype  # ← CHANGE to your repo
+  branch: main
+
+media_folder: "fonts"
+public_folder: "/fonts"
+
+collections:
+  - name: "typefaces"
+    label: "Typefaces"
+    folder: "content/typefaces"
+    create: true
+    format: "json"
+    slug: "{{slug}}"
+    sort: "order"
+    fields:
+      - { label: "Order", name: "order", widget: "number", value_type: "int", min: 1 }
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Author", name: "author", widget: "string" }
+      - { label: "Year", name: "year", widget: "string" }
+      - { label: "Type", name: "type", widget: "string", hint: "e.g. Display Serif, Text, Grotesk" }
+      - { label: "Script Support", name: "script", widget: "string", hint: "e.g. Latin Extended, Cyrillic" }
+      - label: "Styles"
+        name: "styles"
+        widget: "list"
+        field: { label: "Style", name: "style", widget: "string" }
+      - { label: "Sample Text", name: "sampleText", widget: "text" }
+      - { label: "Big Letter", name: "bigLetter", widget: "string", hint: "e.g. Aa, Bb, Кк" }
+      - { label: "Charset", name: "charset", widget: "text", hint: "Space-separated characters" }
+      - { label: "Description", name: "description", widget: "text" }
+      - label: "Font Files"
+        name: "fontFiles"
+        widget: "list"
+        fields:
+          - { label: "Style Name", name: "styleName", widget: "string" }
+          - { label: "WOFF2 File", name: "woff2", widget: "file", media_folder: "/fonts" }
+          - { label: "Weight", name: "weight", widget: "number", default: 400 }
+          - { label: "Italic", name: "italic", widget: "boolean", default: false }
+      - label: "OpenType Features"
+        name: "otFeatures"
+        widget: "list"
+        required: false
+        field: { label: "Feature", name: "feature", widget: "string", hint: "e.g. liga, kern, ss01" }
+      - { label: "Has Weight Axis", name: "hasWeight", widget: "boolean", default: false }
+      - { label: "Weight Min", name: "weightMin", widget: "number", default: 400, required: false }
+      - { label: "Weight Max", name: "weightMax", widget: "number", default: 700, required: false }
+      - { label: "Available (physical edition)", name: "available", widget: "boolean", default: false }
+
+  - name: "posts"
+    label: "Posts"
+    folder: "content/posts"
+    create: true
+    format: "json"
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Type", name: "tag", widget: "select", options: ["blog", "project"] }
+      - { label: "Cover Image", name: "cover", widget: "image", required: false }
+      - { label: "Has Physical Edition", name: "available", widget: "boolean", default: false }
+      - { label: "Related Typeface", name: "relatedTypeface", widget: "string", required: false, hint: "Name of related font if any" }
+      - { label: "Body", name: "body", widget: "markdown" }

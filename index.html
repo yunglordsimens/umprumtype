@@ -1,146 +1,601 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Umprum Type Playground – Interactive Typography Explorer">
-    <title>Playground – Umprum Type</title>
-    
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-XXXXXXXXXX');
-    </script>
-    
-    <!-- jsPDF for PDF exports -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
-    <!-- p5.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
-    
-    <!-- FIXED: Use correct relative paths -->
-    <link rel="icon" href="../favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="play-style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="UMPRUM Type — Studio of Typography & Visual Communication, AAAD Prague">
+<title>UMPRUM TYPE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,600;1,6..72,300;1,6..72,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   COLOR MODES — complementary contrast pairs
+═══════════════════════════════════════════════════════ */
+:root{
+  --bg:#EBEBEB;--fg:#111;--fg-dim:#777;--accent:#111;--at:#EBEBEB;
+  --mono:'Space Mono',monospace;--sans:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  --bw:2px;--hh:56px;--ease:cubic-bezier(.19,1,.22,1);
+  --img-filter:grayscale(100%) contrast(150%);
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-mode]){--bg:#111;--fg:#EBEBEB;--fg-dim:#999;--accent:#EBEBEB;--at:#111;--img-filter:grayscale(100%) contrast(150%) invert(1)}
+}
+[data-mode="mono"]{--bg:#EBEBEB;--fg:#111;--fg-dim:#777;--accent:#111;--at:#EBEBEB;--img-filter:grayscale(100%) contrast(150%)}
+[data-mode="night"]{--bg:#111;--fg:#EBEBEB;--fg-dim:#999;--accent:#EBEBEB;--at:#111;--img-filter:grayscale(100%) contrast(150%) invert(1)}
+[data-mode="ocean"]{--bg:#071E22;--fg:#4ECDC4;--fg-dim:#2A8A84;--accent:#4ECDC4;--at:#071E22;--img-filter:grayscale(100%) contrast(120%) sepia(30%) hue-rotate(130deg)}
+[data-mode="ember"]{--bg:#1C0A00;--fg:#FF6B35;--fg-dim:#A04420;--accent:#FF6B35;--at:#1C0A00;--img-filter:grayscale(100%) contrast(120%) sepia(50%) hue-rotate(-10deg)}
+[data-mode="acid"]{--bg:#0D1A00;--fg:#B5FF2B;--fg-dim:#6B9918;--accent:#B5FF2B;--at:#0D1A00;--img-filter:grayscale(100%) contrast(120%) sepia(30%) hue-rotate(40deg)}
+[data-mode="violet"]{--bg:#110022;--fg:#C49BFF;--fg-dim:#7A5EAA;--accent:#C49BFF;--at:#110022;--img-filter:grayscale(100%) contrast(120%) sepia(40%) hue-rotate(220deg)}
+
+/* ═══ RESET ═══ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);overflow-x:hidden;transition:background .3s,color .3s;text-transform:uppercase}
+::selection{background:var(--fg);color:var(--bg)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;text-transform:uppercase}
+
+/* ═══ HEADER ═══ */
+header{position:fixed;top:0;left:0;right:0;height:var(--hh);display:flex;background:var(--bg);border-bottom:var(--bw) solid var(--fg);z-index:2000;font-family:var(--mono);font-size:clamp(11px,1.4vw,18px);font-weight:700;letter-spacing:-.03em;transition:background .3s,border-color .3s,color .3s}
+.hc{display:flex;align-items:center;padding:0 1.8vw;border-right:var(--bw) solid var(--fg);white-space:nowrap;transition:all .2s}
+.hc:last-child{border-right:none}
+.hc-logo{flex-shrink:0;cursor:pointer;background:var(--fg);color:var(--bg);padding:0 2.2vw;transition:all .3s}
+.hc-nav{flex:1;display:flex;gap:0}
+.hc-nav a{padding:0 2vw;height:100%;display:flex;align-items:center;border-right:var(--bw) solid var(--fg);transition:all .15s}
+.hc-nav a:last-child{border-right:none}
+.hc-nav a:hover,.hc-nav a.on{background:var(--fg);color:var(--bg)}
+.hc-sq{width:var(--hh);justify-content:center;padding:0;font-size:18px;cursor:pointer;transition:all .15s}
+.hc-sq:hover{background:var(--fg);color:var(--bg)}
+/* Mode label in button */
+.mode-label{font-size:8px;letter-spacing:.06em}
+
+/* ═══ INFO MEGA — full width, styled ═══ */
+.info-mega{
+  position:fixed;top:var(--hh);left:0;right:0;z-index:1900;
+  background:var(--fg);color:var(--bg);
+  max-height:0;overflow:hidden;
+  transition:max-height .45s var(--ease),padding .3s;
+  display:flex;gap:0;
+  border-bottom:0 solid var(--fg)
+}
+.info-mega.open{max-height:320px;padding:0;border-bottom-width:var(--bw)}
+.im-col{flex:1;padding:2.5vw;border-right:var(--bw) solid var(--bg);font-size:clamp(12px,1.4vw,16px);font-weight:400;letter-spacing:0;text-transform:none;line-height:1.6;opacity:.85}
+.im-col:last-child{border-right:none}
+.im-col .il{font-family:var(--mono);font-size:8px;letter-spacing:.14em;text-transform:uppercase;opacity:.4;margin-bottom:10px;display:block;font-weight:700}
+.im-col a{text-decoration:underline;text-underline-offset:3px;opacity:.7}
+.im-col a:hover{opacity:1}
+.info-marquee{
+  width:100%;padding:1.2vw 0;
+  border-bottom:var(--bw) solid var(--bg);
+  overflow:hidden;white-space:nowrap;
+  font-family:var(--mono);font-size:clamp(10px,1.2vw,14px);font-weight:700;letter-spacing:.15em;opacity:.3
+}
+.info-marquee span{display:inline-block;animation:imscroll 20s linear infinite}
+@keyframes imscroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ═══ MARQUEE ═══ */
+.marquee-wrap{margin-top:var(--hh);background:var(--bg);border-bottom:var(--bw) solid var(--fg);overflow:hidden;height:22vh;display:flex;align-items:center;transition:height .5s var(--ease),border-bottom-width .3s,opacity .3s}
+.marquee-wrap.hidden{height:0;border-bottom-width:0;opacity:0;pointer-events:none}
+.marquee-track{display:flex;white-space:nowrap;animation:mscroll 14s linear infinite;font-size:17vw;line-height:.85;font-weight:700;letter-spacing:-.04em}
+.marquee-track span{padding:0 3vw}
+@keyframes mscroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ═══ PAGES ═══ */
+main{width:100%}
+.pg{display:none}.pg.on{display:block}
+
+.sec-title{padding:1.2vw 2vw;font-size:clamp(22px,4vw,56px);font-weight:700;letter-spacing:-.05em;border-bottom:var(--bw) solid var(--fg);background:var(--fg);color:var(--bg);position:sticky;top:var(--hh);z-index:1000;line-height:1;transition:all .3s}
+
+/* ═══ FILTERS ═══ */
+.filter-strip{display:flex;align-items:center;padding:0 2vw;height:42px;border-bottom:var(--bw) solid var(--fg);background:var(--bg);position:sticky;top:calc(var(--hh) + 1px);z-index:999;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;transition:all .3s}
+.filter-strip::-webkit-scrollbar{display:none}
+.f-sep{width:1px;height:20px;background:var(--fg);opacity:.2;margin:0 12px;flex-shrink:0}
+.f-label{font-family:var(--mono);font-size:8px;letter-spacing:.1em;color:var(--fg-dim);margin-right:8px;font-weight:700;flex-shrink:0}
+.f-btn{font-family:var(--mono);font-size:10px;font-weight:700;padding:5px 12px;margin-right:3px;border:1px solid var(--fg);background:transparent;color:var(--fg);transition:all .12s;cursor:pointer;flex-shrink:0}
+.f-btn:hover,.f-btn.on{background:var(--fg);color:var(--bg)}
+
+/* ═══════════════════════════════════════════════════════
+   HOME GRID — fonts = text only, posts = with images
+═══════════════════════════════════════════════════════ */
+.home-grid{display:flex;flex-direction:column;background:var(--fg);gap:var(--bw);border-bottom:var(--bw) solid var(--fg)}
+.home-row{display:flex;flex:1;gap:var(--bw);transition:flex .55s var(--ease);min-height:280px}
+.home-cell{flex:1;background:var(--bg);position:relative;overflow:hidden;cursor:crosshair;transition:flex .55s var(--ease),background .2s}
+@media(min-width:901px){
+  .home-grid:has(.home-row:hover) .home-row{flex:1}
+  .home-grid:has(.home-row:hover) .home-row:hover{flex:1.6}
+  .home-row:has(.home-cell:hover) .home-cell{flex:1}
+  .home-row:has(.home-cell:hover) .home-cell:hover{flex:2.2}
+}
+
+/* FONT cells — NO images, just giant text */
+.cell-name{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100%;padding:0 2vw;text-align:center;font-size:clamp(36px,16vw,260px);line-height:.78;font-weight:700;letter-spacing:-.06em;color:var(--fg);z-index:4;overflow-wrap:break-word;word-break:break-all;hyphens:auto;pointer-events:none;transition:font-size .55s var(--ease)}
+.home-cell:hover .cell-name,.home-cell.in-view .cell-name{font-size:clamp(42px,22vw,340px)}
+
+/* POST cells — WITH curtain images */
+.home-cell.post-cell{cursor:pointer}
+.home-cell.post-cell .cell-name{color:#fff;mix-blend-mode:difference;font-size:clamp(20px,5vw,80px);letter-spacing:-.04em;word-break:normal;hyphens:none;line-height:.9;font-family:var(--sans)}
+.home-cell.post-cell:hover .cell-name,.home-cell.post-cell.in-view .cell-name{font-size:clamp(24px,7vw,110px)}
+.img-c{position:absolute;top:0;bottom:0;width:100%;height:100%;object-fit:cover;z-index:3;filter:var(--img-filter);transition:transform .55s var(--ease);pointer-events:none}
+.img-l{clip-path:inset(0 50% 0 0)}.img-r{clip-path:inset(0 0 0 50%)}
+.home-cell:hover .img-l,.home-cell.in-view .img-l{transform:translateX(-100%)}
+.home-cell:hover .img-r,.home-cell.in-view .img-r{transform:translateX(100%)}
+
+.cell-under{position:absolute;inset:0;padding:1.5vw;display:flex;flex-direction:column;justify-content:space-between;z-index:1;background:var(--bg);transition:background .3s}
+.home-cell.post-cell .cell-under{background:var(--fg);color:var(--bg)}
+.cu-top,.cu-bot{display:flex;justify-content:space-between;align-items:flex-end;font-family:var(--mono);font-weight:700;opacity:0;transition:opacity .35s,transform .35s}
+.cu-top{font-size:clamp(11px,1.4vw,22px);transform:translateY(-14px)}
+.cu-bot{font-size:clamp(10px,1.2vw,18px);transform:translateY(14px)}
+.home-cell:hover .cu-top,.home-cell:hover .cu-bot,.home-cell.in-view .cu-top,.home-cell.in-view .cu-bot{opacity:1;transform:translateY(0);transition-delay:.15s}
+.bbtn{display:inline-block;padding:1vw 2vw;background:var(--accent);color:var(--at);font-family:var(--mono);font-weight:700;font-size:clamp(10px,1.2vw,18px)}
+.home-cell.post-cell .bbtn{background:var(--bg);color:var(--fg)}
+
+/* ═══════════════════════════════════════════════════════
+   TYPEFACES ACCORDION (bigger, footer-aware)
+═══════════════════════════════════════════════════════ */
+.tf-wrap{min-height:calc(100vh - var(--hh) - 42px);display:flex;flex-direction:column}
+.tf-list{flex:1}
+.tf-row{border-bottom:var(--bw) solid var(--fg);transition:background .12s}
+.tf-row:hover{background:rgba(128,128,128,.04)}
+.tf-head{display:grid;grid-template-columns:44px 1fr auto;align-items:baseline;padding:18px 2vw;gap:16px;cursor:pointer;user-select:none}
+.tf-num{font-family:var(--mono);font-size:11px;color:var(--fg-dim);padding-top:10px;font-weight:700}
+.tf-name{font-size:clamp(52px,10vw,160px);line-height:.9;letter-spacing:-.03em;font-weight:400;transition:letter-spacing .45s var(--ease)}
+.tf-row:hover .tf-name{letter-spacing:.01em}
+.tf-row.open .tf-name{letter-spacing:-.04em}
+.tf-meta{font-family:var(--mono);font-size:10px;color:var(--fg-dim);text-align:right;padding-top:10px;white-space:nowrap;font-weight:700}
+
+.tf-body{max-height:0;overflow:hidden;transition:max-height .65s var(--ease),padding .45s var(--ease);padding:0 2vw 0 calc(44px + 2vw + 16px)}
+.tf-row.open .tf-body{max-height:1600px;padding-bottom:40px}
+.tf-big{font-size:clamp(140px,30vw,460px);line-height:.8;letter-spacing:-.04em;margin-bottom:24px;user-select:all}
+.tf-styles{display:flex;gap:0;margin-bottom:14px;border:var(--bw) solid var(--fg);width:fit-content}
+.tf-sbtn{font-family:var(--mono);font-size:10px;padding:6px 16px;border-right:var(--bw) solid var(--fg);transition:all .12s;cursor:pointer;font-weight:700}
+.tf-sbtn:last-child{border-right:none}
+.tf-sbtn:hover,.tf-sbtn.on{background:var(--fg);color:var(--bg)}
+.tf-ctrl{display:flex;gap:22px;flex-wrap:wrap;align-items:center;margin-bottom:16px;font-family:var(--mono);font-size:9px;color:var(--fg-dim);font-weight:700}
+.tf-ctrl label{display:flex;align-items:center;gap:7px;white-space:nowrap}
+.tf-ctrl input[type="range"]{width:120px;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer}
+.tf-ctrl input[type="range"]::-webkit-slider-track{height:var(--bw);background:var(--fg)}
+.tf-ctrl input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--accent);margin-top:-6px}
+.tf-ctrl .v{color:var(--fg);min-width:24px;text-align:right}
+.tf-specimen{font-size:26px;line-height:1.45;font-weight:400;text-transform:none;max-height:220px;overflow:hidden;position:relative}
+.tf-specimen::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(transparent,var(--bg));pointer-events:none}
+.tf-chars{font-size:14px;line-height:2;color:var(--fg-dim);letter-spacing:.08em;word-spacing:.4em;margin:18px 0;border-top:var(--bw) solid var(--fg);padding-top:16px;text-transform:none;opacity:.5}
+.tf-about{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:18px;padding-top:16px;border-top:var(--bw) solid var(--fg)}
+.tf-about .al{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--fg-dim);margin-bottom:6px;font-weight:700}
+.tf-about p{font-size:14px;line-height:1.65;font-weight:400;max-width:400px;text-transform:none}
+.tf-acts{display:flex;gap:8px;margin-top:18px}
+.btn{font-family:var(--mono);font-size:10px;font-weight:700;padding:9px 20px;border:var(--bw) solid var(--fg);background:transparent;color:var(--fg);transition:all .12s}
+.btn:hover{background:var(--fg);color:var(--bg)}
+.btn-fill{background:var(--accent);color:var(--at);border-color:var(--accent)}
+
+/* ═══ ARCHIVE ═══ */
+.wk-wrap{min-height:calc(100vh - var(--hh) - 42px)}
+.wk-row{display:grid;grid-template-columns:60px 1fr auto auto;align-items:center;padding:2.5vw 2vw;gap:2vw;border-bottom:var(--bw) solid var(--fg);cursor:pointer;transition:all .12s;font-family:var(--mono);font-weight:700;position:relative}
+.wk-row:hover{background:var(--fg);color:var(--bg)}
+.wk-date{font-size:clamp(11px,1.3vw,18px);color:var(--fg-dim)}
+.wk-row:hover .wk-date{color:inherit;opacity:.5}
+.wk-title{font-size:clamp(26px,5vw,72px);font-family:var(--sans);text-transform:none;line-height:.92;letter-spacing:-.03em}
+.wk-tags{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.wk-tag{font-size:clamp(8px,1vw,12px);padding:3px 10px;border:1px solid var(--fg);opacity:.4}
+.wk-row:hover .wk-tag{border-color:currentColor;opacity:.6}
+.wk-tag.avail{border-color:var(--accent);opacity:.9;background:var(--accent);color:var(--at)}
+.wk-row:hover .wk-tag.avail{background:var(--bg);color:var(--fg);border-color:var(--bg)}
+.wk-arrow{font-size:clamp(16px,2vw,28px)}
+.wk-preview{position:fixed;width:300px;height:200px;pointer-events:none;z-index:1500;overflow:hidden;border:var(--bw) solid var(--fg);opacity:0;transition:opacity .15s;transform:translate(20px,-50%);background:var(--bg)}
+.wk-preview.show{opacity:1}
+.wk-preview img{width:100%;height:100%;object-fit:cover;filter:var(--img-filter)}
+
+/* ═══ TRY ═══ */
+.try-fonts{display:flex;border-bottom:var(--bw) solid var(--fg);overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
+.try-fonts::-webkit-scrollbar{display:none}
+.try-font-btn{padding:12px 2.2vw;border-right:var(--bw) solid var(--fg);font-family:var(--mono);font-size:clamp(11px,1.3vw,18px);font-weight:700;white-space:nowrap;transition:all .12s;cursor:pointer}
+.try-font-btn:hover,.try-font-btn.on{background:var(--fg);color:var(--bg)}
+.try-header{display:flex;border-bottom:var(--bw) solid var(--fg)}
+.try-ctrl{flex:1;min-width:140px;padding:14px 2vw;border-right:var(--bw) solid var(--fg);font-family:var(--mono);font-size:9px;font-weight:700}
+.try-ctrl:last-child{border-right:none}
+.try-ctrl label{display:block;color:var(--fg-dim);margin-bottom:8px;font-size:8px;letter-spacing:.1em}
+.try-ctrl input[type="range"]{width:100%;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer}
+.try-ctrl input[type="range"]::-webkit-slider-track{height:var(--bw);background:var(--fg)}
+.try-ctrl input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--accent);margin-top:-6px}
+.try-ctrl.disabled{opacity:.2;pointer-events:none}
+.try-canvas{min-height:calc(100vh - var(--hh) - 260px);padding:4vw;display:flex;align-items:center;justify-content:center}
+.try-input{width:100%;text-align:center;outline:none;font-size:clamp(60px,16vw,260px);line-height:.85;font-weight:400;letter-spacing:-.03em;background:none;color:var(--fg);border:none;text-transform:none;resize:none;overflow:hidden;font-family:'DM Serif Display',serif;caret-color:var(--accent);transition:color .3s}
+.try-input::placeholder{color:var(--fg);opacity:.1}
+.try-fx{display:flex;border-top:var(--bw) solid var(--fg)}
+.try-fx-btn{flex:1;padding:12px;text-align:center;font-family:var(--mono);font-size:clamp(9px,1.1vw,14px);font-weight:700;border-right:var(--bw) solid var(--fg);transition:all .12s;cursor:pointer}
+.try-fx-btn:last-child{border-right:none}
+.try-fx-btn:hover,.try-fx-btn.on{background:var(--fg);color:var(--bg)}
+.try-fx-btn.disabled{opacity:.15;pointer-events:none}
+/* OT features row */
+.try-ot{display:flex;border-top:var(--bw) solid var(--fg)}
+.try-ot-btn{padding:8px 14px;text-align:center;font-family:var(--mono);font-size:9px;font-weight:700;border-right:var(--bw) solid var(--fg);transition:all .12s;cursor:pointer;letter-spacing:.04em}
+.try-ot-btn:last-child{border-right:none}
+.try-ot-btn:hover,.try-ot-btn.on{background:var(--fg);color:var(--bg)}
+.try-ot-label{padding:8px 14px;font-family:var(--mono);font-size:8px;letter-spacing:.1em;color:var(--fg-dim);font-weight:700;border-right:var(--bw) solid var(--fg)}
+
+/* ═══ FOOTER ═══ */
+footer{display:flex;font-family:var(--mono);font-size:clamp(11px,1.3vw,20px);font-weight:700;border-top:var(--bw) solid var(--fg);transition:all .3s}
+.fc{flex:1;padding:2.5vw;border-right:var(--bw) solid var(--fg);text-align:center;transition:all .3s}
+.fc:last-child{border-right:none}
+.fc a:hover{background:var(--fg);color:var(--bg);padding:0 .8vw}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:900px){
+  .home-row{flex-direction:column;min-height:auto}
+  .home-cell{min-height:320px}
+  .tf-head{grid-template-columns:30px 1fr}.tf-meta{display:none}
+  .tf-body{padding-left:calc(30px + 2vw + 16px)}
+  .tf-about{grid-template-columns:1fr}
+  .im-col{border-right:none!important;border-bottom:1px solid var(--bg);padding:2vw 2.5vw!important}
+  .info-mega{flex-direction:column}
+  .wk-row{grid-template-columns:1fr auto}.wk-date{display:none}
+  .wk-preview{display:none!important}
+  .try-header{flex-wrap:wrap}.try-ctrl{flex-basis:50%;border-bottom:var(--bw) solid var(--fg)}
+  footer{flex-wrap:wrap}.fc{flex-basis:50%}
+}
+@media(max-width:560px){
+  .hc-nav a{padding:0 10px;font-size:9px}
+  .fc{flex-basis:100%;border-right:none;border-bottom:var(--bw) solid var(--fg)}
+  .home-cell{min-height:55vh}
+}
+</style>
 </head>
-<body class="playground">
+<body>
 
-    <div id="loader">Loading Umprum Type Playground</div>
-    <div id="toast-container"></div>
-    <div id="performance-indicator">FPS: 60</div>
-    <div id="shortcuts-hint">Press ? for shortcuts</div>
+<header>
+  <div class="hc hc-logo" onclick="goPage('home')">UMPRUM TYPE</div>
+  <div class="hc hc-nav">
+    <a href="#" class="on" data-p="home" onclick="goPage('home',this)">Index</a>
+    <a href="#" data-p="typefaces" onclick="goPage('typefaces',this)">Typefaces</a>
+    <a href="#" data-p="work" onclick="goPage('work',this)">Archive</a>
+    <a href="#" data-p="try" onclick="goPage('try',this)">Try</a>
+  </div>
+  <button class="hc hc-sq" onclick="toggleMarquee()" id="mqBtn">▼</button>
+  <button class="hc hc-sq" onclick="cycleMode()" id="modeBtn"><span class="mode-label">MONO</span></button>
+</header>
 
-    <!-- Updated Header -->
-    <div class="headerMenuWrapper">
-        <div class="headerMenu">
-            <div class="homeItem">
-                <a href="../index.html">UMPRUM TYPE</a>
-            </div>
-            <div class="menuItem"><a href="../index.html">Home</a></div>
-            <div class="menuItem"><a href="../typefaces.html">Typefaces</a></div>
-            <div class="menuItem"><a href="#" id="shortcuts-btn">Shortcuts</a></div>
-            <div class="menuItem"><a href="mailto:info@typoumprum.cz?subject=Playground%20Feedback">Feedback</a></div>
+<div class="info-mega" id="infoMega">
+  <div class="info-marquee"><span>AAAD / UMPRUM · PRAGUE · STUDIO OF TYPOGRAPHY & VISUAL COMMUNICATION · EST. 2023 · AAAD / UMPRUM · PRAGUE · STUDIO OF TYPOGRAPHY & VISUAL COMMUNICATION · EST. 2023 · </span></div>
+  <div style="display:flex;flex:1">
+    <div class="im-col"><span class="il">Studio</span>The Studio of Typography & Visual Communication at AAAD/UMPRUM, Prague. Czech and international students develop typefaces from concept through finished families.</div>
+    <div class="im-col"><span class="il">Education</span>Founded 2023. Research, education, experimentation. Bridging historical Czech typographic traditions with contemporary digital type design.</div>
+    <div class="im-col"><span class="il">Contact</span><a href="mailto:info@typoumprum.cz">info@typoumprum.cz</a><br><a href="https://www.instagram.com/umprumtype/" target="_blank">@umprumtype</a><br>Prague, Czech Republic</div>
+  </div>
+</div>
+
+<div class="marquee-wrap" id="marqueeWrap">
+  <div class="marquee-track"><span>STUDIO OF TYPOGRAPHY & VISUAL COMMUNICATION · AAAD PRAGUE ·</span><span>STUDIO OF TYPOGRAPHY & VISUAL COMMUNICATION · AAAD PRAGUE ·</span></div>
+</div>
+
+<main>
+  <div class="pg on" id="p-home"><div class="home-grid" id="homeGrid"></div></div>
+  <div class="pg" id="p-typefaces">
+    <div class="sec-title">TYPEFACES [<span id="tfCount">07</span>]</div>
+    <div class="filter-strip" id="tfFilters"></div>
+    <div class="tf-wrap"><div class="tf-list" id="tfList"></div></div>
+  </div>
+  <div class="pg" id="p-work">
+    <div class="sec-title">ARCHIVE</div>
+    <div class="filter-strip" id="wkFilters"></div>
+    <div class="wk-wrap" id="wkList"></div>
+  </div>
+  <div class="pg" id="p-try">
+    <div class="sec-title">TRY</div>
+    <div class="try-fonts" id="tryFonts"></div>
+    <div class="try-header" id="tryHeader"></div>
+    <div class="try-canvas"><textarea class="try-input" id="tryInput" placeholder="Type here..." rows="3">Umprum Type</textarea></div>
+    <div class="try-ot" id="tryOt"></div>
+    <div class="try-fx" id="tryFx"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="fc">© 2026 UMPRUM TYPE</div>
+  <div class="fc"><a href="mailto:info@typoumprum.cz">CONTACT</a></div>
+  <div class="fc"><a href="https://instagram.com/umprumtype" target="_blank">INSTAGRAM</a></div>
+  <div class="fc">PRAGUE, CZ</div>
+</footer>
+<div class="wk-preview" id="wkPreview"><img id="wkPrevImg" src=""></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   DATA — loaded from /content/ JSON or inline fallback
+═══════════════════════════════════════════════════════ */
+let DATA={typefaces:[],posts:[]};
+
+// Fallback font families (Google Fonts stand-ins until real .woff2 loaded)
+const fallbackFamilies={
+  'Ananas':"'DM Serif Display',serif",
+  'Chlebiczech':"'Newsreader',serif",
+  'Korchma':"'DM Serif Display',serif",
+  'März Grotesk':"'Space Mono',monospace",
+  'Walbert':"'Newsreader',serif",
+  'Basteleur':"'Instrument Serif',serif",
+  'Garamond UMPRUM':"'Instrument Serif',serif"
+};
+const fallbackStyles={
+  'Chlebiczech':'font-weight:600','Korchma':'font-style:italic',
+  'März Grotesk':'font-weight:700','Walbert':'font-weight:300',
+  'Garamond UMPRUM':'font-style:italic'
+};
+
+async function loadData(){
+  const tfFiles=['ananas','chlebiczech','korchma','marz-grotesk','walbert','basteleur','garamond-umprum'];
+  const postFiles=['anatomy-of-ananas','czech-lettering-heritage','cyrillic-design','basteleur-process','marz-display-study','garamond-revival'];
+  
+  try{
+    const tfs=await Promise.all(tfFiles.map(f=>fetch('/content/typefaces/'+f+'.json').then(r=>r.json())));
+    const ps=await Promise.all(postFiles.map(f=>fetch('/content/posts/'+f+'.json').then(r=>r.json())));
+    DATA.typefaces=tfs.sort((a,b)=>a.order-b.order);
+    DATA.posts=ps.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  }catch(e){
+    console.log('Using inline fallback data');
+    DATA.typefaces=[
+      {order:1,name:'Ananas',author:'Květoň',year:'2025',type:'Display Serif',script:'Latin Extended',styles:['Regular','Italic','Bold'],sampleText:'Imituje žhavý pohled, vítězně se usmívá a nechává za sebou stopu hořkosladké nostalgie.',bigLetter:'Aa',charset:'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z Á Č Ď É Ě Í Ň Ó Ř Š Ť Ú Ů Ý Ž 0 1 2 3 4 5 6 7 8 9',description:'Display serif for editorial headlines.',otFeatures:['liga','kern'],hasWeight:false,weightMin:400,weightMax:400,available:true},
+      {order:2,name:'Chlebiczech',author:'Kosová',year:'2025',type:'Text Serif',script:'Latin + Cyrillic',styles:['Regular','Italic','Bold','Bold Italic','Black','Black Italic'],sampleText:'Jeho jméno jsem zapomněl, prý provádí nárazové obchody s exotickým kořením.',bigLetter:'Cc',charset:'A B C D E F G H I J K L M А Б В Г Д Е Ж З И К Л М Н О П Р С Т У',description:'Text face for Latin and Cyrillic.',otFeatures:['liga','kern','onum','smcp'],hasWeight:true,weightMin:100,weightMax:900,available:true},
+      {order:3,name:'Korchma',author:'Sherlupenkova',year:'2025',type:'Display Serif',script:'Cyrillic',styles:['Regular','Italic'],sampleText:'Вона імітує запальний погляд, тріумфально оживаючи у темряві ночі.',bigLetter:'Кк',charset:'А Б В Г Д Е Ё Ж З И Й К Л М Н О П Р С Т У Ф Х Ц Ч Ш Щ Ъ Ы Ь Э Ю Я',description:'Cyrillic serif rooted in Ukrainian traditions.',otFeatures:['liga','kern'],hasWeight:false,weightMin:400,weightMax:400,available:false},
+      {order:4,name:'März Grotesk',author:'Vlasák',year:'2025',type:'Display Grotesk',script:'Latin',styles:['Bold','Heavy'],sampleText:"DURING THE THIRTY YEARS' WAR, THE SWEDES WANTED TO USE IT AS A WEAPON OF MASS TYPOGRAPHY.",bigLetter:'Mm',charset:'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z 0 1 2 3 4 5 6 7 8 9',description:'Display grotesk inspired by Märzdorf cemetery.',otFeatures:['kern'],hasWeight:true,weightMin:700,weightMax:900,available:true},
+      {order:5,name:'Walbert',author:'Nečásková',year:'2026',type:'Text',script:'Latin',styles:['Regular'],sampleText:'The quick brown fox jumps over the lazy dog, exploring typographic frontiers.',bigLetter:'Ww',charset:'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9',description:'Text face for long reading.',otFeatures:['liga','kern'],hasWeight:false,weightMin:300,weightMax:300,available:false},
+      {order:6,name:'Basteleur',author:'Studio',year:'2024',type:'Studio Collaborative',script:'Latin',styles:['Regular','Bold'],sampleText:'Typography is the craft of endowing human language with a durable visual form.',bigLetter:'Bb',charset:'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z',description:'Studio collaborative typeface.',otFeatures:['liga','kern','ss01'],hasWeight:false,weightMin:400,weightMax:700,available:true},
+      {order:7,name:'Garamond UMPRUM',author:'Studio',year:'2023',type:'Historical Revival',script:'Latin',styles:['Regular','Italic'],sampleText:'Classic elegance meets contemporary Czech design philosophy.',bigLetter:'Gg',charset:'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z',description:'Historical revival of 16th-century Garamond.',otFeatures:['liga','kern','onum'],hasWeight:false,weightMin:400,weightMax:400,available:false}
+    ];
+    DATA.posts=[
+      {title:'Czech Lettering Heritage',date:'2025-03-10',tag:'blog',cover:'https://images.unsplash.com/photo-1600172454132-057053e18a99?q=80&w=800',available:false},
+      {title:'Anatomy of Ananas',date:'2025-02-15',tag:'project',cover:'https://images.unsplash.com/photo-1616423640778-28d1b53229bd?q=80&w=800',available:true},
+      {title:'März Grotesk — Display Study',date:'2025-01-20',tag:'project',cover:'https://images.unsplash.com/photo-1520616110034-73891461f008?q=80&w=800',available:true},
+      {title:'Cyrillic Design Challenges',date:'2024-11-20',tag:'blog',cover:'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=800',available:false},
+      {title:'Basteleur — Studio Process',date:'2024-06-01',tag:'project',cover:'https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=800',available:true},
+      {title:'The Czech Grotesk Tradition',date:'2024-04-15',tag:'blog',cover:'https://images.unsplash.com/photo-1590459529328-3e4b85d92828?q=80&w=800',available:false},
+      {title:'Garamond Revival — Process',date:'2023-12-15',tag:'project',cover:'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=800',available:false}
+    ];
+  }
+  renderAll();
+}
+
+/* ═══ RENDER ALL ═══ */
+function renderAll(){
+  renderHome();renderTf();renderTfFilters();renderWork();renderWkFilters();renderTryFonts();renderTryControls();
+  document.getElementById('tfCount').textContent=String(DATA.typefaces.length).padStart(2,'0');
+  setupMobileScroll();
+}
+
+/* ═══ HOME — mixed grid ═══ */
+function renderHome(){
+  const tf=DATA.typefaces,ps=DATA.posts;
+  // Interleave: 2 fonts, 1 post per row (3 cells)
+  let cells=[];
+  let fi=0,pi=0;
+  while(fi<tf.length||pi<ps.length){
+    if(fi<tf.length){cells.push({type:'font',data:tf[fi],idx:fi});fi++;}
+    if(fi<tf.length){cells.push({type:'font',data:tf[fi],idx:fi});fi++;}
+    if(pi<ps.length){cells.push({type:'post',data:ps[pi]});pi++;}
+  }
+  // Chunk into rows of 3
+  let rows=[];
+  for(let i=0;i<cells.length;i+=3)rows.push(cells.slice(i,i+3));
+  
+  document.getElementById('homeGrid').innerHTML=rows.map(row=>`<div class="home-row">${row.map(c=>{
+    if(c.type==='font'){
+      const f=c.data,fam=fallbackFamilies[f.name]||'serif',sty=fallbackStyles[f.name]||'';
+      return `<div class="home-cell" onclick="goPage('typefaces');setTimeout(()=>openTf(${c.idx}),100)">
+        <div class="cell-name" style="font-family:${fam};${sty}">${f.name.toUpperCase()}</div>
+        <div class="cell-under"><div class="cu-top"><span>${String(f.order).padStart(2,'0')} · TYPEFACE</span><span>${f.author} · ${f.year}</span></div><div class="cu-bot"><div>${f.type.toUpperCase()}</div><span class="bbtn">VIEW →</span></div></div>
+      </div>`;
+    }else{
+      const p=c.data,img=p.cover||'';
+      return `<div class="home-cell post-cell" onclick="goPage('work')">
+        ${img?`<img src="${img}" class="img-c img-l"><img src="${img}" class="img-c img-r">`:''}
+        <div class="cell-name">${p.title.toUpperCase()}</div>
+        <div class="cell-under"><div class="cu-top"><span>${p.tag.toUpperCase()}</span><span>${p.date.slice(0,4)}</span></div><div class="cu-bot"><div>${p.available?'AVAILABLE':'ARCHIVE'}</div><span class="bbtn">READ →</span></div></div>
+      </div>`;
+    }
+  }).join('')}</div>`).join('');
+}
+
+/* ═══ TYPEFACES ═══ */
+function renderTf(){
+  document.getElementById('tfList').innerHTML=DATA.typefaces.map((f,i)=>{
+    const fam=fallbackFamilies[f.name]||'serif',sty=fallbackStyles[f.name]||'';
+    return `<div class="tf-row" data-y="${f.year}" data-a="${f.author}" onclick="toggleTf(this)">
+      <div class="tf-head"><span class="tf-num">${String(f.order).padStart(2,'0')}</span><span class="tf-name" style="font-family:${fam};${sty}">${f.name}</span><span class="tf-meta">${f.author} · ${f.year}</span></div>
+      <div class="tf-body">
+        <div class="tf-big" style="font-family:${fam};${sty}">${f.bigLetter}</div>
+        <div class="tf-styles">${f.styles.map((s,j)=>`<div class="tf-sbtn${j===0?' on':''}" onclick="event.stopPropagation()">${s}</div>`).join('')}</div>
+        <div class="tf-ctrl" onclick="event.stopPropagation()">
+          <label>SIZE <input type="range" min="14" max="80" value="26" oninput="this.closest('.tf-body').querySelector('.tf-specimen').style.fontSize=this.value+'px';this.parentElement.querySelector('.v').textContent=this.value"><span class="v">26</span></label>
+          <label>COLS <input type="range" min="1" max="3" value="1" oninput="this.closest('.tf-body').querySelector('.tf-specimen').style.columns=this.value;this.parentElement.querySelector('.v').textContent=this.value"><span class="v">1</span></label>
         </div>
+        <div class="tf-specimen" style="font-family:${fam}">${f.sampleText}</div>
+        <div class="tf-chars" style="font-family:${fam}">${f.charset}</div>
+        <div class="tf-about"><div><div class="al">ABOUT</div><p>${f.description}</p></div><div><div class="al">AUTHOR</div><p>${f.author} — Studio of Typography, UMPRUM.</p></div></div>
+        <div class="tf-acts"><a href="#" class="btn btn-fill" onclick="event.stopPropagation();selectTryFont(${i});goPage('try')">TRY →</a><button class="btn" onclick="event.stopPropagation()">SPECIMEN PDF</button></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTfFilters(){
+  const years=[...new Set(DATA.typefaces.map(f=>f.year))].sort((a,b)=>b-a);
+  const authors=[...new Set(DATA.typefaces.map(f=>f.author))].sort();
+  document.getElementById('tfFilters').innerHTML=`
+    <span class="f-label">YEAR</span>
+    <button class="f-btn on" onclick="filtTf('y','all',this)">ALL</button>
+    ${years.map(y=>`<button class="f-btn" onclick="filtTf('y','${y}',this)">${y}</button>`).join('')}
+    <div class="f-sep"></div>
+    <span class="f-label">AUTHOR</span>
+    <button class="f-btn on" onclick="filtTf('a','all',this)">ALL</button>
+    ${authors.map(a=>`<button class="f-btn" onclick="filtTf('a','${a}',this)">${a.toUpperCase()}</button>`).join('')}
+  `;
+}
+
+/* ═══ ARCHIVE ═══ */
+function renderWork(){
+  document.getElementById('wkList').innerHTML=DATA.posts.map(w=>`
+    <div class="wk-row" data-tag="${w.tag}" data-year="${w.date.slice(0,4)}" data-avail="${w.available}" data-img="${w.cover||''}" onmouseenter="showPrev(event,this)" onmouseleave="hidePrev()">
+      <span class="wk-date">${w.date.slice(0,4)}</span>
+      <span class="wk-title">${w.title}</span>
+      <span class="wk-tags"><span class="wk-tag">${w.tag.toUpperCase()}</span>${w.available?'<span class="wk-tag avail">AVAILABLE</span>':''}</span>
+      <span class="wk-arrow">→</span>
     </div>
+  `).join('');
+}
 
-    <div id="tools-panel">
-        <!-- TYPOGRAPHY -->
-        <div class="control-group">
-            <div class="control-group-title">
-                <span>Typography</span>
-            </div>
-            <label for="fontSelect">Typeface</label>
-            <div class="select-wrapper">
-                <select id="fontSelect" aria-label="Select font typeface"></select>
-            </div>
-            <label for="styleSelect">Style</label>
-            <div class="select-wrapper">
-                <select id="styleSelect" aria-label="Select font style"></select>
-            </div>
-        </div>
+function renderWkFilters(){
+  const years=[...new Set(DATA.posts.map(p=>p.date.slice(0,4)))].sort((a,b)=>b-a);
+  document.getElementById('wkFilters').innerHTML=`
+    <span class="f-label">TYPE</span>
+    <button class="f-btn on" onclick="filtWk('t','all',this)">ALL</button>
+    <button class="f-btn" onclick="filtWk('t','blog',this)">BLOG</button>
+    <button class="f-btn" onclick="filtWk('t','project',this)">PROJECT</button>
+    <button class="f-btn" onclick="filtWk('t','available',this)">AVAILABLE</button>
+    <div class="f-sep"></div>
+    <span class="f-label">YEAR</span>
+    <button class="f-btn on" onclick="filtWk('y','all',this)">ALL</button>
+    ${years.map(y=>`<button class="f-btn" onclick="filtWk('y','${y}',this)">${y}</button>`).join('')}
+  `;
+}
 
-        <!-- TEXT CONTENT -->
-        <div class="control-group">
-            <div class="control-group-title">
-                <span>Content</span>
-                <span id="char-count" style="font-size:9px; opacity:0.7;">0 chars</span>
-            </div>
-            <textarea id="customInput" placeholder="Enter your text here... (minimum 5 characters)" rows="3" aria-label="Enter custom text"></textarea>
-            <div class="button-group">
-                <button id="applyTextBtn">Update Text</button>
-                <button id="sample-text-btn">Sample</button>
-            </div>
-        </div>
+/* ═══ TRY — adaptive to font capabilities ═══ */
+function renderTryFonts(){
+  document.getElementById('tryFonts').innerHTML=DATA.typefaces.map((f,i)=>
+    `<div class="try-font-btn${i===0?' on':''}" onclick="selectTryFont(${i})">${f.name}</div>`
+  ).join('');
+}
 
-        <!-- CONTROLS -->
-        <div class="control-group">
-            <div class="control-group-title">
-                <span>Controls</span>
-            </div>
-            <label for="densitySlider">Density</label>
-            <input type="range" id="densitySlider" min="300" max="2500" value="1200" step="100" aria-label="Glyph density">
-            <div class="slider-value" id="densityValue">1200 glyphs</div>
-            
-            <label for="radiusSlider">Interaction Radius</label>
-            <input type="range" id="radiusSlider" min="100" max="800" value="280" step="10" aria-label="Interaction radius">
-            <div class="slider-value" id="radiusValue">280px</div>
-            
-            <label for="scaleSlider">Max Scale</label>
-            <input type="range" id="scaleSlider" min="1.0" max="6.0" value="3.5" step="0.1" aria-label="Maximum scale">
-            <div class="slider-value" id="scaleValue">3.5x</div>
-        </div>
+function renderTryControls(){
+  const f=DATA.typefaces[currentTryFont]||DATA.typefaces[0];
+  const hasW=f.hasWeight;
+  document.getElementById('tryHeader').innerHTML=`
+    <div class="try-ctrl"><label>SIZE</label><input type="range" min="20" max="300" value="120" oninput="setTry('fontSize',this.value+'px')"></div>
+    <div class="try-ctrl"><label>TRACKING</label><input type="range" min="-20" max="50" value="0" oninput="setTry('letterSpacing',(this.value/100)+'em')"></div>
+    <div class="try-ctrl"><label>LEADING</label><input type="range" min="60" max="200" value="85" oninput="setTry('lineHeight',(this.value/100))"></div>
+    <div class="try-ctrl${hasW?'':' disabled'}"><label>WEIGHT${hasW?'':' (N/A)'}</label><input type="range" min="${f.weightMin||100}" max="${f.weightMax||900}" value="${f.weightMin||400}" oninput="setTry('fontWeight',this.value)"${hasW?'':' disabled'}></div>
+  `;
+  // OT features
+  const ot=f.otFeatures||[];
+  document.getElementById('tryOt').innerHTML=ot.length?`<span class="try-ot-label">OPENTYPE</span>${ot.map(ft=>`<div class="try-ot-btn" onclick="toggleOt(this,'${ft}')">${ft.toUpperCase()}</div>`).join('')}`:'';
+  // Effects
+  const hasItalic=f.styles.some(s=>s.toLowerCase().includes('italic'));
+  document.getElementById('tryFx').innerHTML=`
+    <div class="try-fx-btn" onclick="toggleFx(this,'outline')">OUTLINE</div>
+    <div class="try-fx-btn" onclick="toggleFx(this,'invert')">INVERT</div>
+    <div class="try-fx-btn${hasItalic?'':' disabled'}" onclick="${hasItalic?"toggleFx(this,'italic')":""}">ITALIC${hasItalic?'':' (N/A)'}</div>
+    <div class="try-fx-btn" onclick="toggleFx(this,'blur')">BLUR</div>
+  `;
+}
 
-        <!-- TRENDY EFFECTS -->
-        <div class="control-group">
-            <div class="control-group-title">
-                <span>Modes</span>
-            </div>
-            <div class="mode-selector">
-                <label class="checkbox-row" for="waveToggle">
-                    <input type="checkbox" id="waveToggle">
-                    <span>Fluid Wave</span>
-                </label>
-                <label class="checkbox-row" for="bloomToggle">
-                    <input type="checkbox" id="bloomToggle">
-                    <span>Bloom Glow</span>
-                </label>
-                <label class="checkbox-row" for="scatterToggle">
-                    <input type="checkbox" id="scatterToggle">
-                    <span>Scatter</span>
-                </label>
-            </div>
-            <div class="mode-selector">
-                <label class="checkbox-row" for="darkToggle">
-                    <input type="checkbox" id="darkToggle">
-                    <span>Dark Mode</span>
-                </label>
-            </div>
-        </div>
+let currentTryFont=0;
+function selectTryFont(i){
+  currentTryFont=i;
+  const f=DATA.typefaces[i],fam=fallbackFamilies[f.name]||'serif';
+  const inp=document.getElementById('tryInput');
+  inp.style.fontFamily=fam;inp.style.webkitTextStroke='';inp.style.color='var(--fg)';
+  inp.style.fontStyle='normal';inp.style.filter='none';inp.style.fontFeatureSettings='normal';
+  fxS={outline:false,invert:false,italic:false,blur:false};otState={};
+  document.querySelectorAll('.try-font-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.try-font-btn')[i]?.classList.add('on');
+  renderTryControls();
+}
+function setTry(p,v){document.getElementById('tryInput').style[p]=v}
+let fxS={outline:false,invert:false,italic:false,blur:false};
+function toggleFx(btn,fx){
+  fxS[fx]=!fxS[fx];btn.classList.toggle('on');
+  const inp=document.getElementById('tryInput');
+  inp.style.webkitTextStroke=fxS.outline?'2px var(--fg)':'';
+  inp.style.color=fxS.outline?'transparent':'var(--fg)';
+  inp.style.fontStyle=fxS.italic?'italic':'normal';
+  let fl=[];if(fxS.invert)fl.push('invert(1)');if(fxS.blur)fl.push('blur(4px)');
+  inp.style.filter=fl.join(' ')||'none';
+}
+let otState={};
+function toggleOt(btn,feat){
+  otState[feat]=!otState[feat];btn.classList.toggle('on');
+  const settings=Object.entries(otState).filter(([k,v])=>v).map(([k])=>`"${k}" 1`).join(', ');
+  document.getElementById('tryInput').style.fontFeatureSettings=settings||'normal';
+}
+document.getElementById('tryInput').addEventListener('input',function(){this.style.height='auto';this.style.height=this.scrollHeight+'px'});
 
-        <!-- ACTIONS -->
-        <div class="control-group" style="border: none; margin-top: auto;">
-            <div class="control-group-title">
-                <span>Export & Share</span>
-            </div>
-            <div class="button-group">
-                <button id="resetBtn">Reset All</button>
-                <button id="exportPngBtn">Export PNG</button>
-                <button id="exportPdfBtn">Export PDF</button>
-            </div>
-            <div class="button-group" style="margin-top: 10px;">
-                <button id="shareTweetBtn">Share on X</button>
-            </div>
-        </div>
-    </div>
+/* ═══ NAV ═══ */
+function goPage(p,el){
+  document.querySelectorAll('.pg').forEach(x=>x.classList.remove('on'));
+  document.getElementById('p-'+p).classList.add('on');
+  document.querySelectorAll('.hc-nav a').forEach(a=>a.classList.remove('on'));
+  (el||document.querySelector('[data-p="'+p+'"]'))?.classList.add('on');
+  window.scrollTo(0,0);
+  document.getElementById('infoMega').classList.remove('open');
+}
 
-    <button id="mobile-toggle-btn" aria-label="Toggle tools panel">⚙️</button>
+/* ═══ COLOR MODES ═══ */
+const modes=['mono','night','ocean','ember','acid','violet'];
+const modeLabels=['MONO','NIGHT','OCEAN','EMBER','ACID','VIOLET'];
+let modeIdx=0;
+function cycleMode(){
+  // detect system first time
+  modeIdx=(modeIdx+1)%modes.length;
+  document.documentElement.setAttribute('data-mode',modes[modeIdx]);
+  document.getElementById('modeBtn').innerHTML=`<span class="mode-label">${modeLabels[modeIdx]}</span>`;
+}
+// Init from system
+if(window.matchMedia('(prefers-color-scheme:dark)').matches){modeIdx=1;document.documentElement.setAttribute('data-mode','night');document.getElementById('modeBtn').innerHTML='<span class="mode-label">NIGHT</span>';}
 
-    <div id="canvas-container"></div>
+/* ═══ MARQUEE ═══ */
+function toggleMarquee(){document.getElementById('marqueeWrap').classList.toggle('hidden');document.getElementById('mqBtn').textContent=document.getElementById('marqueeWrap').classList.contains('hidden')?'▲':'▼'}
 
-<script type="module" src="js/main.js"></script>
+/* ═══ INFO ═══ */
+const logo=document.querySelector('.hc-logo');let infoT;
+logo.addEventListener('mouseenter',()=>{clearTimeout(infoT);document.getElementById('infoMega').classList.add('open')});
+logo.addEventListener('mouseleave',()=>{infoT=setTimeout(()=>document.getElementById('infoMega').classList.remove('open'),400)});
+document.getElementById('infoMega').addEventListener('mouseenter',()=>clearTimeout(infoT));
+document.getElementById('infoMega').addEventListener('mouseleave',()=>{infoT=setTimeout(()=>document.getElementById('infoMega').classList.remove('open'),250)});
 
+/* ═══ ACCORDION ═══ */
+function toggleTf(row){const w=row.classList.contains('open');document.querySelectorAll('.tf-row.open').forEach(r=>r.classList.remove('open'));if(!w)row.classList.add('open')}
+function openTf(i){const r=document.querySelectorAll('.tf-row');if(r[i]){r[i].classList.add('open');r[i].scrollIntoView({behavior:'smooth',block:'start'})}}
+
+/* ═══ FILTERS ═══ */
+function getGroup(btn){const s=[...btn.closest('.filter-strip').children];const idx=s.indexOf(btn);let a=idx,b=s.length;for(let i=idx-1;i>=0;i--)if(!s[i].classList.contains('f-btn')){a=i+1;break}for(let i=idx+1;i<s.length;i++)if(!s[i].classList.contains('f-btn')){b=i;break}return s.slice(a,b).filter(x=>x.classList.contains('f-btn'))}
+
+let tfY='all',tfA='all';
+function filtTf(dim,val,btn){
+  getGroup(btn).forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  if(dim==='y')tfY=val;else tfA=val;
+  // Close open accordion
+  document.querySelectorAll('.tf-row.open').forEach(r=>r.classList.remove('open'));
+  // Sort + filter
+  const rows=[...document.querySelectorAll('.tf-row')];
+  rows.forEach(r=>{
+    const show=(tfY==='all'||r.dataset.y===tfY)&&(tfA==='all'||r.dataset.a===tfA);
+    r.style.display=show?'':'none';
+  });
+}
+
+let wkT='all',wkY='all';
+function filtWk(dim,val,btn){
+  getGroup(btn).forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  if(dim==='t')wkT=val;else wkY=val;
+  document.querySelectorAll('.wk-row').forEach(r=>{
+    const mt=wkT==='all'||r.dataset.tag===wkT||(wkT==='available'&&r.dataset.avail==='true');
+    r.style.display=mt&&(wkY==='all'||r.dataset.year===wkY)?'':'none';
+  });
+}
+
+/* ═══ HOVER PREVIEW ═══ */
+const prev=document.getElementById('wkPreview'),prevImg=document.getElementById('wkPrevImg');
+function showPrev(e,row){const s=row.dataset.img;if(!s)return;prevImg.src=s;prev.classList.add('show')}
+function hidePrev(){prev.classList.remove('show')}
+document.addEventListener('mousemove',e=>{if(prev.classList.contains('show')){prev.style.left=e.clientX+'px';prev.style.top=e.clientY+'px'}});
+
+/* ═══ MOBILE SCROLL EXPAND ═══ */
+function setupMobileScroll(){
+  if(window.innerWidth>900){document.querySelectorAll('.home-cell.in-view').forEach(c=>c.classList.remove('in-view'));return}
+  const obs=new IntersectionObserver(es=>{es.forEach(e=>e.target.classList.toggle('in-view',e.isIntersecting&&e.intersectionRatio>=0.4))},{threshold:[0,.2,.4,.6,.8,1],rootMargin:'-15% 0px -15% 0px'});
+  document.querySelectorAll('#homeGrid .home-cell').forEach(c=>obs.observe(c));
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('infoMega').classList.remove('open')});
+
+/* ═══ INIT ═══ */
+loadData();
+window.addEventListener('resize',setupMobileScroll);
+</script>
 </body>
 </html>
