@@ -2,7 +2,6 @@ backend:
   name: github
   repo: yunglordsimens/umprumtype  # ← CHANGE to your repo
   branch: main
-  base_url: https://umprumtype.netlify.app/
 
 media_folder: "fonts"
 public_folder: "/fonts"
