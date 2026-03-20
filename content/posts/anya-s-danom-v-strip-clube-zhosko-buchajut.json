@@ -4,5 +4,6 @@
   "title": "ANYA S DANOM V STRIP CLUBE  ZHOSKO BUCHAJUT",
   "tag": "blog",
   "relatedTypeface": "ANANAS",
-  "body": "![dudka iphonejaalbreak](/fonts/8915cbf6-6b1f-435f-98fc-d1f411609d20.jpg \"babaduk\")\n\n\n\n```\nsize(200, 200);\n\n//green\nfill(0, 255, 0);\n\n//draw the head\nellipse(100, 100, 150, 150);\n\n//white\nfill(255);\n\n//draw the eyes\nellipse(75, 85, 30, 20);\nellipse(125, 85, 30, 20);\n\n//black\nfill(0);\n\n//draw the pupils\nellipse(75, 85, 10, 10);\nellipse(125, 85, 10, 10);\n\n//red\nfill(255, 0, 0);\n\n//draw the mouth\narc(100, 125, 80, 50, 0, 3.14);\nline(60, 125, 140, 125);\n```\n\n***AYE***\n\n1. > ***AYE***\\\n   > \\\n   > \\\n   > djufhjshdjfhs"
+  "body": "![dudka iphonejaalbreak](/fonts/8915cbf6-6b1f-435f-98fc-d1f411609d20.jpg \"babaduk\")\n\n\n\n```\nsize(200, 200);\n\n//green\nfill(0, 255, 0);\n\n//draw the head\nellipse(100, 100, 150, 150);\n\n//white\nfill(255);\n\n//draw the eyes\nellipse(75, 85, 30, 20);\nellipse(125, 85, 30, 20);\n\n//black\nfill(0);\n\n//draw the pupils\nellipse(75, 85, 10, 10);\nellipse(125, 85, 10, 10);\n\n//red\nfill(255, 0, 0);\n\n//draw the mouth\narc(100, 125, 80, 50, 0, 3.14);\nline(60, 125, 140, 125);\n```\n\n***AYE***\n\n1. > ***AYE***\\\n   > \\\n   > \\\n   > djufhjshdjfhs",
+  "cover": "/fonts/8915cbf6-6b1f-435f-98fc-d1f411609d20.jpg"
 }
