@@ -1,0 +1,62 @@
+[
+  {
+    "title": "Anatomy of Ananas",
+    "date": "2025-02-15T00:00:00.000Z",
+    "tag": "project",
+    "cover": "https://images.unsplash.com/photo-1616423640778-28d1b53229bd?q=80&w=800",
+    "available": true,
+    "relatedTypeface": "Ananas",
+    "body": "Documenting the two-year process of designing Ananas — a display serif that started as a grotesque experiment.",
+    "_slug": "anatomy-of-ananas"
+  },
+  {
+    "title": "Basteleur — Studio Process",
+    "date": "2024-06-01T00:00:00.000Z",
+    "tag": "project",
+    "cover": "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=800",
+    "available": true,
+    "relatedTypeface": "Basteleur",
+    "body": "Basteleur was designed collectively by the entire studio over one semester.",
+    "_slug": "basteleur-process"
+  },
+  {
+    "title": "Cyrillic Design Challenges",
+    "date": "2024-11-20T00:00:00.000Z",
+    "tag": "blog",
+    "cover": "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=800",
+    "available": false,
+    "relatedTypeface": "Korchma",
+    "body": "Extending a Latin typeface to Cyrillic is not translation — it is redesign.",
+    "_slug": "cyrillic-design"
+  },
+  {
+    "title": "Czech Lettering Heritage",
+    "date": "2025-03-10T00:00:00.000Z",
+    "tag": "blog",
+    "cover": "https://images.unsplash.com/photo-1600172454132-057053e18a99?q=80&w=800",
+    "available": false,
+    "relatedTypeface": "",
+    "body": "Czech lettering traditions run deep — from hand-painted shop signs in Vinohrady to Vojtěch Preissig.",
+    "_slug": "czech-lettering-heritage"
+  },
+  {
+    "title": "Garamond Revival — Process",
+    "date": "2023-12-15T00:00:00.000Z",
+    "tag": "project",
+    "cover": "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=800",
+    "available": false,
+    "relatedTypeface": "Garamond UMPRUM",
+    "body": "The studio's first project: a careful revival of Claude Garamond's types.",
+    "_slug": "garamond-revival"
+  },
+  {
+    "title": "März Grotesk — Display Study",
+    "date": "2025-01-20T00:00:00.000Z",
+    "tag": "project",
+    "cover": "https://images.unsplash.com/photo-1520616110034-73891461f008?q=80&w=800",
+    "available": true,
+    "relatedTypeface": "März Grotesk",
+    "body": "A display grotesk inspired by cemetery lettering in Märzdorf.",
+    "_slug": "marz-display-study"
+  }
+]

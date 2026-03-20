@@ -1,0 +1,191 @@
+[
+  {
+    "order": 1,
+    "name": "Ananas",
+    "author": "Květoň",
+    "year": "2025",
+    "type": "Display Serif",
+    "script": "Latin Extended",
+    "styles": [
+      "Regular",
+      "Italic",
+      "Bold"
+    ],
+    "sampleText": "Imituje žhavý pohled, vítězně se usmívá a nechává za sebou stopu hořkosladké nostalgie.",
+    "bigLetter": "Aa",
+    "charset": "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z Á Č Ď É Ě Í Ň Ó Ř Š Ť Ú Ů Ý Ž 0 1 2 3 4 5 6 7 8 9",
+    "description": "A display serif designed for editorial headlines. Warm inktraps and generous spacing.",
+    "fontFiles": [],
+    "otFeatures": [
+      "liga",
+      "kern"
+    ],
+    "hasWeight": false,
+    "weightMin": 400,
+    "weightMax": 400,
+    "available": true,
+    "_slug": "ananas"
+  },
+  {
+    "order": 6,
+    "name": "Basteleur",
+    "author": "Studio",
+    "year": "2024",
+    "type": "Studio Collaborative",
+    "script": "Latin",
+    "styles": [
+      "Regular",
+      "Bold"
+    ],
+    "sampleText": "Typography is the craft of endowing human language with a durable visual form.",
+    "bigLetter": "Bb",
+    "charset": "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z",
+    "description": "Studio-wide collaborative typeface. The foundational project.",
+    "fontFiles": [],
+    "otFeatures": [
+      "liga",
+      "kern",
+      "ss01"
+    ],
+    "hasWeight": false,
+    "weightMin": 400,
+    "weightMax": 700,
+    "available": true,
+    "_slug": "basteleur"
+  },
+  {
+    "order": 2,
+    "name": "Chlebiczech",
+    "author": "Kosová",
+    "year": "2025",
+    "type": "Text Serif",
+    "script": "Latin + Cyrillic",
+    "styles": [
+      "Regular",
+      "Italic",
+      "Bold",
+      "Bold Italic",
+      "Black",
+      "Black Italic"
+    ],
+    "sampleText": "Jeho jméno jsem zapomněl, prý provádí nárazové obchody s exotickým kořením.",
+    "bigLetter": "Cc",
+    "charset": "A B C D E F G H I J K L M А Б В Г Д Е Ж З И К Л М Н О П Р С Т У",
+    "description": "A text face for extended reading in both Latin and Cyrillic. Six weights.",
+    "fontFiles": [],
+    "otFeatures": [
+      "liga",
+      "kern",
+      "onum",
+      "smcp"
+    ],
+    "hasWeight": true,
+    "weightMin": 100,
+    "weightMax": 900,
+    "available": true,
+    "_slug": "chlebiczech"
+  },
+  {
+    "order": 7,
+    "name": "Garamond UMPRUM",
+    "author": "Studio",
+    "year": "2023",
+    "type": "Historical Revival",
+    "script": "Latin",
+    "styles": [
+      "Regular",
+      "Italic"
+    ],
+    "sampleText": "Classic elegance meets contemporary Czech design philosophy.",
+    "bigLetter": "Gg",
+    "charset": "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z",
+    "description": "Historical revival connecting 16th-century punch-cutting to contemporary Czech practice.",
+    "fontFiles": [],
+    "otFeatures": [
+      "liga",
+      "kern",
+      "onum"
+    ],
+    "hasWeight": false,
+    "weightMin": 400,
+    "weightMax": 400,
+    "available": false,
+    "_slug": "garamond-umprum"
+  },
+  {
+    "order": 3,
+    "name": "Korchma",
+    "author": "Sherlupenkova",
+    "year": "2025",
+    "type": "Display Serif",
+    "script": "Cyrillic",
+    "styles": [
+      "Regular",
+      "Italic"
+    ],
+    "sampleText": "Вона імітує запальний погляд, тріумфально оживаючи у темряві ночі.",
+    "bigLetter": "Кк",
+    "charset": "А Б В Г Д Е Ё Ж З И Й К Л М Н О П Р С Т У Ф Х Ц Ч Ш Щ Ъ Ы Ь Э Ю Я",
+    "description": "Cyrillic display serif rooted in Ukrainian lettering traditions.",
+    "fontFiles": [],
+    "otFeatures": [
+      "liga",
+      "kern"
+    ],
+    "hasWeight": false,
+    "weightMin": 400,
+    "weightMax": 400,
+    "available": false,
+    "_slug": "korchma"
+  },
+  {
+    "order": 4,
+    "name": "März Grotesk",
+    "author": "Vlasák",
+    "year": "2025",
+    "type": "Display Grotesk",
+    "script": "Latin",
+    "styles": [
+      "Bold",
+      "Heavy"
+    ],
+    "sampleText": "DURING THE THIRTY YEARS' WAR, THE SWEDES WANTED TO USE IT AS A WEAPON OF MASS TYPOGRAPHY.",
+    "bigLetter": "Mm",
+    "charset": "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z 0 1 2 3 4 5 6 7 8 9",
+    "description": "Display grotesk inspired by Märzdorf cemetery lettering. Wide, bold, uncompromising.",
+    "fontFiles": [],
+    "otFeatures": [
+      "kern"
+    ],
+    "hasWeight": true,
+    "weightMin": 700,
+    "weightMax": 900,
+    "available": true,
+    "_slug": "marz-grotesk"
+  },
+  {
+    "order": 5,
+    "name": "Walbert",
+    "author": "Nečásková",
+    "year": "2026",
+    "type": "Text",
+    "script": "Latin",
+    "styles": [
+      "Regular"
+    ],
+    "sampleText": "The quick brown fox jumps over the lazy dog, exploring typographic frontiers.",
+    "bigLetter": "Ww",
+    "charset": "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9",
+    "description": "A text face for long reading. Quiet, even color.",
+    "fontFiles": [],
+    "otFeatures": [
+      "liga",
+      "kern"
+    ],
+    "hasWeight": false,
+    "weightMin": 300,
+    "weightMax": 300,
+    "available": false,
+    "_slug": "walbert"
+  }
+]

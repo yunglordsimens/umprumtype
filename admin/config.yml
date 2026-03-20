@@ -12,7 +12,6 @@ collections:
     create: true
     format: "json"
     slug: "{{slug}}"
-    sort: "order"
     fields:
       - { label: "Order", name: "order", widget: "number", value_type: "int", min: 1 }
       - { label: "Name", name: "name", widget: "string" }
@@ -31,6 +30,7 @@ collections:
       - label: "Font Files"
         name: "fontFiles"
         widget: "list"
+        required: false
         fields:
           - { label: "Style Name", name: "styleName", widget: "string" }
           - { label: "WOFF2 File", name: "woff2", widget: "file", media_folder: "/fonts" }
@@ -58,5 +58,5 @@ collections:
       - { label: "Type", name: "tag", widget: "select", options: ["blog", "project"] }
       - { label: "Cover Image", name: "cover", widget: "image", required: false }
       - { label: "Has Physical Edition", name: "available", widget: "boolean", default: false }
-      - { label: "Related Typeface", name: "relatedTypeface", widget: "string", required: false, hint: "Name of related font if any" }
+      - { label: "Related Typeface", name: "relatedTypeface", widget: "string", required: false }
       - { label: "Body", name: "body", widget: "markdown" }
