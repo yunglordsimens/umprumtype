@@ -1,6 +1,5 @@
 backend:
-  name: github
-  repo: yunglordsimens/umprumtype  # ← CHANGE to your repo
+  name: git-gateway
   branch: main
 
 media_folder: "fonts"
