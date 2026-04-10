@@ -1,6 +1,9 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: yunglordsimens/ВОТ-СЮДА-ИМЯ-РЕПО
   branch: main
+  base_url: https://ВОТ-СЮДА-ДОМЕН-VERCEL.vercel.app
+  auth_endpoint: api/auth
 
 media_folder: "public/uploads"
 public_folder: "/uploads"
@@ -10,7 +13,6 @@ slug:
   clean_accents: true
 
 collections:
-  # ── TYPEFACES ──
   - name: "typefaces"
     label: "Typefaces"
     folder: "src/content/typefaces"
@@ -20,22 +22,15 @@ collections:
     fields:
       - { label: "Name", name: "name", widget: "string" }
       - { label: "Author", name: "author", widget: "string" }
-      - { label: "Author Website", name: "authorUrl", widget: "string", required: false }
+      - { label: "Author URL", name: "authorUrl", widget: "string", required: false }
       - { label: "Author Instagram", name: "authorInstagram", widget: "string", required: false }
       - { label: "Author Email", name: "authorEmail", widget: "string", required: false }
       - { label: "Year", name: "year", widget: "number", value_type: "int" }
       - { label: "Description", name: "description", widget: "text" }
-      - label: "Specimen Mode"
-        name: "mode"
-        widget: "select"
-        options: ["text", "display", "mono", "script"]
-        default: "text"
-      - label: "Classification"
-        name: "classification"
-        widget: "select"
-        options: ["serif", "sans", "display", "mono", "script", "slab", "blackletter"]
+      - { label: "Mode", name: "mode", widget: "select", options: ["text", "display", "mono", "script"], default: "text" }
+      - { label: "Classification", name: "classification", widget: "select", options: ["serif", "sans", "display", "mono", "script", "slab", "blackletter"] }
       - { label: "Scripts", name: "scripts", widget: "list", default: ["latin"] }
-      - label: "Font Files"
+      - label: "Fonts"
         name: "fonts"
         widget: "list"
         fields:
@@ -43,7 +38,7 @@ collections:
           - { label: "File", name: "file", widget: "file" }
           - { label: "Style", name: "style", widget: "select", options: ["normal", "italic"], default: "normal" }
           - { label: "Weight", name: "weight", widget: "number", default: 400, value_type: "int" }
-      - label: "Specimen Texts"
+      - label: "Specimens"
         name: "specimens"
         widget: "object"
         required: false
@@ -61,7 +56,6 @@ collections:
       - { label: "Price", name: "price", widget: "string", required: false }
       - { label: "Body", name: "body", widget: "markdown" }
 
-  # ── PROJECTS ──
   - name: "projects"
     label: "Projects"
     folder: "src/content/projects"
@@ -72,10 +66,7 @@ collections:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Author", name: "author", widget: "string", required: false }
       - { label: "Date", name: "date", widget: "datetime" }
-      - label: "Category"
-        name: "category"
-        widget: "select"
-        options: ["exhibition", "workshop", "publication", "collaboration", "lecture"]
+      - { label: "Category", name: "category", widget: "select", options: ["exhibition", "workshop", "publication", "collaboration", "lecture"] }
       - { label: "Tags", name: "tags", widget: "list", default: [] }
       - { label: "Cover", name: "cover", widget: "image", required: false }
       - { label: "Excerpt", name: "excerpt", widget: "text", required: false }
@@ -86,7 +77,6 @@ collections:
       - { label: "Price", name: "price", widget: "string", required: false }
       - { label: "Body", name: "body", widget: "markdown" }
 
-  # ── JOURNAL ──
   - name: "journal"
     label: "Journal"
     folder: "src/content/journal"
@@ -97,10 +87,7 @@ collections:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Author", name: "author", widget: "string", required: false }
       - { label: "Date", name: "date", widget: "datetime" }
-      - label: "Category"
-        name: "category"
-        widget: "select"
-        options: ["essay", "interview", "review", "news", "announcement"]
+      - { label: "Category", name: "category", widget: "select", options: ["essay", "interview", "review", "news", "announcement"] }
       - { label: "Tags", name: "tags", widget: "list", default: [] }
       - { label: "Cover", name: "cover", widget: "image", required: false }
       - { label: "Excerpt", name: "excerpt", widget: "text", required: false }
