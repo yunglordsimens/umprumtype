@@ -1,8 +1,8 @@
 backend:
   name: github
-  repo: yunglordsimens/ВОТ-СЮДА-ИМЯ-РЕПО
+  repo: yunglordsimens/umprumtype
   branch: main
-  base_url: https://ВОТ-СЮДА-ДОМЕН-VERCEL.vercel.app
+  base_url: https://https://umprumtype.vercel.app
   auth_endpoint: api/auth
 
 media_folder: "public/uploads"
