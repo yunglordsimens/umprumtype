@@ -1,0 +1,12 @@
+---
+import { getCollection } from 'astro:content';
+const projects = await getCollection('projects');
+---
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Projects — Umprum Type</title></head>
+<body>
+  <h1>Projects ({projects.length})</h1>
+  <ul>{projects.map(p => <li>{p.data.title} — {p.data.category}</li>)}</ul>
+  <a href="/">← Home</a>
+</body>
+</html>

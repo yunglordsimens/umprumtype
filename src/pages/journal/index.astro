@@ -1,0 +1,12 @@
+---
+import { getCollection } from 'astro:content';
+const journal = await getCollection('journal');
+---
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Journal — Umprum Type</title></head>
+<body>
+  <h1>Journal ({journal.length})</h1>
+  <ul>{journal.map(j => <li>{j.data.title} — {j.data.category}</li>)}</ul>
+  <a href="/">← Home</a>
+</body>
+</html>

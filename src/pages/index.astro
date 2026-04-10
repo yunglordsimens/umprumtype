@@ -1,0 +1,22 @@
+---
+import { getCollection } from 'astro:content';
+const typefaces = await getCollection('typefaces');
+---
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Umprum Type</title>
+</head>
+<body>
+  <h1>Umprum Type</h1>
+  <p>{typefaces.length} typefaces loaded</p>
+  <nav>
+    <a href="/typefaces">Typefaces</a> ·
+    <a href="/projects">Projects</a> ·
+    <a href="/journal">Journal</a> ·
+    <a href="/store">Store</a> ·
+    <a href="/info">Info</a>
+  </nav>
+</body>
+</html>

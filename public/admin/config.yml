@@ -1,0 +1,108 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+slug:
+  encoding: "ascii"
+  clean_accents: true
+
+collections:
+  # ── TYPEFACES ──
+  - name: "typefaces"
+    label: "Typefaces"
+    folder: "src/content/typefaces"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Author", name: "author", widget: "string" }
+      - { label: "Author Website", name: "authorUrl", widget: "string", required: false }
+      - { label: "Author Instagram", name: "authorInstagram", widget: "string", required: false }
+      - { label: "Author Email", name: "authorEmail", widget: "string", required: false }
+      - { label: "Year", name: "year", widget: "number", value_type: "int" }
+      - { label: "Description", name: "description", widget: "text" }
+      - label: "Specimen Mode"
+        name: "mode"
+        widget: "select"
+        options: ["text", "display", "mono", "script"]
+        default: "text"
+      - label: "Classification"
+        name: "classification"
+        widget: "select"
+        options: ["serif", "sans", "display", "mono", "script", "slab", "blackletter"]
+      - { label: "Scripts", name: "scripts", widget: "list", default: ["latin"] }
+      - label: "Font Files"
+        name: "fonts"
+        widget: "list"
+        fields:
+          - { label: "Variant", name: "variant", widget: "string", default: "Regular" }
+          - { label: "File", name: "file", widget: "file" }
+          - { label: "Style", name: "style", widget: "select", options: ["normal", "italic"], default: "normal" }
+          - { label: "Weight", name: "weight", widget: "number", default: 400, value_type: "int" }
+      - label: "Specimen Texts"
+        name: "specimens"
+        widget: "object"
+        required: false
+        fields:
+          - { label: "Czech", name: "cs", widget: "text", required: false }
+          - { label: "English", name: "en", widget: "text", required: false }
+          - { label: "German", name: "de", widget: "text", required: false }
+          - { label: "Ukrainian", name: "uk", widget: "text", required: false }
+      - { label: "Tags", name: "tags", widget: "list", default: [] }
+      - { label: "Tagline", name: "tagline", widget: "string", required: false }
+      - { label: "Cover", name: "cover", widget: "image", required: false }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - { label: "Order", name: "order", widget: "number", default: 0, value_type: "int" }
+      - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
+      - { label: "Price", name: "price", widget: "string", required: false }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  # ── PROJECTS ──
+  - name: "projects"
+    label: "Projects"
+    folder: "src/content/projects"
+    create: true
+    slug: "{{year}}-{{slug}}"
+    extension: "md"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Author", name: "author", widget: "string", required: false }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["exhibition", "workshop", "publication", "collaboration", "lecture"]
+      - { label: "Tags", name: "tags", widget: "list", default: [] }
+      - { label: "Cover", name: "cover", widget: "image", required: false }
+      - { label: "Excerpt", name: "excerpt", widget: "text", required: false }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
+      - { label: "Product Title", name: "productTitle", widget: "string", required: false }
+      - { label: "Product Image", name: "productImage", widget: "image", required: false }
+      - { label: "Price", name: "price", widget: "string", required: false }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  # ── JOURNAL ──
+  - name: "journal"
+    label: "Journal"
+    folder: "src/content/journal"
+    create: true
+    slug: "{{year}}-{{slug}}"
+    extension: "md"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Author", name: "author", widget: "string", required: false }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["essay", "interview", "review", "news", "announcement"]
+      - { label: "Tags", name: "tags", widget: "list", default: [] }
+      - { label: "Cover", name: "cover", widget: "image", required: false }
+      - { label: "Excerpt", name: "excerpt", widget: "text", required: false }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - { label: "Body", name: "body", widget: "markdown" }

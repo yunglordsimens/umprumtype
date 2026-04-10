@@ -1,0 +1,13 @@
+---
+import { getCollection } from 'astro:content';
+const projects = await getCollection('projects');
+const purchasable = projects.filter(p => p.data.purchasable);
+---
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Store — Umprum Type</title></head>
+<body>
+  <h1>Store ({purchasable.length})</h1>
+  <ul>{purchasable.map(p => <li>{p.data.productTitle || p.data.title} — {p.data.price}</li>)}</ul>
+  <a href="/">← Home</a>
+</body>
+</html>
