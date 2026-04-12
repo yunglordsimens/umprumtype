@@ -2,7 +2,7 @@ backend:
   name: github
   repo: yunglordsimens/umprumtype
   branch: main
-  base_url: https://https://umprumtype.vercel.app
+  base_url: https://umprumtype.vercel.app
   auth_endpoint: api/auth
 
 media_folder: "public/uploads"
