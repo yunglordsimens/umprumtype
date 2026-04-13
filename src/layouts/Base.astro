@@ -1,0 +1,122 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title = 'UMPRUM Type',
+  description = 'Typography studio at UMPRUM, Prague — typefaces, projects, and journal.',
+  image,
+} = Astro.props;
+
+const url = Astro.url.href;
+const year = new Date().getFullYear();
+const pathname = Astro.url.pathname;
+const isActive = (prefix: string) =>
+  pathname === prefix || pathname.startsWith(prefix + '/') || (prefix !== '/' && pathname.startsWith(prefix));
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:type" content="website" />
+    {image && <meta property="og:image" content={image} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <nav class="site-nav" id="siteNav" data-hidden="false" data-menu="closed">
+      <div class="container site-nav__inner">
+        <a href="/" class="site-nav__logo">UMPRUM Type</a>
+        <button class="site-nav__burger" type="button" aria-label="Menu" aria-controls="siteNavLinks" aria-expanded="false"></button>
+        <ul class="site-nav__links" id="siteNavLinks">
+          <li><a href="/typefaces" aria-current={isActive('/typefaces') ? 'page' : undefined}>Typefaces</a></li>
+          <li><a href="/projects"  aria-current={isActive('/projects')  ? 'page' : undefined}>Projects</a></li>
+          <li><a href="/journal"   aria-current={isActive('/journal')   ? 'page' : undefined}>Journal</a></li>
+          <li><a href="/store"     aria-current={isActive('/store')     ? 'page' : undefined}>Store</a></li>
+          <li><a href="/info"      aria-current={isActive('/info')      ? 'page' : undefined}>Info</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container site-footer__inner">
+        <span>Umprum Type</span>
+        <span>Prague · {year}</span>
+      </div>
+    </footer>
+
+    <script>
+      // Scroll reveal
+      const revealEls = document.querySelectorAll('[data-reveal], [data-reveal-stagger]');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-visible');
+              io.unobserve(e.target);
+            }
+          }
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+        revealEls.forEach((el) => io.observe(el));
+      } else {
+        revealEls.forEach((el) => el.classList.add('is-visible'));
+      }
+
+      // Nav hide on scroll down, show on scroll up
+      const nav = document.getElementById('siteNav');
+      if (nav) {
+        let lastY = window.scrollY;
+        let ticking = false;
+        const threshold = 8;
+        window.addEventListener('scroll', () => {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(() => {
+            const y = window.scrollY;
+            const dy = y - lastY;
+            if (y < 80) {
+              nav.dataset.hidden = 'false';
+            } else if (Math.abs(dy) > threshold) {
+              nav.dataset.hidden = dy > 0 ? 'true' : 'false';
+            }
+            lastY = y;
+            ticking = false;
+          });
+        }, { passive: true });
+
+        // Burger toggle
+        const burger = nav.querySelector('.site-nav__burger');
+        const closeMenu = () => {
+          nav.dataset.menu = 'closed';
+          burger?.setAttribute('aria-expanded', 'false');
+        };
+        burger?.addEventListener('click', () => {
+          const open = nav.dataset.menu === 'open';
+          nav.dataset.menu = open ? 'closed' : 'open';
+          burger.setAttribute('aria-expanded', open ? 'false' : 'true');
+        });
+        nav.querySelectorAll('.site-nav__links a').forEach((a) => {
+          a.addEventListener('click', closeMenu);
+        });
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') closeMenu();
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -69,6 +69,11 @@ collections:
       - { label: "Category", name: "category", widget: "select", options: ["exhibition", "workshop", "publication", "collaboration", "lecture"] }
       - { label: "Tags", name: "tags", widget: "list", default: [] }
       - { label: "Cover", name: "cover", widget: "image", required: false }
+      - { label: "Hero Image", name: "heroImage", widget: "image", required: false, hint: "Full-width image at top of post" }
+      - { label: "Gallery", name: "gallery", widget: "list", field: { label: "Image", name: "image", widget: "image" }, required: false, hint: "Horizontal scroll gallery under hero" }
+      - { label: "Related Typeface", name: "relatedTypeface", widget: "string", required: false, hint: "Slug of typeface (e.g. ananas, marz-grotesk) — title will be set in this font" }
+      - { label: "Custom Font File", name: "customFont", widget: "file", required: false, hint: ".woff2 file for the title" }
+      - { label: "Show Custom Font in Archive", name: "showCustomFontInArchive", widget: "boolean", default: false }
       - { label: "Excerpt", name: "excerpt", widget: "text", required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
       - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
@@ -90,6 +95,9 @@ collections:
       - { label: "Category", name: "category", widget: "select", options: ["essay", "interview", "review", "news", "announcement"] }
       - { label: "Tags", name: "tags", widget: "list", default: [] }
       - { label: "Cover", name: "cover", widget: "image", required: false }
+      - { label: "Hero Image", name: "heroImage", widget: "image", required: false, hint: "Full-width image at top of post" }
+      - { label: "Gallery", name: "gallery", widget: "list", field: { label: "Image", name: "image", widget: "image" }, required: false, hint: "Horizontal scroll gallery under hero" }
+      - { label: "Related Typeface", name: "relatedTypeface", widget: "string", required: false, hint: "Slug of typeface — title will be set in this font" }
       - { label: "Excerpt", name: "excerpt", widget: "text", required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
       - { label: "Body", name: "body", widget: "markdown" }
