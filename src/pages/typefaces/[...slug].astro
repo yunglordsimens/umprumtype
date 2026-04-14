@@ -1,0 +1,88 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import SpecimenTester from '../../components/SpecimenTester.jsx';
+import BottomBar from '../../components/BottomBar.jsx';
+
+const slugOf = (entry) => entry.id.replace(/\.md$/, '');
+
+export async function getStaticPaths() {
+  const all = await getCollection('typefaces');
+  all.sort((a, b) => b.data.year - a.data.year || a.data.name.localeCompare(b.data.name));
+  const clean = (s) => s.id.replace(/\.md$/, '');
+  return all.map((entry, i) => ({
+    params: { slug: clean(entry) },
+    props: {
+      entry,
+      prev: clean(all[(i - 1 + all.length) % all.length]),
+      next: clean(all[(i + 1) % all.length]),
+    },
+  }));
+}
+
+const { entry, prev, next } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+
+const fontFaces = d.fonts.map(f =>
+  `@font-face{font-family:"${d.name}";src:url("${f.file}") format("woff2");font-weight:${f.weight};font-style:${f.style};font-display:swap;}`
+).join('\n');
+---
+<Base title={`${d.name} — Umprum Type`} description={d.description || `${d.name} by ${d.author}, ${d.year}.`}>
+  <style set:html={fontFaces}></style>
+  <article class="container tf-page">
+    <header class="tf-page__head" data-reveal>
+      <nav class="tf-page__nav">
+        <a href="/typefaces">← all typefaces</a>
+        <span>
+          <a href={`/typefaces/${prev}`}>← prev</a> · <a href={`/typefaces/${next}`}>next →</a>
+        </span>
+      </nav>
+      <h1 class="tf-page__title" style={`font-family:"${d.name}",var(--font-ui)`}>{d.name}</h1>
+      {d.tagline && <p class="muted" style={`font-family:"${d.name}",var(--font-ui);font-size:var(--step-1);`}>{d.tagline}</p>}
+      <div class="tf-page__meta">
+        <span>{d.classification}</span>
+        {d.mode && <span>{d.mode}</span>}
+        <span>{d.author}</span>
+        <span>{d.year}</span>
+        {d.scripts?.length > 0 && <span>{d.scripts.join(', ')}</span>}
+      </div>
+    </header>
+
+    <SpecimenTester
+      client:load
+      fontFamily={d.name}
+      variants={d.fonts}
+      specimens={d.specimens || {}}
+      mode={d.mode}
+      scripts={d.scripts}
+      prevSlug={prev}
+      nextSlug={next}
+    />
+
+    {d.description && (
+      <section class="tf-page__about" data-reveal>
+        <h2>About</h2>
+        <p>{d.description}</p>
+        <Content />
+      </section>
+    )}
+
+    <section class="tf-page__author" data-reveal>
+      <h2>Author</h2>
+      <p>{d.author}</p>
+      {d.authorUrl && <p><a href={d.authorUrl} target="_blank" rel="noopener">{d.authorUrl.replace(/^https?:\/\//, '')}</a></p>}
+      {d.authorInstagram && <p>Instagram: <a href={`https://instagram.com/${d.authorInstagram.replace(/^@/, '')}`} target="_blank" rel="noopener">{d.authorInstagram}</a></p>}
+      {d.authorEmail && <p><a href={`mailto:${d.authorEmail}`}>{d.authorEmail}</a></p>}
+    </section>
+
+    {d.tags && d.tags.length > 0 && (
+      <section class="tf-page__tags" data-reveal>
+        <h2 style="font-size:var(--step-0);text-transform:uppercase;letter-spacing:0.1em;color:var(--text-subtle);margin-bottom:var(--space-3);">Tags</h2>
+        <ul class="tag-list">{d.tags.map(t => <li>#{t}</li>)}</ul>
+      </section>
+    )}
+  </article>
+
+  <BottomBar client:load name={d.name} prevSlug={prev} nextSlug={next} />
+</Base>

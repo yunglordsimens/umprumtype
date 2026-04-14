@@ -35,6 +35,7 @@ const isActive = (prefix: string) =>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body>
+    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
     <nav class="site-nav" id="siteNav" data-hidden="false" data-menu="closed">
       <div class="container site-nav__inner">
         <a href="/" class="site-nav__logo">UMPRUM Type</a>
@@ -77,8 +78,9 @@ const isActive = (prefix: string) =>
         revealEls.forEach((el) => el.classList.add('is-visible'));
       }
 
-      // Nav hide on scroll down, show on scroll up
+      // Nav hide on scroll down, show on scroll up + scroll progress
       const nav = document.getElementById('siteNav');
+      const progress = document.getElementById('scrollProgress');
       if (nav) {
         let lastY = window.scrollY;
         let ticking = false;
@@ -93,6 +95,11 @@ const isActive = (prefix: string) =>
               nav.dataset.hidden = 'false';
             } else if (Math.abs(dy) > threshold) {
               nav.dataset.hidden = dy > 0 ? 'true' : 'false';
+            }
+            if (progress) {
+              const h = document.documentElement.scrollHeight - window.innerHeight;
+              const pct = h > 0 ? (y / h) * 100 : 0;
+              progress.style.width = pct + '%';
             }
             lastY = y;
             ticking = false;

@@ -1,12 +1,52 @@
 ---
+import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
-const journal = await getCollection('journal');
+
+const entries = (await getCollection('journal'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const categories = [...new Set(entries.map(e => e.data.category))].sort();
+const slugOf = (e) => e.id.replace(/\.md$/, '');
 ---
-<html lang="en">
-<head><meta charset="UTF-8" /><title>Journal — Umprum Type</title></head>
-<body>
-  <h1>Journal ({journal.length})</h1>
-  <ul>{journal.map(j => <li>{j.data.title} — {j.data.category}</li>)}</ul>
-  <a href="/">← Home</a>
-</body>
-</html>
+<Base title="Journal — Umprum Type" description="Essays, interviews, reviews, news from UMPRUM Type.">
+  <section class="container">
+    <header class="page-head" data-reveal>
+      <h1>Journal</h1>
+      <p class="muted">Essays, interviews, reviews.</p>
+    </header>
+
+    {categories.length > 1 && (
+      <div class="tf-filters" data-reveal>
+        <div class="tf-filter-row" data-group="category">
+          <span class="tf-filter-label">category</span>
+          {categories.map(c => <button data-filter="category" data-value={c}>{c}</button>)}
+        </div>
+      </div>
+    )}
+
+    <ul class="post-list" data-reveal-stagger>
+      {entries.map(p => (
+        <li class="post-row" data-row data-category={p.data.category}>
+          <a href={`/journal/${slugOf(p)}`}>
+            <time datetime={p.data.date.toISOString()}>{p.data.date.toISOString().slice(0, 10)}</time>
+            <h2>{p.data.title}</h2>
+            <span class="post-row__category">{p.data.category}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <script>
+    const active = new Set();
+    document.querySelectorAll('[data-filter="category"]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const v = btn.getAttribute('data-value');
+        if (active.has(v)) { active.delete(v); btn.setAttribute('aria-pressed', 'false'); }
+        else { active.add(v); btn.setAttribute('aria-pressed', 'true'); }
+        document.querySelectorAll('[data-row]').forEach((r) => {
+          r.dataset.hidden = String(active.size > 0 && !active.has(r.dataset.category));
+        });
+      });
+    });
+  </script>
+</Base>

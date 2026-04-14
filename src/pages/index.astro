@@ -1,22 +1,378 @@
 ---
+import '../styles/global.css';
 import { getCollection } from 'astro:content';
+
 const typefaces = await getCollection('typefaces');
+const projects = await getCollection('projects');
+const journal = await getCollection('journal');
+
+const slugOf = (e) => e.id.replace(/\.md$/, '');
+
+const tfFeatured = typefaces.filter(t => t.data.featured);
+const tfRest = typefaces.filter(t => !t.data.featured);
+const tfSample = [...tfFeatured, ...tfRest].slice(0, 14);
+
+const posts = [...projects, ...journal]
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 6);
+
+const postsWithCollection = posts.map(p => ({
+  entry: p,
+  collection: projects.includes(p) ? 'projects' : 'journal',
+}));
+
+const fontFaces = tfSample.flatMap(t =>
+  t.data.fonts.map(f =>
+    `@font-face{font-family:"${t.data.name}";src:url("${f.file}") format("woff2");font-weight:${f.weight};font-style:${f.style};font-display:swap;}`
+  )
+).join('\n');
+
+const blocks = [];
+tfSample.forEach(t => blocks.push({ kind: 'tf', slug: slugOf(t), data: t.data }));
+postsWithCollection.forEach(({ entry, collection }) =>
+  blocks.push({ kind: 'post', slug: slugOf(entry), collection, data: entry.data })
+);
+
+function split(arr) {
+  const a = arr.slice();
+  const half = Math.ceil(a.length / 2);
+  return [a.slice(0, half), a.slice(half)];
+}
+const [rowA, rowB] = split(blocks);
+
+const year = new Date().getFullYear();
 ---
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Umprum Type</title>
-</head>
-<body>
-  <h1>Umprum Type</h1>
-  <p>{typefaces.length} typefaces loaded</p>
-  <nav>
-    <a href="/typefaces">Typefaces</a> ·
-    <a href="/projects">Projects</a> ·
-    <a href="/journal">Journal</a> ·
-    <a href="/store">Store</a> ·
-    <a href="/info">Info</a>
-  </nav>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Umprum Type</title>
+    <meta name="description" content="Archive of typefaces, projects, and writing from the type class at UMPRUM, Prague." />
+    <meta property="og:title" content="Umprum Type" />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style set:html={fontFaces}></style>
+    <style>
+      :root {
+        --home-bg: #111118;
+        --home-fg: #f2f2ef;
+        --home-muted: rgba(242, 242, 239, 0.6);
+        --home-faint: rgba(242, 242, 239, 0.35);
+      }
+      html, body { height: 100%; margin: 0; padding: 0; background: var(--home-bg); color: var(--home-fg); overflow: hidden; overscroll-behavior: none; }
+      body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+      a { color: inherit; text-decoration: none; }
+
+      .home {
+        position: fixed; inset: 0;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        background: var(--home-bg);
+      }
+
+      .home-nav {
+        position: relative; z-index: 10;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 14px 22px;
+        font-size: 13px; letter-spacing: 0.01em;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        background: rgba(17,17,24,0.6);
+        backdrop-filter: blur(12px);
+      }
+      .home-nav__logo { font-weight: 500; }
+      .home-nav__links { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; }
+      .home-nav__links a { color: var(--home-muted); transition: color 180ms; }
+      .home-nav__links a:hover { color: var(--home-fg); }
+
+      .bento {
+        position: relative;
+        overflow: hidden;
+        display: flex; flex-direction: column;
+        gap: 0;
+      }
+
+      .bento__row {
+        flex: 1;
+        display: flex;
+        align-items: stretch;
+        min-height: 0;
+        will-change: transform;
+      }
+      .bento__row--top { border-bottom: 1px solid rgba(255,255,255,0.06); }
+
+      .bento-block {
+        position: relative;
+        flex: 0 0 auto;
+        overflow: hidden;
+        cursor: pointer;
+        border-right: 1px solid rgba(255,255,255,0.06);
+        transition: flex-basis 1800ms cubic-bezier(0.16, 1, 0.3, 1), width 1800ms cubic-bezier(0.16, 1, 0.3, 1);
+        isolation: isolate;
+      }
+      .bento-block::before {
+        content: "";
+        position: absolute; inset: 0;
+        background-image:
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.22 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+          var(--b-gradient, linear-gradient(135deg, #2a2a3a, #151520));
+        background-size: 140px 140px, cover;
+        background-blend-mode: overlay, normal;
+        z-index: -1;
+        transition: filter 600ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .bento-block:hover::before { filter: brightness(1.15) saturate(1.15); }
+
+      .bento-block__content {
+        position: absolute; inset: 0;
+        padding: 18px 22px;
+        display: flex; align-items: center; justify-content: center;
+        text-align: center;
+      }
+      .bento-block__name {
+        font-size: clamp(2rem, 6vw, 7rem);
+        line-height: 0.95;
+        letter-spacing: -0.02em;
+        word-break: break-word;
+      }
+      .bento-block__title {
+        font-size: clamp(0.9rem, 1.3vw, 1.3rem);
+        line-height: 1.2;
+        letter-spacing: -0.005em;
+        font-weight: 500;
+        max-width: 90%;
+      }
+      .bento-block__kind {
+        position: absolute;
+        top: 10px; left: 14px;
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--home-faint);
+      }
+      .bento-block__hover {
+        position: absolute;
+        left: 14px; right: 14px; bottom: 12px;
+        display: flex; flex-wrap: wrap; gap: 6px;
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1), transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: none;
+      }
+      .bento-block:hover .bento-block__hover {
+        opacity: 1; transform: none;
+      }
+      .bento-block__tag {
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.18);
+        color: var(--home-fg);
+      }
+
+      .home-foot {
+        position: relative; z-index: 10;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 10px 22px;
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        color: var(--home-faint);
+        border-top: 1px solid rgba(255,255,255,0.08);
+        background: rgba(17,17,24,0.5);
+      }
+      .home-foot .hint { display: none; }
+      @media (min-width: 900px) { .home-foot .hint { display: inline; } }
+
+      @media (prefers-reduced-motion: reduce) {
+        .bento-block, .bento-block::before { transition: none !important; }
+        .bento__row { animation: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="home">
+      <nav class="home-nav">
+        <a href="/" class="home-nav__logo">UMPRUM Type</a>
+        <ul class="home-nav__links">
+          <li><a href="/typefaces">Typefaces</a></li>
+          <li><a href="/projects">Projects</a></li>
+          <li><a href="/journal">Journal</a></li>
+          <li><a href="/store">Store</a></li>
+          <li><a href="/info">Info</a></li>
+        </ul>
+      </nav>
+
+      <div class="bento" id="bento">
+        <div class="bento__row bento__row--top" id="rowA" data-row>
+          {[...rowA, ...rowA, ...rowA].map((b, i) => (
+            <a
+              class="bento-block"
+              href={b.kind === 'tf' ? `/typefaces/${b.slug}` : `/${b.collection}/${b.slug}`}
+              data-block
+            >
+              <span class="bento-block__kind">{b.kind === 'tf' ? 'typeface' : b.collection}</span>
+              <span class="bento-block__content">
+                {b.kind === 'tf'
+                  ? <span class="bento-block__name" style={`font-family:"${b.data.name}",var(--home-fg)`}>{b.data.name}</span>
+                  : <span class="bento-block__title">{b.data.title}</span>
+                }
+              </span>
+              <span class="bento-block__hover">
+                {b.kind === 'tf' ? (
+                  <>
+                    {b.data.author && <span class="bento-block__tag">{b.data.author}</span>}
+                    {b.data.year && <span class="bento-block__tag">{b.data.year}</span>}
+                    {b.data.classification && <span class="bento-block__tag">{b.data.classification}</span>}
+                  </>
+                ) : (
+                  <>
+                    <span class="bento-block__tag">{b.data.category}</span>
+                    {b.data.author && <span class="bento-block__tag">{b.data.author}</span>}
+                  </>
+                )}
+              </span>
+            </a>
+          ))}
+        </div>
+        <div class="bento__row bento__row--bot" id="rowB" data-row>
+          {[...rowB, ...rowB, ...rowB].map((b, i) => (
+            <a
+              class="bento-block"
+              href={b.kind === 'tf' ? `/typefaces/${b.slug}` : `/${b.collection}/${b.slug}`}
+              data-block
+            >
+              <span class="bento-block__kind">{b.kind === 'tf' ? 'typeface' : b.collection}</span>
+              <span class="bento-block__content">
+                {b.kind === 'tf'
+                  ? <span class="bento-block__name" style={`font-family:"${b.data.name}",var(--home-fg)`}>{b.data.name}</span>
+                  : <span class="bento-block__title">{b.data.title}</span>
+                }
+              </span>
+              <span class="bento-block__hover">
+                {b.kind === 'tf' ? (
+                  <>
+                    {b.data.author && <span class="bento-block__tag">{b.data.author}</span>}
+                    {b.data.year && <span class="bento-block__tag">{b.data.year}</span>}
+                    {b.data.classification && <span class="bento-block__tag">{b.data.classification}</span>}
+                  </>
+                ) : (
+                  <>
+                    <span class="bento-block__tag">{b.data.category}</span>
+                    {b.data.author && <span class="bento-block__tag">{b.data.author}</span>}
+                  </>
+                )}
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <footer class="home-foot">
+        <span>Umprum Type · Prague · {year}</span>
+        <span class="hint">scroll · drag · click</span>
+      </footer>
+    </div>
+
+    <script is:inline>
+      // ---------- Palette ----------
+      const palettes = [
+        ['#3a1c71', '#d76d77'], ['#1f4037', '#99f2c8'], ['#373b44', '#4286f4'],
+        ['#ff512f', '#dd2476'], ['#0f2027', '#2c5364'], ['#654ea3', '#eaafc8'],
+        ['#4e54c8', '#8f94fb'], ['#232526', '#414345'], ['#000428', '#004e92'],
+        ['#eb3349', '#f45c43'], ['#1a2980', '#26d0ce'], ['#757f9a', '#d7dde8'],
+        ['#ff9966', '#ff5e62'], ['#355c7d', '#6c5b7b'], ['#2b5876', '#4e4376'],
+      ];
+      const rand = (n) => Math.floor(Math.random() * n);
+      const pickGradient = () => {
+        const [a, b] = palettes[rand(palettes.length)];
+        const angle = rand(360);
+        return `linear-gradient(${angle}deg, ${a}, ${b})`;
+      };
+
+      // ---------- Per-row independent horizontal scroll ----------
+      function setupRow(rowId, initialSpeed) {
+        const row = document.getElementById(rowId);
+        if (!row) return;
+        const blocks = row.querySelectorAll('[data-block]');
+
+        // random gradient + random width per block
+        blocks.forEach((b) => {
+          b.style.setProperty('--b-gradient', pickGradient());
+          const base = 180 + rand(260); // 180-440px
+          b.style.flexBasis = base + 'px';
+          b.dataset.base = String(base);
+        });
+
+        let offset = 0;
+        let velocity = initialSpeed;
+        let dragStart = null;
+        let dragBase = 0;
+        let isDragging = false;
+
+        // total width of one-third (since we triplicate)
+        const segmentWidth = () => row.scrollWidth / 3;
+
+        function tick() {
+          offset += velocity;
+          const w = segmentWidth();
+          if (offset <= -w) offset += w;
+          if (offset >= 0 && velocity < 0) offset -= w;
+          if (offset > 0) offset -= w;
+          row.style.transform = `translate3d(${offset}px, 0, 0)`;
+          requestAnimationFrame(tick);
+        }
+        tick();
+
+        // Wheel -> horizontal translate
+        row.addEventListener('wheel', (e) => {
+          const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+          velocity = Math.max(-8, Math.min(8, velocity - d * 0.02));
+          e.preventDefault();
+        }, { passive: false });
+
+        // Drag
+        row.addEventListener('pointerdown', (e) => {
+          isDragging = true;
+          dragStart = e.clientX;
+          dragBase = offset;
+          row.setPointerCapture(e.pointerId);
+        });
+        row.addEventListener('pointermove', (e) => {
+          if (!isDragging) return;
+          const dx = e.clientX - dragStart;
+          offset = dragBase + dx;
+          velocity *= 0.9;
+        });
+        const release = (e) => {
+          if (!isDragging) return;
+          isDragging = false;
+          try { row.releasePointerCapture(e.pointerId); } catch {}
+          velocity += (e.movementX || 0) * 0.2;
+        };
+        row.addEventListener('pointerup', release);
+        row.addEventListener('pointercancel', release);
+
+        // Damping
+        setInterval(() => {
+          velocity *= 0.985;
+          if (Math.abs(velocity) < 0.05) velocity = initialSpeed;
+        }, 60);
+
+        // Re-animate widths every ~2.5s
+        setInterval(() => {
+          blocks.forEach((b) => {
+            const delta = rand(240) - 120;
+            const base = Math.max(140, (+b.dataset.base || 260) + delta);
+            b.style.flexBasis = base + 'px';
+            b.dataset.base = String(base);
+          });
+        }, 2500);
+      }
+
+      setupRow('rowA', -0.35);
+      setupRow('rowB',  0.25);
+    </script>
+  </body>
 </html>

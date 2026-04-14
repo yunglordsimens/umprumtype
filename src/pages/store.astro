@@ -1,13 +1,38 @@
 ---
+import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+
 const projects = await getCollection('projects');
-const purchasable = projects.filter(p => p.data.purchasable);
+const items = projects.filter(p => p.data.purchasable);
+const slugOf = (e) => e.id.replace(/\.md$/, '');
 ---
-<html lang="en">
-<head><meta charset="UTF-8" /><title>Store — Umprum Type</title></head>
-<body>
-  <h1>Store ({purchasable.length})</h1>
-  <ul>{purchasable.map(p => <li>{p.data.productTitle || p.data.title} — {p.data.price}</li>)}</ul>
-  <a href="/">← Home</a>
-</body>
-</html>
+<Base title="Store — Umprum Type" description="Prints, zines, and objects from UMPRUM Type projects.">
+  <section class="container">
+    <header class="page-head measure" data-reveal>
+      <h1>Store</h1>
+      <p>Prints, zines, and objects. Contact the author through the project page.</p>
+    </header>
+
+    {items.length === 0 ? (
+      <p class="muted" style="padding:var(--space-7) 0;">No items available right now — check back soon.</p>
+    ) : (
+      <div class="store-grid" data-reveal-stagger>
+        {items.map(p => {
+          const img = p.data.productImage || p.data.heroImage || p.data.gallery?.[0] || p.data.cover;
+          return (
+            <a class="store-card" href={`/projects/${slugOf(p)}`}>
+              <div class="store-card__img">
+                {img && <img src={img} alt={p.data.productTitle || p.data.title} loading="lazy" />}
+              </div>
+              <div class="store-card__meta">
+                <h3>{p.data.productTitle || p.data.title}</h3>
+                {p.data.author && <p>{p.data.author}</p>}
+                <span class="store-card__cta">→ view project</span>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    )}
+  </section>
+</Base>
