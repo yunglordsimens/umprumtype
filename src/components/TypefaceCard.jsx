@@ -16,6 +16,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
 
   const [size, setSize] = useState(nearest(Math.max(72, initialSizePx), SIZE_STEPS));
   const [variantIdx, setVariantIdx] = useState(clampedIdx);
+  const [cols, setCols] = useState(1);
   const [text, setText] = useState(defaultText);
   const textRef = useRef(null);
   const panelRef = useRef(null);
@@ -43,13 +44,13 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
     }
   }, [isOpen]);
 
-  // re-measure panel when content changes (size slider, etc.)
+  // re-measure panel when content changes (size slider, cols, etc.)
   useEffect(() => {
     const panel = panelRef.current;
     if (panel && isOpen) {
       panel.style.maxHeight = panel.scrollHeight + 'px';
     }
-  }, [size, variantIdx, isOpen]);
+  }, [size, variantIdx, cols, isOpen]);
 
   function switchVariant(i) {
     setVariantIdx(i);
@@ -109,6 +110,17 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
               </div>
             </div>
 
+            <div className="specimen__group">
+              <label>col</label>
+              {[1, 2, 3].map(c => (
+                <button
+                  key={c}
+                  className={cols === c ? 'is-active' : ''}
+                  onClick={() => setCols(c)}
+                >{c}</button>
+              ))}
+            </div>
+
             {tf.otfVariants.length > 1 && (
               <div className="specimen__group">
                 <label>style</label>
@@ -145,6 +157,8 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
               fontWeight: current?.weight || 400,
               fontStyle: current?.style || 'normal',
               lineHeight: lh,
+              columnCount: cols,
+              columnGap: '2em',
             }}
           >
             {defaultText}
