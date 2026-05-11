@@ -12,92 +12,145 @@ slug:
   encoding: "ascii"
   clean_accents: true
 
+# ---------------------------------------------------------------------------
+# TYPEFACES
+# Each entry becomes src/content/typefaces/{slug}.md.
+# The site builds typeface pages directly from public/fonts/*/info.txt,
+# so this CMS is for manual metadata overrides and editorial control only.
+# OTF files stay in public/fonts/ — never upload fonts here.
+# ---------------------------------------------------------------------------
 collections:
+
   - name: "typefaces"
     label: "Typefaces"
+    label_singular: "Typeface"
     folder: "src/content/typefaces"
     create: true
+    delete: true
     slug: "{{slug}}"
     extension: "md"
+    summary: "{{name}} — {{designer}}, {{year}}"
+    sortable_fields: ["name", "designer", "year"]
     fields:
-      - { label: "Name", name: "name", widget: "string" }
-      - { label: "Author", name: "author", widget: "string" }
-      - { label: "Author URL", name: "authorUrl", widget: "string", required: false }
-      - { label: "Author Instagram", name: "authorInstagram", widget: "string", required: false }
-      - { label: "Author Email", name: "authorEmail", widget: "string", required: false }
-      - { label: "Year", name: "year", widget: "number", value_type: "int" }
-      - { label: "Description", name: "description", widget: "text" }
-      - { label: "Mode", name: "mode", widget: "select", options: ["text", "display", "mono", "script"], default: "text" }
-      - { label: "Classification", name: "classification", widget: "select", options: ["serif", "sans", "display", "mono", "script", "slab", "blackletter"] }
-      - { label: "Scripts", name: "scripts", widget: "list", default: ["latin"] }
-      - label: "Fonts"
-        name: "fonts"
-        widget: "list"
-        fields:
-          - { label: "Variant", name: "variant", widget: "string", default: "Regular" }
-          - { label: "File", name: "file", widget: "file" }
-          - { label: "Style", name: "style", widget: "select", options: ["normal", "italic"], default: "normal" }
-          - { label: "Weight", name: "weight", widget: "number", default: 400, value_type: "int" }
-      - label: "Specimens"
-        name: "specimens"
-        widget: "object"
-        required: false
-        fields:
-          - { label: "Czech", name: "cs", widget: "text", required: false }
-          - { label: "English", name: "en", widget: "text", required: false }
-          - { label: "German", name: "de", widget: "text", required: false }
-          - { label: "Ukrainian", name: "uk", widget: "text", required: false }
-      - { label: "Tags", name: "tags", widget: "list", default: [] }
-      - { label: "Tagline", name: "tagline", widget: "string", required: false }
-      - { label: "Cover", name: "cover", widget: "image", required: false }
-      - { label: "Featured", name: "featured", widget: "boolean", default: false }
-      - { label: "Order", name: "order", widget: "number", default: 0, value_type: "int" }
-      - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
-      - { label: "Price", name: "price", widget: "string", required: false }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - label: "Name"
+        name: "name"
+        widget: "string"
+        hint: "Display name exactly as it appears on the specimen page."
 
+      - label: "Designer"
+        name: "designer"
+        widget: "string"
+
+      - label: "Year"
+        name: "year"
+        widget: "number"
+        value_type: "int"
+        min: 2000
+        max: 2100
+
+      - label: "Designer URL"
+        name: "authorUrl"
+        widget: "string"
+        required: false
+        hint: "Full URL (https://...)"
+
+      - label: "Instagram"
+        name: "authorInstagram"
+        widget: "string"
+        required: false
+        hint: "@handle"
+
+      - label: "Email"
+        name: "authorEmail"
+        widget: "string"
+        required: false
+
+      - label: "Specimen headline"
+        name: "mainText"
+        widget: "string"
+        required: false
+        hint: "Short phrase displayed large on the specimen page. Overrides info.txt mainText."
+
+      - label: "About the typeface"
+        name: "aboutFont"
+        widget: "text"
+        required: false
+        hint: "One or two paragraphs. Overrides info.txt aboutFont."
+
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        required: false
+        default: []
+        hint: "e.g. serif, display, experimental"
+
+      - label: "Featured on homepage"
+        name: "featured"
+        widget: "boolean"
+        default: false
+        hint: "Featured typefaces appear first in the homepage bento grid."
+
+      - label: "Notes (internal)"
+        name: "body"
+        widget: "markdown"
+        required: false
+        hint: "Internal editorial notes. Not shown on the public site."
+
+  # -------------------------------------------------------------------------
+  # PROJECTS
+  # -------------------------------------------------------------------------
   - name: "projects"
     label: "Projects"
+    label_singular: "Project"
     folder: "src/content/projects"
     create: true
     slug: "{{year}}-{{slug}}"
     extension: "md"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Author", name: "author", widget: "string", required: false }
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Category", name: "category", widget: "select", options: ["exhibition", "workshop", "publication", "collaboration", "lecture"] }
-      - { label: "Tags", name: "tags", widget: "list", default: [] }
-      - { label: "Cover", name: "cover", widget: "image", required: false }
+      - { label: "Title",    name: "title",    widget: "string" }
+      - { label: "Author",   name: "author",   widget: "string",   required: false }
+      - { label: "Date",     name: "date",     widget: "datetime" }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["exhibition", "workshop", "publication", "collaboration", "lecture"]
+      - { label: "Tags",    name: "tags",    widget: "list",  default: [] }
+      - { label: "Cover",   name: "cover",   widget: "image", required: false }
       - { label: "Hero Image", name: "heroImage", widget: "image", required: false, hint: "Full-width image at top of post" }
-      - { label: "Gallery", name: "gallery", widget: "list", field: { label: "Image", name: "image", widget: "image" }, required: false, hint: "Horizontal scroll gallery under hero" }
-      - { label: "Related Typeface", name: "relatedTypeface", widget: "string", required: false, hint: "Slug of typeface (e.g. ananas, marz-grotesk) — title will be set in this font" }
-      - { label: "Custom Font File", name: "customFont", widget: "file", required: false, hint: ".woff2 file for the title" }
+      - { label: "Gallery", name: "gallery", widget: "list",  required: false, field: { label: "Image", name: "image", widget: "image" } }
+      - { label: "Related Typeface", name: "relatedTypeface", widget: "string", required: false, hint: "Slug of typeface (e.g. ananas, marz-grotesk)" }
+      - { label: "Custom Font File", name: "customFont", widget: "file", required: false, hint: ".woff2 for the project title" }
       - { label: "Show Custom Font in Archive", name: "showCustomFontInArchive", widget: "boolean", default: false }
-      - { label: "Excerpt", name: "excerpt", widget: "text", required: false }
+      - { label: "Excerpt",  name: "excerpt",  widget: "text",    required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
       - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
       - { label: "Product Title", name: "productTitle", widget: "string", required: false }
-      - { label: "Product Image", name: "productImage", widget: "image", required: false }
-      - { label: "Price", name: "price", widget: "string", required: false }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Product Image", name: "productImage", widget: "image",  required: false }
+      - { label: "Price",    name: "price",    widget: "string",  required: false }
+      - { label: "Body",     name: "body",     widget: "markdown" }
 
+  # -------------------------------------------------------------------------
+  # JOURNAL
+  # -------------------------------------------------------------------------
   - name: "journal"
     label: "Journal"
+    label_singular: "Entry"
     folder: "src/content/journal"
     create: true
     slug: "{{year}}-{{slug}}"
     extension: "md"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Author", name: "author", widget: "string", required: false }
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Category", name: "category", widget: "select", options: ["essay", "interview", "review", "news", "announcement"] }
-      - { label: "Tags", name: "tags", widget: "list", default: [] }
-      - { label: "Cover", name: "cover", widget: "image", required: false }
-      - { label: "Hero Image", name: "heroImage", widget: "image", required: false, hint: "Full-width image at top of post" }
-      - { label: "Gallery", name: "gallery", widget: "list", field: { label: "Image", name: "image", widget: "image" }, required: false, hint: "Horizontal scroll gallery under hero" }
-      - { label: "Related Typeface", name: "relatedTypeface", widget: "string", required: false, hint: "Slug of typeface — title will be set in this font" }
-      - { label: "Excerpt", name: "excerpt", widget: "text", required: false }
+      - { label: "Title",   name: "title",   widget: "string" }
+      - { label: "Author",  name: "author",  widget: "string",   required: false }
+      - { label: "Date",    name: "date",    widget: "datetime" }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["essay", "interview", "process", "review", "news"]
+      - { label: "Tags",    name: "tags",    widget: "list",  default: [] }
+      - { label: "Cover",   name: "cover",   widget: "image", required: false }
+      - { label: "Hero Image", name: "heroImage", widget: "image", required: false }
+      - { label: "Related Typeface", name: "relatedTypeface", widget: "string", required: false, hint: "Slug of typeface" }
+      - { label: "Excerpt", name: "excerpt", widget: "text",    required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Body",    name: "body",    widget: "markdown" }

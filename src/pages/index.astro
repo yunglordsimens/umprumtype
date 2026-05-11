@@ -1,16 +1,36 @@
 ---
 import '../styles/global.css';
 import { getCollection } from 'astro:content';
+import { getAllTypefaces } from '../lib/typefaces';
 
-const typefaces = await getCollection('typefaces');
+// Typefaces from public/fonts/ (all 50)
+const allTypefaces = getAllTypefaces();
+
+// Pull featured ones to the front, then shuffle the rest for variety
+function seededShuffle<T>(arr: T[]): T[] {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    // deterministic-ish: use index-based swap so SSR output is stable
+    const j = (i * 7 + 13) % (i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+const tfSample = seededShuffle(allTypefaces).slice(0, 14);
+
+const fontFaces = tfSample
+  .filter(t => t.defaultVariant)
+  .map(t => {
+    const v = t.defaultVariant!;
+    const fam = t.title.replace(/"/g, '\\"');
+    return `@font-face{font-family:"${fam}";src:url("${v.webPath}") format("opentype");font-weight:${v.weight};font-style:${v.style};font-display:swap;}`;
+  })
+  .join('\n');
+
+// Posts (projects + journal) still come from markdown
 const projects = await getCollection('projects');
-const journal = await getCollection('journal');
-
-const slugOf = (e) => e.id.replace(/\.md$/, '');
-
-const tfFeatured = typefaces.filter(t => t.data.featured);
-const tfRest = typefaces.filter(t => !t.data.featured);
-const tfSample = [...tfFeatured, ...tfRest].slice(0, 14);
+const journal  = await getCollection('journal');
+const slugOf   = (e: { id: string }) => e.id.replace(/\.md$/, '');
 
 const posts = [...projects, ...journal]
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -18,17 +38,11 @@ const posts = [...projects, ...journal]
 
 const postsWithCollection = posts.map(p => ({
   entry: p,
-  collection: projects.includes(p) ? 'projects' : 'journal',
+  collection: projects.includes(p as any) ? 'projects' : 'journal',
 }));
 
-const fontFaces = tfSample.flatMap(t =>
-  t.data.fonts.map(f =>
-    `@font-face{font-family:"${t.data.name}";src:url("${f.file}") format("woff2");font-weight:${f.weight};font-style:${f.style};font-display:swap;}`
-  )
-).join('\n');
-
-const blocks = [];
-tfSample.forEach(t => blocks.push({ kind: 'tf', slug: slugOf(t), data: t.data }));
+const blocks: any[] = [];
+tfSample.forEach(tf => blocks.push({ kind: 'tf', slug: tf.slug, tf }));
 postsWithCollection.forEach(({ entry, collection }) =>
   blocks.push({ kind: 'post', slug: slugOf(entry), collection, data: entry.data })
 );
@@ -206,7 +220,7 @@ const year = new Date().getFullYear();
 
       <div class="bento" id="bento">
         <div class="bento__row bento__row--top" id="rowA" data-row>
-          {[...rowA, ...rowA, ...rowA].map((b, i) => (
+          {[...rowA, ...rowA, ...rowA].map((b) => (
             <a
               class="bento-block"
               href={b.kind === 'tf' ? `/typefaces/${b.slug}` : `/${b.collection}/${b.slug}`}
@@ -215,16 +229,15 @@ const year = new Date().getFullYear();
               <span class="bento-block__kind">{b.kind === 'tf' ? 'typeface' : b.collection}</span>
               <span class="bento-block__content">
                 {b.kind === 'tf'
-                  ? <span class="bento-block__name" style={`font-family:"${b.data.name}",var(--home-fg)`}>{b.data.name}</span>
+                  ? <span class="bento-block__name" style={`font-family:"${b.tf.title.replace(/"/g, '\\"')}",sans-serif`}>{b.tf.title}</span>
                   : <span class="bento-block__title">{b.data.title}</span>
                 }
               </span>
               <span class="bento-block__hover">
                 {b.kind === 'tf' ? (
                   <>
-                    {b.data.author && <span class="bento-block__tag">{b.data.author}</span>}
-                    {b.data.year && <span class="bento-block__tag">{b.data.year}</span>}
-                    {b.data.classification && <span class="bento-block__tag">{b.data.classification}</span>}
+                    {b.tf.designer && <span class="bento-block__tag">{b.tf.designer}</span>}
+                    {b.tf.year    && <span class="bento-block__tag">{b.tf.year}</span>}
                   </>
                 ) : (
                   <>
@@ -237,7 +250,7 @@ const year = new Date().getFullYear();
           ))}
         </div>
         <div class="bento__row bento__row--bot" id="rowB" data-row>
-          {[...rowB, ...rowB, ...rowB].map((b, i) => (
+          {[...rowB, ...rowB, ...rowB].map((b) => (
             <a
               class="bento-block"
               href={b.kind === 'tf' ? `/typefaces/${b.slug}` : `/${b.collection}/${b.slug}`}
@@ -246,16 +259,15 @@ const year = new Date().getFullYear();
               <span class="bento-block__kind">{b.kind === 'tf' ? 'typeface' : b.collection}</span>
               <span class="bento-block__content">
                 {b.kind === 'tf'
-                  ? <span class="bento-block__name" style={`font-family:"${b.data.name}",var(--home-fg)`}>{b.data.name}</span>
+                  ? <span class="bento-block__name" style={`font-family:"${b.tf.title.replace(/"/g, '\\"')}",sans-serif`}>{b.tf.title}</span>
                   : <span class="bento-block__title">{b.data.title}</span>
                 }
               </span>
               <span class="bento-block__hover">
                 {b.kind === 'tf' ? (
                   <>
-                    {b.data.author && <span class="bento-block__tag">{b.data.author}</span>}
-                    {b.data.year && <span class="bento-block__tag">{b.data.year}</span>}
-                    {b.data.classification && <span class="bento-block__tag">{b.data.classification}</span>}
+                    {b.tf.designer && <span class="bento-block__tag">{b.tf.designer}</span>}
+                    {b.tf.year    && <span class="bento-block__tag">{b.tf.year}</span>}
                   </>
                 ) : (
                   <>
