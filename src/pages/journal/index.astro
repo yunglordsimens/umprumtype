@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import ArchiveIsland from '../../components/ArchiveIsland.jsx';
+import JournalIsland from '../../components/JournalIsland.jsx';
 import { getCollection, render } from 'astro:content';
 
 const entries = (await getCollection('journal'))
@@ -8,12 +8,10 @@ const entries = (await getCollection('journal'))
 
 const slugOf = (e: { id: string }) => e.id.replace(/\.md$/, '');
 
-// Build-time render: each entry's Content component for the hidden DOM store
 const rendered = await Promise.all(
   entries.map(async e => ({ slug: slugOf(e), Content: (await render(e)).Content }))
 );
 
-// Serialisable metadata passed to the React island
 const posts = entries.map(e => ({
   slug:        slugOf(e),
   title:       e.data.title,
@@ -31,25 +29,15 @@ const posts = entries.map(e => ({
 <Base
   title="Journal — Umprum Type"
   description="Essays, interviews, reviews, and news from the UMPRUM type class."
+  bodyClass="lib-page"
 >
-  <section class="container">
-    <header class="page-head" data-reveal>
-      <h1>Journal</h1>
-      <p class="muted">{entries.length} entries — essays, interviews, process notes.</p>
-    </header>
+  <div class="post-content-store" aria-hidden="true">
+    {rendered.map(({ slug, Content }) => (
+      <div data-post-slug={slug}>
+        <Content />
+      </div>
+    ))}
+  </div>
 
-    <!--
-      Hidden build-time content store.
-      React island reads innerHTML by [data-post-slug] when a post is opened.
-    -->
-    <div class="post-content-store" aria-hidden="true">
-      {rendered.map(({ slug, Content }) => (
-        <div data-post-slug={slug}>
-          <Content />
-        </div>
-      ))}
-    </div>
-
-    <ArchiveIsland client:load posts={posts} />
-  </section>
+  <JournalIsland client:load posts={posts} />
 </Base>

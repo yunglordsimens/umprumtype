@@ -1900,6 +1900,49 @@ body.tf-page .site-footer { display: none; }
   }
 }
 
+/* ── Post island (Journal / Projects) inside lib-scroll ── */
+
+/* No double top-margin between count and list */
+.post-island__list { margin-top: 0; }
+
+/* Full-width row hover — extends to lib-scroll's 48px padding edges */
+.post-island__scroll .post-row__btn {
+  margin-inline: calc(-1 * var(--space-7));
+  padding-inline: var(--space-7);
+}
+@media (max-width: 767px) {
+  .post-island__scroll .post-row__btn {
+    margin-inline: calc(-1 * 20px);
+    padding-inline: 20px;
+  }
+}
+
+/* Post detail inside the orange lib-detail panel — pin to dark text
+   so it's readable regardless of prefers-color-scheme               */
+.lib-detail .post-detail__meta { color: rgba(0,0,0,0.55); }
+.lib-detail .post-detail__title { color: #000; }
+.lib-detail .post-detail__excerpt { color: rgba(0,0,0,0.65); }
+.lib-detail .post__body { color: rgba(0,0,0,0.85); }
+.lib-detail .post__body a { color: #000; border-bottom-color: rgba(0,0,0,0.3); }
+.lib-detail .post__body blockquote {
+  border-left-color: rgba(0,0,0,0.25);
+  color: rgba(0,0,0,0.6);
+}
+.lib-detail .post__body h2,
+.lib-detail .post__body h3 { color: #000; }
+/* Gallery: match lib-detail__scroll's 48px horizontal padding */
+.lib-detail .post-detail__gallery {
+  margin-inline: calc(-1 * var(--space-7));
+  padding-inline: var(--space-7);
+}
+/* Contact block: use translucent dark instead of CSS-var surface */
+.lib-detail .post-detail__contact {
+  background: rgba(0,0,0,0.07);
+  border: 1px solid rgba(0,0,0,0.15);
+}
+.lib-detail .post-detail__contact h3 { color: rgba(0,0,0,0.45); }
+.lib-detail .post-detail__contact p  { color: rgba(0,0,0,0.65); }
+
 /* Mobile: panels become fixed overlays */
 @media (max-width: 767px) {
   .lib-toolbar { padding: 0 20px; height: 64px; }

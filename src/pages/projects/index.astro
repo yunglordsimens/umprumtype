@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import ArchiveIsland from '../../components/ArchiveIsland.jsx';
+import ProjectsIsland from '../../components/ProjectsIsland.jsx';
 import { getCollection, render } from 'astro:content';
 
 const entries = (await getCollection('projects'))
@@ -29,21 +29,15 @@ const posts = entries.map(e => ({
 <Base
   title="Projects — Umprum Type"
   description="Exhibitions, workshops, publications, and collaborations from the UMPRUM type class."
+  bodyClass="lib-page"
 >
-  <section class="container">
-    <header class="page-head" data-reveal>
-      <h1>Projects</h1>
-      <p class="muted">{entries.length} projects — exhibitions, workshops, publications.</p>
-    </header>
+  <div class="post-content-store" aria-hidden="true">
+    {rendered.map(({ slug, Content }) => (
+      <div data-post-slug={slug}>
+        <Content />
+      </div>
+    ))}
+  </div>
 
-    <div class="post-content-store" aria-hidden="true">
-      {rendered.map(({ slug, Content }) => (
-        <div data-post-slug={slug}>
-          <Content />
-        </div>
-      ))}
-    </div>
-
-    <ArchiveIsland client:load posts={posts} />
-  </section>
+  <ProjectsIsland client:load posts={posts} />
 </Base>
