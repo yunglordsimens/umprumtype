@@ -6,7 +6,6 @@ const all = getAllTypefaces();
 const years = [...new Set(all.map(t => t.year).filter(Boolean))]
   .sort((a, b) => (b ?? 0) - (a ?? 0));
 
-// One @font-face per typeface, using its default variant OTF
 const fontFaces = all
   .filter(t => t.defaultVariant)
   .map(t => {
@@ -16,255 +15,129 @@ const fontFaces = all
   })
   .join('\n');
 ---
-
-<Base
-  title="Typefaces — Umprum Type"
-  description="Archive of typefaces designed at the type class of UMPRUM, Prague."
->
+<Base title="Typefaces — Umprum Type" description="Archive of typefaces designed at the type class of UMPRUM, Prague.">
   <style set:html={fontFaces}></style>
-
   <section class="container">
-
-    <!-- header -->
     <header class="page-head" data-reveal>
       <h1>Typefaces</h1>
-      <p class="muted">{all.length} designs from the UMPRUM type class.</p>
+      <p class="muted">{all.length} designs from the UMPRUM type class. Filters combine AND across rows, OR within.</p>
     </header>
 
-    <!-- controls -->
     <div class="tf-controls" data-reveal>
-      <input
-        id="tfSearch"
-        type="search"
-        placeholder="Search by name or designer…"
-        class="tf-search"
-        autocomplete="off"
-      />
+      <input type="search" placeholder="Search by name or designer…" class="tf-search" id="tfSearch" />
       <div class="tf-sort">
-        <button data-sort="name"    aria-pressed="true">A–Z</button>
+        <button data-sort="shuffle" aria-pressed="true">shuffle</button>
         <button data-sort="year">year</button>
-        <button data-sort="shuffle">shuffle</button>
+        <button data-sort="name">name</button>
+        <button data-sort="author">designer</button>
         <button id="tfRandom">→ random</button>
       </div>
     </div>
 
-    <!-- year filter -->
-    {years.length > 0 && (
-      <div class="tf-filters" data-reveal>
-        <div class="tf-filter-row" data-group="year">
-          <span class="tf-filter-label">year</span>
-          {years.map(y => (
-            <button data-filter="year" data-value={String(y)}>{y}</button>
-          ))}
-        </div>
+    <div class="tf-filters" data-reveal>
+      <div class="tf-filter-row" data-group="year">
+        <span class="tf-filter-label">year</span>
+        {years.map(y => (
+          <button data-filter="year" data-value={String(y)}>{y}</button>
+        ))}
       </div>
-    )}
+    </div>
 
-    <!-- card grid -->
-    <ul class="tf-grid" id="tfGrid" data-reveal-stagger aria-label="Typefaces">
-      {all.map(t => {
-        const fam  = `"${t.title.replace(/"/g, '\\"')}",var(--font-ui)`;
-        const wt   = t.defaultVariant?.weight  ?? 400;
-        const sty  = t.defaultVariant?.style   ?? 'normal';
-        // Short specimen: mainText preferred, else first styleText excerpt
-        const spec = t.mainText
-          || (t.styleTexts[0]?.slice(0, 90) ?? '');
-        return (
-          <li
-            class="tf-card"
-            data-card
-            data-name={t.title.toLowerCase()}
-            data-designer={t.designer.toLowerCase()}
-            data-year={t.year ?? ''}
-          >
-            <a href={`/typefaces/${t.slug}`} class="tf-card__link">
-
-              {/* font name rendered in itself — the "live" part */}
-              <span
-                class="tf-card__name"
-                style={`font-family:${fam};font-weight:${wt};font-style:${sty}`}
-                aria-hidden="true"
-              >{t.title}</span>
-
-              {/* short specimen line in the same font */}
-              {spec && (
-                <span
-                  class="tf-card__specimen"
-                  style={`font-family:${fam};font-weight:${wt};font-style:${sty}`}
-                >{spec}</span>
-              )}
-
-              {/* meta: designer · year */}
-              <span class="tf-card__meta">
-                <span class="tf-card__designer">{t.designer}</span>
-                {t.year && <span class="tf-card__year">{t.year}</span>}
-              </span>
-
-            </a>
-          </li>
-        );
-      })}
+    <ul class="tf-list" id="tfList" data-reveal-stagger>
+      {all.map(t => (
+        <li
+          class="tf-row"
+          data-row
+          data-name={t.title.toLowerCase()}
+          data-author={t.designer.toLowerCase()}
+          data-year={t.year ?? ''}
+        >
+          <a href={`/typefaces/${t.slug}`} class="tf-row__link">
+            <span
+              class="tf-row__name"
+              style={`font-family:"${t.title.replace(/"/g, '\\"')}",var(--font-ui);font-weight:${t.defaultVariant?.weight ?? 400}`}
+            >{t.title}</span>
+            <span class="tf-row__class">{t.mainText}</span>
+            <span class="tf-row__author">{t.designer}</span>
+            <span class="tf-row__year">{t.year}</span>
+          </a>
+        </li>
+      ))}
     </ul>
-
-    <!-- empty state -->
-    <p class="tf-empty" id="tfEmpty" hidden>No results.</p>
-
   </section>
 
-  <style>
-    /* ---- card grid ---- */
-    .tf-grid {
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1px;
-      background: var(--border);          /* gap colour = border */
-      border: 1px solid var(--border);
-      margin-top: var(--space-6);
-    }
-
-    .tf-card {
-      background: var(--bg);
-      transition: background var(--dur-fast) var(--ease);
-    }
-    .tf-card:hover { background: var(--surface-alt); }
-    .tf-card[data-hidden="true"] { display: none; }
-
-    .tf-card__link {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-2);
-      padding: var(--space-5);
-      text-decoration: none;
-      color: inherit;
-      height: 100%;
-      min-height: 200px;
-    }
-    .tf-card__link:hover { text-decoration: none; }
-
-    /* large name in the typeface */
-    .tf-card__name {
-      font-size: clamp(1.8rem, 3.5vw, 3rem);
-      line-height: 1.05;
-      flex: 1;
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      word-break: break-word;
-      hyphens: auto;
-    }
-
-    /* short specimen text, same font, smaller + muted */
-    .tf-card__specimen {
-      font-size: var(--step--1);
-      color: var(--text-muted);
-      line-height: 1.4;
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-    }
-
-    /* designer · year row */
-    .tf-card__meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: var(--space-3);
-      font-size: var(--step--1);
-      font-family: var(--font-ui);
-      margin-top: var(--space-1);
-      padding-top: var(--space-3);
-      border-top: 1px solid var(--border);
-    }
-    .tf-card__designer { color: var(--text-muted); }
-    .tf-card__year     { color: var(--text-subtle); font-variant-numeric: tabular-nums; }
-
-    .tf-empty { margin-top: var(--space-6); color: var(--text-muted); }
-  </style>
-
   <script>
-    const grid  = document.getElementById('tfGrid')!;
-    const empty = document.getElementById('tfEmpty') as HTMLElement;
-    const cards = () => Array.from(document.querySelectorAll('[data-card]')) as HTMLElement[];
+    const list = document.getElementById('tfList')!;
+    const rows = () => Array.from(document.querySelectorAll('[data-row]')) as HTMLElement[];
 
-    /* ---- active filters ---- */
     const active: Record<string, Set<string>> = { year: new Set() };
 
-    document.querySelectorAll('[data-filter]').forEach(btn => {
+    document.querySelectorAll('[data-filter]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const el    = btn as HTMLElement;
         const group = el.dataset.filter!;
         const val   = el.dataset.value!;
         const set   = active[group];
         if (set.has(val)) { set.delete(val); btn.setAttribute('aria-pressed', 'false'); }
-        else              { set.add(val);    btn.setAttribute('aria-pressed', 'true');  }
-        apply();
+        else              { set.add(val);    btn.setAttribute('aria-pressed', 'true'); }
+        applyFilters();
       });
     });
 
-    /* ---- search ---- */
-    const q = document.getElementById('tfSearch') as HTMLInputElement;
-    q.addEventListener('input', apply);
+    const q = document.getElementById('tfSearch') as HTMLInputElement | null;
+    q?.addEventListener('input', applyFilters);
 
-    function apply() {
-      const needle = q.value.trim().toLowerCase();
-      let visible = 0;
-      cards().forEach(c => {
-        const matchSearch = !needle
-          || (c.dataset.name    ?? '').includes(needle)
-          || (c.dataset.designer ?? '').includes(needle);
-        const matchYear = active.year.size === 0 || active.year.has(c.dataset.year ?? '');
-        const show = matchSearch && matchYear;
-        c.dataset.hidden = show ? 'false' : 'true';
-        if (show) visible++;
+    function applyFilters() {
+      const needle = (q?.value ?? '').trim().toLowerCase();
+      rows().forEach((r) => {
+        const name   = r.dataset.name   ?? '';
+        const author = r.dataset.author ?? '';
+        const yr     = r.dataset.year   ?? '';
+        const matchSearch = !needle || name.includes(needle) || author.includes(needle);
+        const matchYr     = active.year.size === 0 || active.year.has(yr);
+        r.dataset.hidden  = String(!(matchSearch && matchYr));
       });
-      empty.hidden = visible > 0;
     }
 
-    /* ---- sort ---- */
-    let currentSort = 'name';
-    document.querySelectorAll('[data-sort]').forEach(btn => {
+    let currentSort = 'shuffle';
+    const sortBtns = document.querySelectorAll('[data-sort]');
+    sortBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
         currentSort = (btn as HTMLElement).dataset.sort!;
-        document.querySelectorAll('[data-sort]').forEach(b =>
-          b.setAttribute('aria-pressed', b === btn ? 'true' : 'false')
-        );
-        sort();
+        sortBtns.forEach((b) => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+        applySort();
       });
     });
 
-    function shuffle<T>(a: T[]): T[] {
-      const r = a.slice();
-      for (let i = r.length - 1; i > 0; i--) {
+    function shuffle<T>(arr: T[]): T[] {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [r[i], r[j]] = [r[j], r[i]];
+        [a[i], a[j]] = [a[j], a[i]];
       }
-      return r;
+      return a;
     }
 
-    function sort() {
-      const items = cards();
+    function applySort() {
+      const items = rows();
       let sorted: HTMLElement[];
-      if      (currentSort === 'name')    sorted = items.slice().sort((a, b) => (a.dataset.name ?? '').localeCompare(b.dataset.name ?? '', 'cs'));
+      if      (currentSort === 'shuffle') sorted = shuffle(items);
       else if (currentSort === 'year')    sorted = items.slice().sort((a, b) => +(b.dataset.year ?? 0) - +(a.dataset.year ?? 0));
-      else if (currentSort === 'shuffle') sorted = shuffle(items);
+      else if (currentSort === 'name')    sorted = items.slice().sort((a, b) => (a.dataset.name ?? '').localeCompare(b.dataset.name ?? ''));
+      else if (currentSort === 'author')  sorted = items.slice().sort((a, b) => (a.dataset.author ?? '').localeCompare(b.dataset.author ?? ''));
       else sorted = items;
-      sorted.forEach(el => grid.appendChild(el));
+      sorted.forEach((el) => list.appendChild(el));
     }
+    applySort();
 
-    sort();   // initial sort (A-Z)
-
-    /* ---- random ---- */
     document.getElementById('tfRandom')?.addEventListener('click', () => {
-      const visible = cards().filter(c => c.dataset.hidden !== 'true');
+      const visible = rows().filter((r) => r.dataset.hidden !== 'true');
       if (!visible.length) return;
       const pick = visible[Math.floor(Math.random() * visible.length)];
       pick.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      pick.querySelector('a')?.animate(
-        [{ outline: '2px solid var(--text)' }, { outline: '2px solid transparent' }],
-        { duration: 900, easing: 'var(--ease)' }
+      pick.animate(
+        [{ background: 'var(--surface-alt)' }, { background: 'transparent' }],
+        { duration: 1200, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }
       );
     });
   </script>
