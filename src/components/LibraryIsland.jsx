@@ -1,10 +1,43 @@
 import { useState, useMemo, useEffect } from 'react';
-import FilterPanel from './FilterPanel.jsx';
-import SearchBar from './SearchBar.jsx';
-import DetailPanel from './DetailPanel.jsx';
 
 const SHEET_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9pcn-Vt6gV9lCYZEK1Ly6ZKdEIYqN-VoIu9EkPqDqkFCAwT5R_eqaKz6priy-ixFZQWD3CtX263O_/pub?output=csv';
+
+const FilterIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
+const ChevronLeftIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="15 18 9 12 15 6" />
+  </svg>
+);
+
+const PlusIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
+
+const SearchIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 13l4 4L19 7" />
+  </svg>
+);
 
 const TAG_COVERS = {
   'type':                  { bg: '#18181b', text: '#ffffff' },
@@ -76,66 +109,36 @@ function toThumb(url) {
   return url.startsWith('http') ? url : null;
 }
 
-function BookCoverInner({ book, cover }) {
-  return (
-    <>
-      {book.image ? (
-        <img src={book.image} alt={book.title} loading="lazy" />
-      ) : (
-        <div className="book-cover__text" style={{ color: cover.text }}>
-          <span className="book-cover__text-title">{book.title}</span>
-          <span className="book-cover__text-author">{book.author || ''}</span>
-        </div>
-      )}
-      <div className="book-cover__spine-shadow" />
-      <div className="book-cover__spine-highlight" />
-    </>
-  );
-}
-
 function BookCard({ book, onClick }) {
   const cover = getCover(book);
   return (
     <div
-      className="book-card"
+      className="lib-card"
       onClick={onClick}
       role="button"
       tabIndex={0}
       onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onClick?.()}
     >
-      <div className="book-cover book-cover--sm" style={{ background: cover.bg }}>
-        <BookCoverInner book={book} cover={cover} />
+      <div className="lib-book">
+        <div className="lib-book__cover" style={{ background: cover.bg }}>
+          {book.image ? (
+            <img src={book.image} alt={book.title} className="lib-book__img" loading="lazy" />
+          ) : (
+            <div className="lib-book__text" style={{ color: cover.text }}>
+              <span className="lib-book__text-title">{book.title}</span>
+              <span className="lib-book__text-author">{book.author || ''}</span>
+            </div>
+          )}
+          <div className="lib-book__spine" />
+          <div className="lib-book__shine" />
+        </div>
       </div>
-      <div className="book-card__info">
-        <h4 className="book-card__title">{book.title}</h4>
-        <p className="book-card__author">{book.author || <em>—</em>}</p>
-        {book.year && <p className="book-card__year">{book.year}</p>}
+      <div className="lib-card__info">
+        <h4 className="lib-card__title">{book.title}</h4>
+        <p className="lib-card__author">{book.author || <em>—</em>}</p>
+        {book.year && <p className="lib-card__year">{book.year}</p>}
       </div>
     </div>
-  );
-}
-
-function BookDetail({ book }) {
-  if (!book) return null;
-  const cover = getCover(book);
-  return (
-    <article className="book-detail">
-      <div className="book-cover book-cover--lg" style={{ background: cover.bg }}>
-        <BookCoverInner book={book} cover={cover} />
-      </div>
-      <div className="book-detail__meta">
-        <h2 className="book-detail__title">{book.title}</h2>
-        {book.author && <p className="book-detail__author">{book.author}</p>}
-        {book.year   && <p className="book-detail__year">{book.year}</p>}
-        {book.tags.length > 0 && (
-          <ul className="book-detail__tags">
-            {book.tags.map(t => (
-              <li key={t} className="book-detail__tag">{t}</li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </article>
   );
 }
 
@@ -145,8 +148,8 @@ export default function LibraryIsland() {
   const [activeTags, setActiveTags]     = useState([]);
   const [search, setSearch]             = useState('');
   const [selectedBook, setSelectedBook] = useState(null);
+  const [showFilters, setShowFilters]   = useState(false);
   const [showAdd, setShowAdd]           = useState(false);
-  const [showFilters, setShowFilters]   = useState(true);
   const [newBook, setNewBook]           = useState({ title: '', author: '', year: '', tags: '' });
 
   useEffect(() => {
@@ -207,62 +210,151 @@ export default function LibraryIsland() {
     setShowAdd(false);
   }
 
-  if (loading) return <p className="muted library-loading">Loading library…</p>;
+  if (loading) return (
+    <div className="lib-loading">Loading…</div>
+  );
+
+  const selectedCover = selectedBook ? getCover(selectedBook) : null;
 
   return (
-    <>
-      <div className="library-toolbar">
-        <span className="library-wordmark">UMPRUM TYPE LIBRARY</span>
-        {!showFilters && (
-          <button className="archive-main__filters-btn" onClick={() => setShowFilters(true)}>
-            Filters
+    <div className="lib-layout">
+
+      {/* ── Left filter panel ── */}
+      <aside className={`lib-filter${showFilters ? ' is-open' : ''}`}>
+        <div className="lib-filter__inner">
+          <div className="lib-filter__head">
+            <h2 className="lib-filter__title">Filters</h2>
+            <button className="lib-filter__close" onClick={() => setShowFilters(false)} aria-label="Close filters">
+              <CloseIcon />
+            </button>
+          </div>
+          <div>
+            <h3 className="lib-filter__section-title">Tags &amp; Categories</h3>
+            <div className="lib-filter__tags">
+              {ALL_TAGS.map(tag => {
+                const active = activeTags.includes(tag);
+                return (
+                  <label key={tag} className={`lib-filter__tag${active ? ' is-active' : ''}`}>
+                    <div className="lib-filter__check">
+                      {active && <CheckIcon />}
+                    </div>
+                    <span className="lib-filter__tag-label">{tag}</span>
+                  </label>
+                );
+              })}
+            </div>
+            {activeTags.length > 0 && (
+              <button className="lib-filter__clear" onClick={() => setActiveTags([])}>
+                Clear filters
+              </button>
+            )}
+          </div>
+        </div>
+      </aside>
+
+      {/* ── Main area ── */}
+      <div className="lib-main">
+
+        {/* Toolbar */}
+        <header className="lib-toolbar">
+          <button
+            className="lib-filter-btn"
+            onClick={() => setShowFilters(f => !f)}
+            aria-pressed={showFilters}
+          >
+            <FilterIcon />
+            <span className="lib-filter-btn__label">
+              {showFilters ? 'Hide filters' : 'Filters'}
+            </span>
           </button>
-        )}
-        <button className="library-add-btn" onClick={() => setShowAdd(true)}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Add book
-        </button>
-        <p className="library-count muted">{filtered.length} of {library.length}</p>
-      </div>
 
-      <div className="archive-layout">
-        <FilterPanel
-          allTags={ALL_TAGS}
-          activeTags={activeTags}
-          onToggle={toggleTag}
-          isOpen={showFilters}
-          onClose={() => setShowFilters(false)}
-        />
-
-        <div className="library-main archive-main">
-          <div className="library-search">
-            <SearchBar value={search} onChange={setSearch} placeholder="Search titles, authors…" />
+          <div className="lib-search-wrap">
+            <div className="lib-search">
+              <span className="lib-search__icon"><SearchIcon /></span>
+              <input
+                className="lib-search__input"
+                type="text"
+                placeholder="Search titles, authors…"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+            </div>
           </div>
 
+          <div className="lib-right">
+            <span className="lib-wordmark">UMPRUM TYPE LIBRARY</span>
+            <button className="lib-add-btn" onClick={() => setShowAdd(true)}>
+              <PlusIcon />
+              <span>Add</span>
+            </button>
+          </div>
+        </header>
+
+        {/* Scrollable grid */}
+        <div className="lib-scroll">
           {filtered.length === 0 ? (
-            <p className="muted library-empty">Nothing found.</p>
+            <div className="lib-empty">Nothing found.</div>
           ) : (
-            <div className="library-grid">
+            <div className="lib-grid">
               {filtered.map(book => (
                 <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} />
               ))}
             </div>
           )}
+          <div className="lib-count">{filtered.length} of {library.length} books</div>
         </div>
-
-        <DetailPanel isOpen={!!selectedBook} onClose={() => setSelectedBook(null)} variant="accent">
-          <BookDetail book={selectedBook} />
-        </DetailPanel>
       </div>
 
+      {/* ── Right detail panel ── */}
+      <aside className={`lib-detail${selectedBook ? ' is-open' : ''}`}>
+        <div className="lib-detail__inner">
+          <button className="lib-detail__close" onClick={() => setSelectedBook(null)} aria-label="Close">
+            <ChevronLeftIcon />
+          </button>
+          <div className="lib-detail__scroll">
+            <span className="lib-detail__label">Book details</span>
+            {selectedBook && (
+              <div className="lib-detail__content">
+                <div className="lib-detail__cover" style={{ background: selectedCover.bg }}>
+                  {selectedBook.image ? (
+                    <img src={selectedBook.image} alt={selectedBook.title} className="lib-book__img" />
+                  ) : (
+                    <>
+                      <div className="lib-book__spine" />
+                      <div className="lib-book__shine" />
+                      <div className="lib-detail__cover-text" style={{ color: selectedCover.text }}>
+                        <span className="lib-detail__cover-title">{selectedBook.title}</span>
+                        <span className="lib-detail__cover-author">{selectedBook.author || ''}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="lib-detail__meta">
+                  <h2 className="lib-detail__title">{selectedBook.title}</h2>
+                  {selectedBook.author && <p className="lib-detail__author">{selectedBook.author}</p>}
+                  {selectedBook.year   && <p className="lib-detail__year">{selectedBook.year}</p>}
+                  {selectedBook.tags.length > 0 && (
+                    <ul className="lib-detail__tags">
+                      {selectedBook.tags.map(t => (
+                        <li key={t} className="lib-detail__tag">{t}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="lib-detail__footer">UMPRUM Type Library &times; 2026</div>
+        </div>
+      </aside>
+
+      {/* ── Add book modal ── */}
       {showAdd && (
         <div className="library-modal-backdrop" onClick={() => setShowAdd(false)}>
           <div className="library-modal" onClick={e => e.stopPropagation()}>
             <div className="library-modal__header">
               <h2>Add book</h2>
-              <button onClick={() => setShowAdd(false)} aria-label="Close">×</button>
+              <button onClick={() => setShowAdd(false)} aria-label="Close"><CloseIcon /></button>
             </div>
             <div className="library-modal__fields">
               <label>
@@ -306,6 +398,6 @@ export default function LibraryIsland() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
