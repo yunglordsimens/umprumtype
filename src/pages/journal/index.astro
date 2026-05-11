@@ -1,52 +1,55 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getCollection } from 'astro:content';
+import ArchiveIsland from '../../components/ArchiveIsland.jsx';
+import { getCollection, render } from 'astro:content';
 
 const entries = (await getCollection('journal'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const categories = [...new Set(entries.map(e => e.data.category))].sort();
-const slugOf = (e) => e.id.replace(/\.md$/, '');
+
+const slugOf = (e: { id: string }) => e.id.replace(/\.md$/, '');
+
+// Build-time render: each entry's Content component for the hidden DOM store
+const rendered = await Promise.all(
+  entries.map(async e => ({ slug: slugOf(e), Content: (await render(e)).Content }))
+);
+
+// Serialisable metadata passed to the React island
+const posts = entries.map(e => ({
+  slug:        slugOf(e),
+  title:       e.data.title,
+  date:        e.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }),
+  dateIso:     e.data.date.toISOString(),
+  author:      e.data.author    ?? null,
+  category:    e.data.category,
+  tags:        e.data.tags      ?? [],
+  excerpt:     e.data.excerpt   ?? null,
+  gallery:     e.data.gallery   ?? [],
+  purchasable: e.data.purchasable ?? false,
+  contact:     e.data.contact   ?? null,
+}));
 ---
-<Base title="Journal — Umprum Type" description="Essays, interviews, reviews, news from UMPRUM Type.">
+<Base
+  title="Journal — Umprum Type"
+  description="Essays, interviews, reviews, and news from the UMPRUM type class."
+>
   <section class="container">
     <header class="page-head" data-reveal>
       <h1>Journal</h1>
-      <p class="muted">Essays, interviews, reviews.</p>
+      <p class="muted">{entries.length} entries — essays, interviews, process notes.</p>
     </header>
 
-    {categories.length > 1 && (
-      <div class="tf-filters" data-reveal>
-        <div class="tf-filter-row" data-group="category">
-          <span class="tf-filter-label">category</span>
-          {categories.map(c => <button data-filter="category" data-value={c}>{c}</button>)}
+    <!--
+      Hidden build-time content store.
+      React island reads innerHTML by [data-post-slug] when a post is opened.
+    -->
+    <div class="post-content-store" aria-hidden="true">
+      {rendered.map(({ slug, Content }) => (
+        <div data-post-slug={slug}>
+          <Content />
         </div>
-      </div>
-    )}
-
-    <ul class="post-list" data-reveal-stagger>
-      {entries.map(p => (
-        <li class="post-row" data-row data-category={p.data.category}>
-          <a href={`/journal/${slugOf(p)}`}>
-            <time datetime={p.data.date.toISOString()}>{p.data.date.toISOString().slice(0, 10)}</time>
-            <h2>{p.data.title}</h2>
-            <span class="post-row__category">{p.data.category}</span>
-          </a>
-        </li>
       ))}
-    </ul>
-  </section>
+    </div>
 
-  <script>
-    const active = new Set();
-    document.querySelectorAll('[data-filter="category"]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const v = btn.getAttribute('data-value');
-        if (active.has(v)) { active.delete(v); btn.setAttribute('aria-pressed', 'false'); }
-        else { active.add(v); btn.setAttribute('aria-pressed', 'true'); }
-        document.querySelectorAll('[data-row]').forEach((r) => {
-          r.dataset.hidden = String(active.size > 0 && !active.has(r.dataset.category));
-        });
-      });
-    });
-  </script>
+    <ArchiveIsland client:load posts={posts} />
+  </section>
 </Base>
