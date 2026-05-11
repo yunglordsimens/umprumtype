@@ -52,6 +52,7 @@ const projects = defineCollection({
     showCustomFontInArchive: z.boolean().default(false),
     excerpt: z.string().optional(),
     purchasable: z.boolean().default(false),
+    contact: z.string().optional(),
     productTitle: z.string().optional(),
     productImage: z.string().optional(),
     price: z.string().optional(),
@@ -72,6 +73,8 @@ const journal = defineCollection({
     gallery: z.array(z.string()).default([]),
     relatedTypeface: z.string().optional(),
     excerpt: z.string().optional(),
+    purchasable: z.boolean().default(false),
+    contact: z.string().optional(),
     featured: z.boolean().default(false),
   }),
 });

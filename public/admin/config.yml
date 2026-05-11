@@ -124,6 +124,11 @@ collections:
       - { label: "Excerpt",  name: "excerpt",  widget: "text",    required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
       - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
+      - label: "Contact info"
+        name: "contact"
+        widget: "text"
+        required: false
+        hint: "How to reach the author for purchase or collaboration (email, link, etc.)"
       - { label: "Product Title", name: "productTitle", widget: "string", required: false }
       - { label: "Product Image", name: "productImage", widget: "image",  required: false }
       - { label: "Price",    name: "price",    widget: "string",  required: false }
@@ -150,7 +155,14 @@ collections:
       - { label: "Tags",    name: "tags",    widget: "list",  default: [] }
       - { label: "Cover",   name: "cover",   widget: "image", required: false }
       - { label: "Hero Image", name: "heroImage", widget: "image", required: false }
+      - { label: "Gallery", name: "gallery", widget: "list",  required: false, field: { label: "Image", name: "image", widget: "image" } }
       - { label: "Related Typeface", name: "relatedTypeface", widget: "string", required: false, hint: "Slug of typeface" }
       - { label: "Excerpt", name: "excerpt", widget: "text",    required: false }
-      - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - { label: "Featured",     name: "featured",     widget: "boolean", default: false }
+      - { label: "Purchasable",  name: "purchasable",  widget: "boolean", default: false }
+      - label: "Contact info"
+        name: "contact"
+        widget: "text"
+        required: false
+        hint: "How to reach the author (email, link, etc.)"
       - { label: "Body",    name: "body",    widget: "markdown" }
