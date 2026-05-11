@@ -1,38 +1,74 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getCollection } from 'astro:content';
+import StoreIsland from '../components/StoreIsland.jsx';
+import { getCollection, render } from 'astro:content';
 
-const projects = await getCollection('projects');
-const items = projects.filter(p => p.data.purchasable);
-const slugOf = (e) => e.id.replace(/\.md$/, '');
+const [allProjects, allJournal] = await Promise.all([
+  getCollection('projects'),
+  getCollection('journal'),
+]);
+
+const slugOf = (e: { id: string }) => e.id.replace(/\.md$/, '');
+
+// Collect purchasable entries from both collections
+const purchasable = [
+  ...allProjects.filter(p => p.data.purchasable).map(e => ({ ...e, _col: 'projects' as const })),
+  ...allJournal .filter(e => e.data.purchasable).map(e => ({ ...e, _col: 'journal'  as const })),
+].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// Build-time render for content store
+const rendered = await Promise.all(
+  purchasable.map(async e => ({ slug: slugOf(e), Content: (await render(e)).Content }))
+);
+
+// Serialisable metadata for the React island
+const items = purchasable.map(e => {
+  const d = e.data;
+  // first usable image: gallery[0] → heroImage → cover → productImage
+  const image = d.gallery?.[0] ?? d.heroImage ?? (d as any).cover ?? (d as any).productImage ?? null;
+  return {
+    slug:     slugOf(e),
+    title:    (d as any).productTitle || d.title,
+    author:   d.author   ?? null,
+    year:     d.date.getFullYear(),
+    date:     d.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }),
+    dateIso:  d.date.toISOString(),
+    category: d.category,
+    tags:     d.tags     ?? [],
+    excerpt:  d.excerpt  ?? null,
+    gallery:  d.gallery  ?? [],
+    contact:  d.contact  ?? null,
+    image,
+  };
+});
 ---
-<Base title="Store — Umprum Type" description="Prints, zines, and objects from UMPRUM Type projects.">
+<Base
+  title="Store — Umprum Type"
+  description="Prints, zines, and objects from the UMPRUM type class. Contact authors directly."
+>
   <section class="container">
-    <header class="page-head measure" data-reveal>
+    <header class="page-head" data-reveal>
       <h1>Store</h1>
-      <p>Prints, zines, and objects. Contact the author through the project page.</p>
+      <p class="muted">
+        Prints, zines, and objects.
+        Contact the author through the item page.
+      </p>
     </header>
 
-    {items.length === 0 ? (
-      <p class="muted" style="padding:var(--space-7) 0;">No items available right now — check back soon.</p>
-    ) : (
-      <div class="store-grid" data-reveal-stagger>
-        {items.map(p => {
-          const img = p.data.productImage || p.data.heroImage || p.data.gallery?.[0] || p.data.cover;
-          return (
-            <a class="store-card" href={`/projects/${slugOf(p)}`}>
-              <div class="store-card__img">
-                {img && <img src={img} alt={p.data.productTitle || p.data.title} loading="lazy" />}
-              </div>
-              <div class="store-card__meta">
-                <h3>{p.data.productTitle || p.data.title}</h3>
-                {p.data.author && <p>{p.data.author}</p>}
-                <span class="store-card__cta">→ view project</span>
-              </div>
-            </a>
-          );
-        })}
-      </div>
-    )}
+    <!-- hidden content store for DetailPanel -->
+    <div class="post-content-store" aria-hidden="true">
+      {rendered.map(({ slug, Content }) => (
+        <div data-post-slug={slug}>
+          <Content />
+        </div>
+      ))}
+    </div>
+
+    <StoreIsland client:load items={items} />
   </section>
 </Base>
+
+<style>
+  .store-empty { padding: var(--space-7) 0; }
+  .store-contact { margin-top: var(--space-6); }
+</style>
