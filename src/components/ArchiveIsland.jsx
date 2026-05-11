@@ -3,7 +3,6 @@ import FilterPanel from './FilterPanel.jsx';
 import DetailPanel from './DetailPanel.jsx';
 import SearchBar from './SearchBar.jsx';
 
-// Read pre-rendered Astro HTML from hidden DOM store
 function getPostHtml(slug) {
   const el = document.querySelector(`[data-post-slug="${slug}"]`);
   return el ? el.innerHTML : '';
@@ -11,9 +10,10 @@ function getPostHtml(slug) {
 
 export default function ArchiveIsland({ posts }) {
   const [activeTags, setActiveTags] = useState([]);
-  const [query,      setQuery]      = useState('');
-  const [openSlug,   setOpenSlug]   = useState(null);
-  const [panelHtml,  setPanelHtml]  = useState('');
+  const [query,       setQuery]      = useState('');
+  const [openSlug,    setOpenSlug]   = useState(null);
+  const [panelHtml,   setPanelHtml]  = useState('');
+  const [showFilters, setShowFilters] = useState(true);
 
   const allTags = [...new Set(posts.flatMap(p => p.tags))].sort();
 
@@ -40,24 +40,33 @@ export default function ArchiveIsland({ posts }) {
   return (
     <div className="archive-layout">
 
-      {/* left sidebar */}
-      <aside className="archive-sidebar">
-        <SearchBar value={query} onChange={setQuery} placeholder="Search…" />
-        {allTags.length > 0 && (
-          <FilterPanel
-            allTags={allTags}
-            activeTags={activeTags}
-            onToggle={tag =>
-              setActiveTags(prev =>
-                prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
-              )
-            }
-          />
-        )}
-      </aside>
+      {allTags.length > 0 && (
+        <FilterPanel
+          allTags={allTags}
+          activeTags={activeTags}
+          onToggle={tag =>
+            setActiveTags(prev =>
+              prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+            )
+          }
+          isOpen={showFilters}
+          onClose={() => setShowFilters(false)}
+        />
+      )}
 
-      {/* post list */}
       <section className="archive-main">
+        <div className="archive-main__toolbar">
+          <SearchBar value={query} onChange={setQuery} placeholder="Search…" />
+          {!showFilters && allTags.length > 0 && (
+            <button
+              className="archive-main__filters-btn"
+              onClick={() => setShowFilters(true)}
+            >
+              Filters
+            </button>
+          )}
+        </div>
+
         <ul className="post-list">
           {filtered.map(p => (
             <li key={p.slug} className={`post-row${openSlug === p.slug ? ' is-active' : ''}`}>
@@ -74,7 +83,6 @@ export default function ArchiveIsland({ posts }) {
         )}
       </section>
 
-      {/* right detail panel */}
       <DetailPanel isOpen={!!openSlug} onClose={closePost} variant="accent">
         {activePost && (
           <PostContent post={activePost} html={panelHtml} />

@@ -22,12 +22,6 @@ export default function DetailPanel({ children, onClose, isOpen = false, variant
 
   return (
     <>
-      <div
-        className={`detail-panel-backdrop${isOpen ? ' is-open' : ''}`}
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
       <aside className={cls} aria-modal="true" role="dialog">
         <button className="detail-panel__close" onClick={onClose} aria-label="Back">
           <ChevronLeft />

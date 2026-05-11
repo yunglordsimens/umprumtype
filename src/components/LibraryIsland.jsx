@@ -146,6 +146,7 @@ export default function LibraryIsland() {
   const [search, setSearch]             = useState('');
   const [selectedBook, setSelectedBook] = useState(null);
   const [showAdd, setShowAdd]           = useState(false);
+  const [showFilters, setShowFilters]   = useState(true);
   const [newBook, setNewBook]           = useState({ title: '', author: '', year: '', tags: '' });
 
   useEffect(() => {
@@ -212,6 +213,11 @@ export default function LibraryIsland() {
     <>
       <div className="library-toolbar">
         <span className="library-wordmark">UMPRUM TYPE LIBRARY</span>
+        {!showFilters && (
+          <button className="archive-main__filters-btn" onClick={() => setShowFilters(true)}>
+            Filters
+          </button>
+        )}
         <button className="library-add-btn" onClick={() => setShowAdd(true)}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -222,11 +228,17 @@ export default function LibraryIsland() {
       </div>
 
       <div className="archive-layout">
-        <FilterPanel allTags={ALL_TAGS} activeTags={activeTags} onToggle={toggleTag} />
+        <FilterPanel
+          allTags={ALL_TAGS}
+          activeTags={activeTags}
+          onToggle={toggleTag}
+          isOpen={showFilters}
+          onClose={() => setShowFilters(false)}
+        />
 
-        <div className="library-main">
+        <div className="library-main archive-main">
           <div className="library-search">
-            <SearchBar value={search} onChange={e => setSearch(e.target.value)} placeholder="Search titles, authors…" />
+            <SearchBar value={search} onChange={setSearch} placeholder="Search titles, authors…" />
           </div>
 
           {filtered.length === 0 ? (
@@ -239,11 +251,11 @@ export default function LibraryIsland() {
             </div>
           )}
         </div>
-      </div>
 
-      <DetailPanel isOpen={!!selectedBook} onClose={() => setSelectedBook(null)} variant="accent">
-        <BookDetail book={selectedBook} />
-      </DetailPanel>
+        <DetailPanel isOpen={!!selectedBook} onClose={() => setSelectedBook(null)} variant="accent">
+          <BookDetail book={selectedBook} />
+        </DetailPanel>
+      </div>
 
       {showAdd && (
         <div className="library-modal-backdrop" onClick={() => setShowAdd(false)}>

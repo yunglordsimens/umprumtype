@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import TypefaceAccordion from '../../components/TypefaceAccordion.jsx';
+import TypefaceIsland from '../../components/TypefaceIsland.jsx';
 import { getAllTypefaces } from '../../lib/typefaces';
 
 const all = getAllTypefaces();
@@ -22,7 +22,9 @@ const fontFaces = all
       <h1>Typefaces</h1>
       <p class="muted">{all.length} designs from the UMPRUM type class.</p>
     </header>
-
-    <TypefaceAccordion client:load typefaces={all} />
   </section>
+
+  <div class="container">
+    <TypefaceIsland client:load typefaces={all} />
+  </div>
 </Base>

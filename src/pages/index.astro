@@ -1,5 +1,5 @@
 ---
-import '../styles/global.css';
+import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { getAllTypefaces } from '../lib/typefaces';
 
@@ -51,404 +51,340 @@ const [rowA, rowB] = split(blocks);
 
 const year = new Date().getFullYear();
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Umprum Type</title>
-    <meta name="description" content="Archive of typefaces, projects, and writing from the type class at UMPRUM, Prague." />
-    <meta property="og:title" content="Umprum Type" />
-    <meta property="og:type" content="website" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <style set:html={fontFaces}></style>
-    <style>
-      :root {
-        --home-bg: #111118;
-        --home-fg: #f2f2ef;
-        --home-muted: rgba(242,242,239,0.6);
-        --home-faint: rgba(242,242,239,0.35);
-      }
+<Base
+  title="Umprum Type"
+  description="Archive of typefaces, projects, and writing from the type class at UMPRUM, Prague."
+  bodyClass="home-page"
+>
+  <style set:html={fontFaces}></style>
+  <style>
+    :root {
+      --home-fg: #f2f2ef;
+      --home-muted: rgba(242,242,239,0.6);
+      --home-faint: rgba(242,242,239,0.35);
+    }
 
-      /* ---- Base ---- */
-      html, body {
-        height: 100%;
-        margin: 0; padding: 0;
-        background: var(--home-bg);
-        color: var(--home-fg);
-        overflow: hidden;
-        overscroll-behavior: none;
-      }
-      body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
-      a { color: inherit; text-decoration: none; }
+    .home {
+      position: fixed;
+      top: var(--nav-h);
+      right: 0;
+      bottom: 0;
+      left: 0;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      background: #111118;
+    }
 
-      .home {
-        position: fixed; inset: 0;
-        display: grid;
-        grid-template-rows: auto 1fr auto;
-        background: var(--home-bg);
-      }
+    /* ---- Bento ---- */
+    .bento {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .bento__row {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+      min-height: 0;
+      will-change: transform;
+    }
+    .bento__row--top { border-bottom: 1px solid rgba(255,255,255,0.06); }
 
-      /* ---- Nav ---- */
-      .home-nav {
-        position: relative; z-index: 10;
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 14px 22px;
-        font-size: 13px; letter-spacing: 0.01em;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-        background: rgba(17,17,24,0.7);
-        backdrop-filter: blur(14px);
-      }
-      .home-nav__logo { font-weight: 500; }
-      .home-nav__links {
-        display: flex; gap: 20px;
-        list-style: none; margin: 0; padding: 0;
-      }
-      .home-nav__links a { color: var(--home-muted); transition: color 180ms; }
-      .home-nav__links a:hover { color: var(--home-fg); }
+    .bento-block {
+      position: relative;
+      flex: 0 0 auto;
+      overflow: hidden;
+      cursor: pointer;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      isolation: isolate;
+    }
+    .bento-block::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.22 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+        var(--b-gradient, linear-gradient(135deg, #2a2a3a, #151520));
+      background-size: 140px 140px, cover;
+      background-blend-mode: overlay, normal;
+      z-index: -1;
+      transition: filter 500ms cubic-bezier(0.16,1,0.3,1);
+    }
+    .bento-block:hover::before { filter: brightness(1.18) saturate(1.12); }
 
-      /* ---- Bento ---- */
+    .bento-block__content {
+      position: absolute; inset: 0;
+      padding: 18px 22px;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      contain: strict;
+    }
+    .bento-block__name {
+      font-size: clamp(2rem, 6vw, 7rem);
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      word-break: break-word;
+      font-synthesis: none;
+      color: var(--home-fg);
+    }
+    .bento-block__title {
+      font-size: clamp(0.9rem, 1.3vw, 1.3rem);
+      line-height: 1.2;
+      letter-spacing: -0.005em;
+      font-weight: 500;
+      max-width: 90%;
+      color: var(--home-fg);
+    }
+    .bento-block__kind {
+      position: absolute;
+      top: 10px; left: 14px;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--home-faint);
+    }
+    .bento-block__hover {
+      position: absolute;
+      left: 14px; right: 14px; bottom: 12px;
+      display: flex; flex-wrap: wrap; gap: 6px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 280ms cubic-bezier(0.16,1,0.3,1), transform 280ms cubic-bezier(0.16,1,0.3,1);
+      pointer-events: none;
+    }
+    .bento-block:hover .bento-block__hover { opacity: 1; transform: none; }
+    .bento-block__tag {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: var(--home-fg);
+    }
+
+    /* ---- Footer ---- */
+    .home-foot {
+      position: relative; z-index: 10;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 22px;
+      font-size: 11px; letter-spacing: 0.05em;
+      color: var(--home-faint);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background: rgba(17,17,24,0.5);
+    }
+    .home-foot .hint { display: none; }
+    @media (min-width: 900px) { .home-foot .hint { display: inline; } }
+
+    /* ---- Mobile: vertical card stack ---- */
+    @media (max-width: 640px) {
+      .home { position: static; top: 0; height: auto; min-height: calc(100dvh - var(--nav-h)); }
       .bento {
-        position: relative;
-        overflow: hidden;
-        display: flex; flex-direction: column;
+        overflow: visible;
+        flex-direction: row;
+        flex-wrap: wrap;
       }
-      .bento__row {
-        flex: 1;
-        display: flex;
-        align-items: stretch;
-        min-height: 0;
-        will-change: transform;
-      }
-      .bento__row--top { border-bottom: 1px solid rgba(255,255,255,0.06); }
-
+      .bento__row { display: contents; }
       .bento-block {
-        position: relative;
-        flex: 0 0 auto;
-        overflow: hidden;
-        cursor: pointer;
-        border-right: 1px solid rgba(255,255,255,0.06);
-        isolation: isolate;
-        /* no transition on flex-basis — prevents jump */
+        flex: 0 0 calc(50% - 0.5px);
+        height: 150px;
       }
-      .bento-block::before {
-        content: "";
-        position: absolute; inset: 0;
-        background-image:
-          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.22 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
-          var(--b-gradient, linear-gradient(135deg, #2a2a3a, #151520));
-        background-size: 140px 140px, cover;
-        background-blend-mode: overlay, normal;
-        z-index: -1;
-        transition: filter 500ms cubic-bezier(0.16,1,0.3,1);
-      }
-      .bento-block:hover::before { filter: brightness(1.18) saturate(1.12); }
+      .bento-block--dup { display: none !important; }
+      .bento-block__name { font-size: clamp(1.4rem, 7vw, 2.8rem); }
+    }
 
-      .bento-block__content {
-        position: absolute; inset: 0;
-        padding: 18px 22px;
-        display: flex; align-items: center; justify-content: center;
-        text-align: center;
-        /* size container so font changes don't affect block layout */
-        contain: strict;
-      }
-      .bento-block__name {
-        font-size: clamp(2rem, 6vw, 7rem);
-        line-height: 0.95;
-        letter-spacing: -0.02em;
-        word-break: break-word;
-        /* Reserve space sized to system fallback so swap doesn't reflow block */
-        font-synthesis: none;
-      }
-      .bento-block__title {
-        font-size: clamp(0.9rem, 1.3vw, 1.3rem);
-        line-height: 1.2;
-        letter-spacing: -0.005em;
-        font-weight: 500;
-        max-width: 90%;
-      }
-      .bento-block__kind {
-        position: absolute;
-        top: 10px; left: 14px;
-        font-size: 10px;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--home-faint);
-      }
-      .bento-block__hover {
-        position: absolute;
-        left: 14px; right: 14px; bottom: 12px;
-        display: flex; flex-wrap: wrap; gap: 6px;
-        opacity: 0;
-        transform: translateY(6px);
-        transition: opacity 280ms cubic-bezier(0.16,1,0.3,1), transform 280ms cubic-bezier(0.16,1,0.3,1);
-        pointer-events: none;
-      }
-      .bento-block:hover .bento-block__hover { opacity: 1; transform: none; }
-      .bento-block__tag {
-        font-size: 11px;
-        padding: 3px 8px;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.12);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.18);
-      }
+    @media (prefers-reduced-motion: reduce) {
+      .bento-block::before { transition: none !important; }
+      .bento-block__hover { transition: none !important; }
+    }
+  </style>
 
-      /* ---- Footer ---- */
-      .home-foot {
-        position: relative; z-index: 10;
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 10px 22px;
-        font-size: 11px; letter-spacing: 0.05em;
-        color: var(--home-faint);
-        border-top: 1px solid rgba(255,255,255,0.08);
-        background: rgba(17,17,24,0.5);
-      }
-      .home-foot .hint { display: none; }
-      @media (min-width: 900px) { .home-foot .hint { display: inline; } }
-
-      /* ---- Mobile: vertical card stack ---- */
-      @media (max-width: 640px) {
-        html, body { overflow: auto; overscroll-behavior: auto; }
-        .home { position: static; height: auto; min-height: 100dvh; }
-        .bento {
-          overflow: visible;
-          flex-direction: row;
-          flex-wrap: wrap;
-        }
-        .bento__row {
-          display: contents; /* let blocks flow into the parent flex wrap */
-        }
-        .bento-block {
-          flex: 0 0 calc(50% - 0.5px);
-          height: 150px;
-        }
-        /* hide the triplicated duplicates */
-        .bento-block--dup { display: none !important; }
-        .bento-block__name { font-size: clamp(1.4rem, 7vw, 2.8rem); }
-        .home-nav__links { gap: 14px; font-size: 12px; }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .bento-block::before { transition: none !important; }
-        .bento-block__hover { transition: none !important; }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="home">
-      <nav class="home-nav">
-        <a href="/" class="home-nav__logo">UMPRUM Type</a>
-        <ul class="home-nav__links">
-          <li><a href="/typefaces">Typefaces</a></li>
-          <li><a href="/projects">Projects</a></li>
-          <li><a href="/journal">Journal</a></li>
-          <li><a href="/store">Store</a></li>
-          <li><a href="/library">Library</a></li>
-          <li><a href="/info">Info</a></li>
-        </ul>
-      </nav>
-
-      <div class="bento" id="bento">
-        <!-- Row A -->
-        <div class="bento__row bento__row--top" id="rowA" data-row>
-          {[...rowA, ...rowA, ...rowA].map((b, i) => (
-            <a
-              class={`bento-block${i >= rowA.length ? ' bento-block--dup' : ''}`}
-              href={b.kind === 'tf' ? `/typefaces` : `/${b.collection}/${b.slug}`}
-              data-block
-            >
-              <span class="bento-block__kind">{b.kind === 'tf' ? 'typeface' : b.collection}</span>
-              <span class="bento-block__content">
-                {b.kind === 'tf'
-                  ? <span class="bento-block__name" style={`font-family:"${b.tf.title.replace(/"/g, '\\"')}",sans-serif`}>{b.tf.title}</span>
-                  : <span class="bento-block__title">{b.data.title}</span>
-                }
-              </span>
-              <span class="bento-block__hover">
-                {b.kind === 'tf' ? (
-                  <>
-                    {b.tf.designer && <span class="bento-block__tag">{b.tf.designer}</span>}
-                    {b.tf.year    && <span class="bento-block__tag">{b.tf.year}</span>}
-                  </>
-                ) : (
-                  <>
-                    <span class="bento-block__tag">{b.data.category}</span>
-                    {b.data.author && <span class="bento-block__tag">{b.data.author}</span>}
-                  </>
-                )}
-              </span>
-            </a>
-          ))}
-        </div>
-
-        <!-- Row B -->
-        <div class="bento__row bento__row--bot" id="rowB" data-row>
-          {[...rowB, ...rowB, ...rowB].map((b, i) => (
-            <a
-              class={`bento-block${i >= rowB.length ? ' bento-block--dup' : ''}`}
-              href={b.kind === 'tf' ? `/typefaces` : `/${b.collection}/${b.slug}`}
-              data-block
-            >
-              <span class="bento-block__kind">{b.kind === 'tf' ? 'typeface' : b.collection}</span>
-              <span class="bento-block__content">
-                {b.kind === 'tf'
-                  ? <span class="bento-block__name" style={`font-family:"${b.tf.title.replace(/"/g, '\\"')}",sans-serif`}>{b.tf.title}</span>
-                  : <span class="bento-block__title">{b.data.title}</span>
-                }
-              </span>
-              <span class="bento-block__hover">
-                {b.kind === 'tf' ? (
-                  <>
-                    {b.tf.designer && <span class="bento-block__tag">{b.tf.designer}</span>}
-                    {b.tf.year    && <span class="bento-block__tag">{b.tf.year}</span>}
-                  </>
-                ) : (
-                  <>
-                    <span class="bento-block__tag">{b.data.category}</span>
-                    {b.data.author && <span class="bento-block__tag">{b.data.author}</span>}
-                  </>
-                )}
-              </span>
-            </a>
-          ))}
-        </div>
+  <div class="home">
+    <div class="bento" id="bento">
+      <!-- Row A -->
+      <div class="bento__row bento__row--top" id="rowA" data-row>
+        {[...rowA, ...rowA, ...rowA].map((b, i) => (
+          <a
+            class={`bento-block${i >= rowA.length ? ' bento-block--dup' : ''}`}
+            href={b.kind === 'tf' ? `/typefaces` : `/${b.collection}/${b.slug}`}
+            data-block
+          >
+            <span class="bento-block__kind">{b.kind === 'tf' ? 'typeface' : b.collection}</span>
+            <span class="bento-block__content">
+              {b.kind === 'tf'
+                ? <span class="bento-block__name" style={`font-family:"${b.tf.title.replace(/"/g, '\\"')}",sans-serif`}>{b.tf.title}</span>
+                : <span class="bento-block__title">{b.data.title}</span>
+              }
+            </span>
+            <span class="bento-block__hover">
+              {b.kind === 'tf' ? (
+                <>
+                  {b.tf.designer && <span class="bento-block__tag">{b.tf.designer}</span>}
+                  {b.tf.year    && <span class="bento-block__tag">{b.tf.year}</span>}
+                </>
+              ) : (
+                <>
+                  <span class="bento-block__tag">{b.data.category}</span>
+                  {b.data.author && <span class="bento-block__tag">{b.data.author}</span>}
+                </>
+              )}
+            </span>
+          </a>
+        ))}
       </div>
 
-      <footer class="home-foot">
-        <span>Umprum Type · Prague · {year}</span>
-        <span class="hint">drag · scroll · click</span>
-      </footer>
+      <!-- Row B -->
+      <div class="bento__row bento__row--bot" id="rowB" data-row>
+        {[...rowB, ...rowB, ...rowB].map((b, i) => (
+          <a
+            class={`bento-block${i >= rowB.length ? ' bento-block--dup' : ''}`}
+            href={b.kind === 'tf' ? `/typefaces` : `/${b.collection}/${b.slug}`}
+            data-block
+          >
+            <span class="bento-block__kind">{b.kind === 'tf' ? 'typeface' : b.collection}</span>
+            <span class="bento-block__content">
+              {b.kind === 'tf'
+                ? <span class="bento-block__name" style={`font-family:"${b.tf.title.replace(/"/g, '\\"')}",sans-serif`}>{b.tf.title}</span>
+                : <span class="bento-block__title">{b.data.title}</span>
+              }
+            </span>
+            <span class="bento-block__hover">
+              {b.kind === 'tf' ? (
+                <>
+                  {b.tf.designer && <span class="bento-block__tag">{b.tf.designer}</span>}
+                  {b.tf.year    && <span class="bento-block__tag">{b.tf.year}</span>}
+                </>
+              ) : (
+                <>
+                  <span class="bento-block__tag">{b.data.category}</span>
+                  {b.data.author && <span class="bento-block__tag">{b.data.author}</span>}
+                </>
+              )}
+            </span>
+          </a>
+        ))}
+      </div>
     </div>
 
-    <script is:inline>
-      // Skip animation on mobile
-      if (window.matchMedia('(max-width: 640px)').matches) {
-        // Just paint gradients, no scroll animation
+    <footer class="home-foot">
+      <span>Umprum Type · Prague · {year}</span>
+      <span class="hint">drag · scroll · click</span>
+    </footer>
+  </div>
+
+  <script is:inline>
+    if (window.matchMedia('(max-width: 640px)').matches) {
+      const palettes = [
+        ['#3a1c71','#d76d77'],['#1f4037','#99f2c8'],['#373b44','#4286f4'],
+        ['#ff512f','#dd2476'],['#0f2027','#2c5364'],['#654ea3','#eaafc8'],
+        ['#4e54c8','#8f94fb'],['#232526','#414345'],['#000428','#004e92'],
+        ['#eb3349','#f45c43'],['#1a2980','#26d0ce'],['#ff9966','#ff5e62'],
+      ];
+      const rand = n => Math.floor(Math.random() * n);
+      document.querySelectorAll('[data-block]').forEach(b => {
+        const [a, c] = palettes[rand(palettes.length)];
+        b.style.setProperty('--b-gradient', `linear-gradient(${rand(360)}deg,${a},${c})`);
+      });
+    } else {
+      (function () {
         const palettes = [
           ['#3a1c71','#d76d77'],['#1f4037','#99f2c8'],['#373b44','#4286f4'],
           ['#ff512f','#dd2476'],['#0f2027','#2c5364'],['#654ea3','#eaafc8'],
           ['#4e54c8','#8f94fb'],['#232526','#414345'],['#000428','#004e92'],
-          ['#eb3349','#f45c43'],['#1a2980','#26d0ce'],['#ff9966','#ff5e62'],
+          ['#eb3349','#f45c43'],['#1a2980','#26d0ce'],['#757f9a','#d7dde8'],
+          ['#ff9966','#ff5e62'],['#355c7d','#6c5b7b'],['#2b5876','#4e4376'],
         ];
         const rand = n => Math.floor(Math.random() * n);
-        document.querySelectorAll('[data-block]').forEach(b => {
-          const [a, c] = palettes[rand(palettes.length)];
-          b.style.setProperty('--b-gradient', `linear-gradient(${rand(360)}deg,${a},${c})`);
-        });
-      } else {
-        (function () {
-          const palettes = [
-            ['#3a1c71','#d76d77'],['#1f4037','#99f2c8'],['#373b44','#4286f4'],
-            ['#ff512f','#dd2476'],['#0f2027','#2c5364'],['#654ea3','#eaafc8'],
-            ['#4e54c8','#8f94fb'],['#232526','#414345'],['#000428','#004e92'],
-            ['#eb3349','#f45c43'],['#1a2980','#26d0ce'],['#757f9a','#d7dde8'],
-            ['#ff9966','#ff5e62'],['#355c7d','#6c5b7b'],['#2b5876','#4e4376'],
-          ];
-          const rand = n => Math.floor(Math.random() * n);
-          const gradient = () => {
-            const [a, b] = palettes[rand(palettes.length)];
-            return `linear-gradient(${rand(360)}deg,${a},${b})`;
-          };
+        const gradient = () => {
+          const [a, b] = palettes[rand(palettes.length)];
+          return `linear-gradient(${rand(360)}deg,${a},${b})`;
+        };
 
-          function setupRow(rowId, baseSpeed) {
-            const row = document.getElementById(rowId);
-            if (!row) return;
-            const blocks = Array.from(row.querySelectorAll('[data-block]'));
+        function setupRow(rowId, baseSpeed) {
+          const row = document.getElementById(rowId);
+          if (!row) return;
+          const blocks = Array.from(row.querySelectorAll('[data-block]'));
 
-            // Assign gradient + fixed width per block (set once, never changed)
-            blocks.forEach(b => {
-              b.style.setProperty('--b-gradient', gradient());
-              b.style.flexBasis = (200 + rand(280)) + 'px';
-            });
+          blocks.forEach(b => {
+            b.style.setProperty('--b-gradient', gradient());
+            b.style.flexBasis = (200 + rand(280)) + 'px';
+          });
 
-            let offset    = 0;
-            let vel       = baseSpeed;
-            let dragging  = false;
-            let dragX0    = 0;
-            let dragOff0  = 0;
-            let history   = []; // [{x, t}] last few pointermove samples
+          let offset   = 0;
+          let vel      = baseSpeed;
+          let dragging = false;
+          let dragX0   = 0;
+          let dragOff0 = 0;
+          let history  = [];
 
-            // Cache segment width; re-measure only when layout changes
-            let segW      = 0;
-            function measureSeg() { segW = row.scrollWidth / 3; }
-            // Measure after fonts likely loaded
-            measureSeg();
-            setTimeout(measureSeg, 500);
-            setTimeout(measureSeg, 1500);
+          let segW = 0;
+          function measureSeg() { segW = row.scrollWidth / 3; }
+          measureSeg();
+          setTimeout(measureSeg, 500);
+          setTimeout(measureSeg, 1500);
 
-            function tick() {
-              if (!dragging) {
-                // Exponential decay toward base drift speed
-                vel += (baseSpeed - vel) * 0.005;
-              }
-
-              offset += vel;
-
-              // Seamless loop
-              if (segW > 0) {
-                while (offset <= -segW) offset += segW;
-                while (offset > 0)     offset -= segW;
-              }
-
-              row.style.transform = `translate3d(${offset}px,0,0)`;
-              requestAnimationFrame(tick);
+          function tick() {
+            if (!dragging) {
+              vel += (baseSpeed - vel) * 0.005;
             }
+            offset += vel;
+            if (segW > 0) {
+              while (offset <= -segW) offset += segW;
+              while (offset > 0)     offset -= segW;
+            }
+            row.style.transform = `translate3d(${offset}px,0,0)`;
             requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
 
-            // Wheel → velocity nudge
-            row.addEventListener('wheel', e => {
-              const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-              vel -= d * 0.04;
-              vel  = Math.max(-11, Math.min(11, vel));
-              e.preventDefault();
-            }, { passive: false });
+          row.addEventListener('wheel', e => {
+            const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+            vel -= d * 0.04;
+            vel  = Math.max(-11, Math.min(11, vel));
+            e.preventDefault();
+          }, { passive: false });
 
-            // Pointer drag
-            row.addEventListener('pointerdown', e => {
-              dragging = true;
-              dragX0   = e.clientX;
-              dragOff0 = offset;
-              history  = [{ x: e.clientX, t: performance.now() }];
-              row.setPointerCapture(e.pointerId);
-            });
+          row.addEventListener('pointerdown', e => {
+            dragging = true;
+            dragX0   = e.clientX;
+            dragOff0 = offset;
+            history  = [{ x: e.clientX, t: performance.now() }];
+            row.setPointerCapture(e.pointerId);
+          });
 
-            row.addEventListener('pointermove', e => {
-              if (!dragging) return;
-              offset = dragOff0 + (e.clientX - dragX0);
-              // Wrap during drag so segmentWidth stays stable
-              if (segW > 0) {
-                const wrap = Math.round((offset - dragOff0) / segW) * segW;
-                if (wrap) { dragOff0 += wrap; offset += wrap; dragX0 += wrap * 0; }
-              }
-              history.push({ x: e.clientX, t: performance.now() });
-              if (history.length > 6) history.shift();
-            });
+          row.addEventListener('pointermove', e => {
+            if (!dragging) return;
+            offset = dragOff0 + (e.clientX - dragX0);
+            if (segW > 0) {
+              const wrap = Math.round((offset - dragOff0) / segW) * segW;
+              if (wrap) { dragOff0 += wrap; offset += wrap; }
+            }
+            history.push({ x: e.clientX, t: performance.now() });
+            if (history.length > 6) history.shift();
+          });
 
-            function release(e) {
-              if (!dragging) return;
-              dragging = false;
-              try { row.releasePointerCapture(e.pointerId); } catch {}
-              // Momentum: velocity from last ~80ms of drag
-              if (history.length >= 2) {
-                const now  = performance.now();
-                const old  = history.find(h => now - h.t <= 80) || history[0];
-                const last = history[history.length - 1];
-                const dt   = last.t - old.t;
-                if (dt > 4) {
-                  vel = (last.x - old.x) / dt * 16;
-                  vel = Math.max(-14, Math.min(14, vel));
-                }
+          function release(e) {
+            if (!dragging) return;
+            dragging = false;
+            try { row.releasePointerCapture(e.pointerId); } catch {}
+            if (history.length >= 2) {
+              const now  = performance.now();
+              const old  = history.find(h => now - h.t <= 80) || history[0];
+              const last = history[history.length - 1];
+              const dt   = last.t - old.t;
+              if (dt > 4) {
+                vel = (last.x - old.x) / dt * 16;
+                vel = Math.max(-14, Math.min(14, vel));
               }
             }
-            row.addEventListener('pointerup',     release);
-            row.addEventListener('pointercancel', release);
           }
+          row.addEventListener('pointerup',     release);
+          row.addEventListener('pointercancel', release);
+        }
 
-          setupRow('rowA', -0.38);
-          setupRow('rowB',  0.28);
-        })();
-      }
-    </script>
-  </body>
-</html>
+        setupRow('rowA', -0.38);
+        setupRow('rowB',  0.28);
+      })();
+    }
+  </script>
+</Base>

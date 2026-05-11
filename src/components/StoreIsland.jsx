@@ -57,24 +57,26 @@ export default function StoreIsland({ items }) {
   }
 
   return (
-    <>
-      <div className="store-grid">
-        {items.map(item => {
-          const cover = coverFromTags(item.tags);
-          return (
-            <GridCard
-              key={item.slug}
-              title={item.title}
-              author={item.author}
-              year={item.year}
-              image={item.image}
-              tags={item.tags}
-              coverBg={cover?.bg}
-              coverText={cover?.text}
-              onClick={() => openItem(item)}
-            />
-          );
-        })}
+    <div className="archive-layout">
+      <div className="archive-main">
+        <div className="store-grid">
+          {items.map(item => {
+            const cover = coverFromTags(item.tags);
+            return (
+              <GridCard
+                key={item.slug}
+                title={item.title}
+                author={item.author}
+                year={item.year}
+                image={item.image}
+                tags={item.tags}
+                coverBg={cover?.bg}
+                coverText={cover?.text}
+                onClick={() => openItem(item)}
+              />
+            );
+          })}
+        </div>
       </div>
 
       <DetailPanel isOpen={!!openSlug} onClose={closeItem} variant="accent">
@@ -82,7 +84,7 @@ export default function StoreIsland({ items }) {
           <StoreDetail item={activeItem} html={panelHtml} />
         )}
       </DetailPanel>
-    </>
+    </div>
   );
 }
 

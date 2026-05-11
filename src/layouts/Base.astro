@@ -5,12 +5,14 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  bodyClass?: string;
 }
 
 const {
   title = 'UMPRUM Type',
   description = 'Typography studio at UMPRUM, Prague — typefaces, projects, and journal.',
   image,
+  bodyClass,
 } = Astro.props;
 
 const url = Astro.url.href;
@@ -34,7 +36,7 @@ const isActive = (prefix: string) =>
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
-  <body>
+  <body class={bodyClass || undefined}>
     <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
     <nav class="site-nav" id="siteNav" data-hidden="false" data-menu="closed">
       <div class="container site-nav__inner">
