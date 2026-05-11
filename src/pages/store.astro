@@ -45,30 +45,15 @@ const items = purchasable.map(e => {
 <Base
   title="Store — Umprum Type"
   description="Prints, zines, and objects from the UMPRUM type class. Contact authors directly."
+  bodyClass="lib-page"
 >
-  <section class="container">
-    <header class="page-head" data-reveal>
-      <h1>Store</h1>
-      <p class="muted">
-        Prints, zines, and objects.
-        Contact the author through the item page.
-      </p>
-    </header>
+  <div class="post-content-store" aria-hidden="true">
+    {rendered.map(({ slug, Content }) => (
+      <div data-post-slug={slug}>
+        <Content />
+      </div>
+    ))}
+  </div>
 
-    <!-- hidden content store for DetailPanel -->
-    <div class="post-content-store" aria-hidden="true">
-      {rendered.map(({ slug, Content }) => (
-        <div data-post-slug={slug}>
-          <Content />
-        </div>
-      ))}
-    </div>
-
-    <StoreIsland client:load items={items} />
-  </section>
+  <StoreIsland client:load items={items} />
 </Base>
-
-<style>
-  .store-empty { padding: var(--space-7) 0; }
-  .store-contact { margin-top: var(--space-6); }
-</style>

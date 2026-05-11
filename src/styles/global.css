@@ -1943,6 +1943,30 @@ body.tf-page .site-footer { display: none; }
 .lib-detail .post-detail__contact h3 { color: rgba(0,0,0,0.45); }
 .lib-detail .post-detail__contact p  { color: rgba(0,0,0,0.65); }
 
+/* ── Store detail layout ── */
+.store-detail {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+.store-detail__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+.store-detail__body {
+  width: 100%;
+  margin-top: var(--space-5);
+}
+.store-detail__contact {
+  width: 100%;
+}
+
 /* Mobile: panels become fixed overlays */
 @media (max-width: 767px) {
   .lib-toolbar { padding: 0 20px; height: 64px; }
