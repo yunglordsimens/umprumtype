@@ -1,9 +1,16 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 const SIZE_STEPS = [12, 16, 22, 32, 48, 72, 96, 144, 200];
 
 function nearest(val, steps) {
   return steps.reduce((a, b) => (Math.abs(b - val) < Math.abs(a - val) ? b : a));
+}
+
+// auto column count from font size
+function autoCols(size) {
+  if (size <= 48) return 1;
+  if (size <= 96) return 2;
+  return 3;
 }
 
 export default function TypefaceCard({ tf, isOpen, onOpen }) {
@@ -14,15 +21,23 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
   const defaultText = tf.styleTexts[clampedIdx] || tf.styleTexts[0] || tf.title;
   const initialSizePx = Math.round((parseFloat(tf.mainSize) || 6) * 16);
 
-  const [size, setSize] = useState(nearest(Math.max(72, initialSizePx), SIZE_STEPS));
+  const [size,       setSize]       = useState(nearest(Math.max(72, initialSizePx), SIZE_STEPS));
   const [variantIdx, setVariantIdx] = useState(clampedIdx);
-  const [cols, setCols] = useState(1);
-  const [text, setText] = useState(defaultText);
-  const textRef = useRef(null);
+  // null = auto mode; 1/2/3 = user override
+  const [manualCols, setManualCols] = useState(null);
+  const [text,       setText]       = useState(defaultText);
+  const textRef  = useRef(null);
   const panelRef = useRef(null);
 
+  const cols    = manualCols ?? autoCols(size);
   const current = tf.otfVariants[variantIdx] ?? null;
-  const fam = tf.title.replace(/"/g, '\\"');
+  const fam     = tf.title.replace(/"/g, '\\"');
+
+  // change size — always resets to auto column mode
+  function changeSize(val) {
+    setSize(val);
+    setManualCols(null);
+  }
 
   // sync contentEditable when text state changes externally
   useEffect(() => {
@@ -31,7 +46,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
     }
   }, [text]);
 
-  // animate panel height
+  // animate panel height open/close
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
@@ -44,7 +59,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
     }
   }, [isOpen]);
 
-  // re-measure panel when content changes (size slider, cols, etc.)
+  // re-measure panel when content changes
   useEffect(() => {
     const panel = panelRef.current;
     if (panel && isOpen) {
@@ -83,20 +98,18 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
         </span>
       </button>
 
-      <div
-        ref={panelRef}
-        className="tfa-panel"
-        aria-hidden={!isOpen}
-      >
+      <div ref={panelRef} className="tfa-panel" aria-hidden={!isOpen}>
         <div className="tfa-panel__inner">
 
           {/* controls */}
           <div className="specimen__controls">
+
+            {/* size slider */}
             <div className="specimen__group">
               <label>size</label>
               <input
                 type="range" min="8" max="240" step="1" value={size}
-                onChange={e => setSize(+e.target.value)}
+                onChange={e => changeSize(+e.target.value)}
               />
               <span className="specimen__value">{size}px</span>
               <div className="specimen__presets">
@@ -104,23 +117,26 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
                   <button
                     key={p}
                     className={p === nearest(size, SIZE_STEPS) && SIZE_STEPS.includes(size) ? 'is-active' : ''}
-                    onClick={() => setSize(p)}
+                    onClick={() => changeSize(p)}
                   >{p}</button>
                 ))}
               </div>
             </div>
 
+            {/* column buttons — active shows effective cols; manual overrides auto */}
             <div className="specimen__group">
               <label>col</label>
               {[1, 2, 3].map(c => (
                 <button
                   key={c}
                   className={cols === c ? 'is-active' : ''}
-                  onClick={() => setCols(c)}
+                  onClick={() => setManualCols(c === cols && manualCols === null ? null : c)}
+                  title={manualCols === null ? 'auto' : 'manual'}
                 >{c}</button>
               ))}
             </div>
 
+            {/* style variants */}
             {tf.otfVariants.length > 1 && (
               <div className="specimen__group">
                 <label>style</label>
@@ -134,6 +150,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
               </div>
             )}
 
+            {/* reset text */}
             <div className="specimen__group">
               <button
                 className="specimen__reset"
@@ -141,6 +158,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
                 onClick={() => setText(defaultText)}
               >↺</button>
             </div>
+
           </div>
 
           {/* editable specimen text */}
@@ -152,19 +170,19 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
             spellCheck="false"
             onInput={e => setText(e.currentTarget.textContent ?? '')}
             style={{
-              fontFamily: `"${fam}", var(--font-ui)`,
-              fontSize: `${size}px`,
-              fontWeight: current?.weight || 400,
-              fontStyle: current?.style || 'normal',
-              lineHeight: lh,
-              columnCount: cols,
-              columnGap: '2em',
+              fontFamily:   `"${fam}", var(--font-ui)`,
+              fontSize:     `${size}px`,
+              fontWeight:   current?.weight || 400,
+              fontStyle:    current?.style || 'normal',
+              lineHeight:   lh,
+              columnCount:  cols,
+              columnGap:    '2em',
             }}
           >
             {defaultText}
           </div>
 
-          {/* about */}
+          {/* about typeface */}
           {tf.aboutFont && (
             <div className="tfa-about">
               <h3>About</h3>
@@ -172,6 +190,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
             </div>
           )}
 
+          {/* about designer */}
           {tf.aboutDesigner && (
             <div
               className="tfa-about tfa-about--designer"
