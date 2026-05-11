@@ -1,5 +1,12 @@
 import { useState } from 'react';
 
+const CloseIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
 export default function FilterPanel({ allTags = [], activeTags = [], onToggle }) {
   const [open, setOpen] = useState(true);
 
@@ -11,7 +18,11 @@ export default function FilterPanel({ allTags = [], activeTags = [], onToggle })
         aria-expanded={open}
       >
         <span>Filters</span>
-        <span className="filter-panel__arrow" aria-hidden="true">›</span>
+        {open && (
+          <span className="filter-panel__close-icon" aria-hidden="true">
+            <CloseIcon />
+          </span>
+        )}
       </button>
 
       <div className="filter-panel__body" aria-hidden={!open}>
