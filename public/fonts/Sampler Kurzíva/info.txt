@@ -1,0 +1,11 @@
+name=Sampler Kurzíva
+designer=Žofia Fodorová
+date=2025
+mainText=A specimen of achievement
+mainSize=6em
+styleText0=My God, what is this. There are three winged Assyrian bulls sitting at one table! With long, black, square beards and burning eyes — and they stare at the place where a breast pocket is worn. But they are only Mr Eisenkas from Long Street, Mr Jeittinger and Dr Paschory, a specialist in incurable diseases, and their appearance loses much of its terror as soon as they stand up, for they have crooked trousers and peaceful flat feet. And in the corner of the regulars, a gentleman sits day after day, who may not be a gentleman at all, but a condor. He is always à quatre épingles, but he is still a predator. Would you like to bet? I have forgotten his name, but they say he does spot trading. I guess that means he trades in whatever he comes across. Small eyes, a thin, wrinkled neck and a huge condor's beak — he is terrifying to look at; God knows that no one would be surprised if he suddenly reached into his bag, pulled out a pile of intestines and swallowed them with a hoarse vulture's cry.
+styleSize=4em
+aboutFont=From the series of typefaces taken from embroidery samplers.
+aboutDesigner=Žofia Fodorová<br><a href="https://www.instagram.com/shrimptailtypefoundry/">@shrimptailtypefoundry</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>zofia.fodorova@gmail.com
+mainStyleNo=1
+tags=

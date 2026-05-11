@@ -1,0 +1,11 @@
+name=Ciment
+designer=Žofia Fodorová
+date=2020
+mainText=Ciment is a real staple element to your design.
+mainSize=6em
+styleText0=Imituje žhavý pohled, vítězně, jako kdyby vynalezla nějakou novou neřest. A tamhle zastavuje vůz. Jaký nádherný landauer! Podívejme se! Manželka milionáře Kostertsche v něm sedí a holými prsty pojídá ze své pompadúrky studenou čočku. V rozpacích na ni volá dcera, která jde právě kolem: „Ale mamá, copak to jíš?!“ Jenže na starou dámu to neplatí. Nu, a kdopak je tohle? — Že by se už vrátil z Vídně? — Ach, namoutě: Přijel hejtman Aaron Gedalje Hehler od 202. pěšího regimentu. — Samozřejmě z písařského oddělení. Kdo by ho neznal! Váha pětačtyřicet kilo, balmachome v lehké váze par excellence.
+styleSize=4em
+aboutFont=Beton ripp-off.
+aboutDesigner=Žofia Fodorová<br><a href="https://www.instagram.com/shrimptailtypefoundry/">@shrimptailtypefoundry</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>zofia.fodorova@gmail.com
+mainStyleNo=0
+tags=

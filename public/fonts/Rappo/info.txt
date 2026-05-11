@@ -1,0 +1,12 @@
+name=Rappo
+designer=Žofia Kosová
+date=2020
+mainText=Spogan Rappo Theatre
+mainSize=6em
+styleText0=She imitates a fiery gaze, triumphantly, as if she had invented some new vice. And there a carriage stops. What a beautiful landau! Let's take a look! The wife of the millionaire Kostertsche is sitting in it, eating cold lentils from her pompadour with her bare fingers. Her daughter, who is just passing by, calls out to her in embarrassment: ‘But Mama, what are you eating?!’ But that doesn't work on the old lady. Well, who's this? — Could he be back from Vienna already? — Oh, my goodness: it's Captain Aaron Gedalje Hehler from the 202nd Infantry Regiment. — From the clerical department, of course. Who wouldn't know him! Weighing forty-five kilos, he is a lightweight par excellence.
+styleText1=Imituje žhavý pohled, vítězně, jako kdyby vynalezla nějakou novou neřest. A tamhle zastavuje vůz. Jaký nádherný landauer! Podívejme se! Manželka milionáře Kostertsche v něm sedí a holými prsty pojídá ze své pompadúrky studenou čočku. V rozpacích na ni volá dcera, která jde právě kolem: „Ale mamá, copak to jíš?!“ Jenže na starou dámu to neplatí. Nu, a kdopak je tohle? — Že by se už vrátil z Vídně? — Ach, namoutě: Přijel hejtman Aaron Gedalje Hehler od 202. pěšího regimentu. — Samozřejmě z písařského oddělení. Kdo by ho neznal! Váha pětačtyřicet kilo, balmachome v lehké váze par excellence.
+styleSize=4em
+aboutFont=The Rappo font is inspired by 19th century English circus posters. Excessively narrow Bodoni-type antiqua complements the Fraktur cut in equally tapered proportions. The font is not primarily intended for tlonger text. The Rappo Fraktur in this case serves more as an ornamental section of this typeface, as its character construction is based on the original fraktur. Therefore, it is relatively illegible to the general user.
+aboutDesigner=Žofia Kosová<br><a href="https://www.instagram.com/zofkakosova/">@zofkakosova</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>kosovazofia@gmail.com
+mainStyleNo=0
+tags=

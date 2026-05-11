@@ -1,0 +1,11 @@
+name=Polia
+designer=Pavla Nečásková
+date=2024
+mainText=No Romance!
+mainSize=6em
+styleText0=There is also sunshine on Příkopy Street. But only the commercial council Slunitschko. (Today, there is no doubt that Prague was indeed founded by Oriental merchants, as the legend says.) Mr Slunitschko likes to stand outside the Waldek & Wagner shop, which sells rubber goods and utensils, and his face often has that gleam that has always characterised great merchants: Marco Polo, Fugger, Li-hung-cang. Rád tam postává — je to uprostřed mezi dvěma bankami, Českou zemskou bankou a Úvěrním ústavem, a to dělá vždycky dobrý dojem. Mimoto chodí stále oblečen černě. Je to pan Feldeck von Howiessi. Bystrá hlava. Náprsní taška naditá. Má v ní stearínové svíčky. Vyndává je pokaždé z luceren své ekvipáže, aby je koží neukradl. Otočíme se: Ach! To šla kolem nás neškodná ženuška, paní doktorová Kokerhelová. Klap, klap, klap.
+styleSize=4em
+aboutFont=Polia is inspired by the Renaissance typeface Poliphilo, cut by Francesco Griffo for Aldus Manutius's 1499 edition of Hypnerotomachia Poliphili. Polia is based on a 16 pt movable metal type print from our UMPRUM letterpress workshop. I kept some irregular lowercase widths and the monumental capitals, but stripped away historical and romantic details to find a contemporary book face. The Book cut is complete; an italic, likely based on Blado (1925), is in development.
+aboutDesigner=Pavla Nečásková<br><a href="https://www.instagram.com/nacasejepavla/">@nacasejepavla</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>necaskovapavla@gmail.com
+mainStyleNo=0
+tags=

@@ -1,0 +1,11 @@
+name=Fuzetik Text
+designer=Jaroslav Lekeš
+date=2024
+mainText=Ateliér č. 206
+mainSize=6em
+styleText0=Sie imitiert einen heißen Blick, triumphierend, als hätte sie eine neue Lasterhaftigkeit erfunden. Und dort hält ein Wagen. Was für ein prächtiger Landauer! Schauen wir mal! Die Frau des Millionärs Kostertsche sitzt darin und isst mit bloßen Fingern kalte Linsen aus ihrer Pompadourhaube. Verlegen ruft ihre Tochter, die gerade vorbeikommt, ihr zu: „Aber Mama, was isst du denn da?!“ Aber das beeindruckt die alte Dame nicht. Nun, und wer ist das? – Ist er schon aus Wien zurück? – Ach, meine Güte: Es ist Oberst Aaron Gedalje Hehler vom 202. Infanterieregiment. – Natürlich aus der Schreibabteilung. Wer würde ihn nicht kennen! Er wiegt fünfundvierzig Kilo, ein Leichtgewicht par excellence.
+styleSize=4em
+aboutFont=Inspired by Morris Fuller Benton's Cloister from 1913, this refined serif font combines classic elegance with modern versatility. Ideal for both body text and display use, it offers better readability and timeless style.
+aboutDesigner=Jaroslav Lekeš<br><a href="https://www.instagram.com/jaroslav_lekes/">@jaroslav_lekes</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>lekesjara@gmail.com
+mainStyleNo=0
+tags=

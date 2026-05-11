@@ -1,0 +1,12 @@
+name=Korchma
+designer=Anna Sherlupenkova
+date=2025
+mainText=Mini skirts 4ever
+mainSize=6em
+styleText0=Вона імітує запальний погляд, тріумфально, ніби винайшла якийсь новий порок. І тут зупиняється карета. Яка прекрасна ландо! Давайте подивимося! The wife of the millionaire Kostertsche is sitting in it, eating cold lentils from her pompadour with her bare fingers. Her daughter, who is just passing by, calls out to her in embarrassment: ‘But Mama, what are you eating?!’ Але це не діє на стару даму. Ну, а хто це? — Може, він уже повернувся з Відня? — О, Боже мій: це капітан Аарон Гедальє Гелер із 202-го піхотного полку. — З адміністративного відділу, звичайно. Хто його не знає! Важить сорок п'ять кілограмів, він — легковаговик par excellence.
+styleText1=She imitates a fiery gaze, triumphantly, as if she had invented some new vice. And there a carriage stops. What a beautiful landau! Let's take a look! The wife of the millionaire Kostertsche is sitting in it, eating cold lentils from her pompadour with her bare fingers. Her daughter, who is just passing by, calls out to her in embarrassment: ‘But Mama, what are you eating?!’ But that doesn't work on the old lady. Well, who's this? — Could he be back from Vienna already? — Oh, my goodness: it's Captain Aaron Gedalje Hehler from the 202nd Infantry Regiment. — From the clerical department, of course. Who wouldn't know him! Weighing forty-five kilos, he is a lightweight par excellence.
+styleSize=4em
+aboutFont=Korchma was inspired by Renaissance type and designed with simplicity in mind. Since it’s a book typeface where readability is key, rather than adding standout features, I focused on refining proportions, spacing, and rhythm to ensure clarity and comfort in long texts. Korchma doesn’t try to stand out, it’s simple, neutral and quiet, what I believe makes it stronger. It avoids distraction, letting content take the lead while still offering a quiet elegance rooted in historical forms.
+aboutDesigner=Anna Sherlupenkova<br><a href="https://www.instagram.com/cawcawke/">@cawcacke</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>sherlupenkova@gmail.com
+mainStyleNo=0
+tags=

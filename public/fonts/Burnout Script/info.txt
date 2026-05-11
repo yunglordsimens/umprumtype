@@ -1,0 +1,11 @@
+name=Burnout Script
+designer=Žofia Fodorová
+date=2024
+mainText=I Love Working Until Im Burnt Out
+mainSize=6em
+styleText0=There is also sunshine on Příkopy Street. But only the commercial council Slunitschko. (Today, there is no doubt that Prague was indeed founded by Oriental merchants, as the legend says.) Mr Slunitschko likes to stand outside the Waldek & Wagner shop, which sells rubber goods and utensils, and his face often has that gleam that has always characterised great merchants: Marco Polo, Fugger, Li-hung-cang. He likes to stand there — it is in the middle between two banks, Česká zemská banka and Úvěrní ústav, and that always makes a good impression. Besides, he always dresses in black. It is Mr Feldeck von Howiessi. A sharp mind. His breast pocket is bulging. He has stearin candles in it. He takes them out of his carriage lanterns every time so that they won't be stolen. We turn around: Ah! The harmless Mrs Kokerhelová, the doctor's wife, is walking past us. Clack, clack, clack.
+styleSize=4em
+aboutFont=Burnout Script is a typeface for anyone who can appreciate wood and is scared to burn out.
+aboutDesigner=Žofia Fodorová<br><a href="https://www.instagram.com/shrimptailtypefoundry/">@shrimptailtypefoundry</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>zofia.fodorova@gmail.com
+mainStyleNo=0
+tags=

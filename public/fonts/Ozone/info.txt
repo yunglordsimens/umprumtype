@@ -1,0 +1,11 @@
+name=Ozone
+designer=Šimon Vlasák
+date=2024
+mainText=TEARDROPS
+mainSize=6em
+styleText0=SALMON APPEARS ON THE TABLE – WITH POTATOES. THEY WANT TO DIG IN. NO WAY! The salmon is raw. It hasn't even been gutted. So they eat the potatoes. Of course, the salmon hasn't been cooked on purpose. It will be cooked tomorrow at noon. Something is squeaking again; the house terrier has crawled under the sideboard and is gnawing on a crayfish. So it wasn't a paperweight after all.
+styleSize=4em
+aboutFont=Typeface exactly as I imagined. Ozone is my creation of typeface without any source. It ended up being something of medieval itself, but my idea initially was simple visual. Ozone is a type, created mainly for the band The Ozone. It's characteristic. And while being capable of many emotions, this typeface remains edgy as hell.
+aboutDesigner=Šimon Vlasák<br><a href="https://www.instagram.com/simonvlasaak/">@simonvlasaak</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>simon.vlasakk@gmail.com
+mainStyleNo=0
+tags=

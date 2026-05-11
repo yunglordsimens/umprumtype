@@ -1,0 +1,11 @@
+name=Empe Sans
+designer=Kintija Karasa
+date=2022
+mainText=Six Feet Over
+mainSize=6em
+styleText0=He makes a very bold impression, and there is nothing strange about that, because one of his ancestors bravely made his way to the late Hermann Cherusko so as not to miss out on the oak trade in the Teutoburg Forest. Mr Hehler was recently decorated again — from Armenia, along with hairdresser Schicketanz and diurnist Oberkneifer from Mariánské Lázně, but certainly not for his fearlessness or unique ability to interpret concepts of honour in the sense of Kabbalah, but apparently for his merits he earned in Armenia and neighbouring countries when he was still an unbaptised assistant in the chicory industry. ‘My Karla, she's a lady,’ he likes to sing in the evening over a glass of wine, because he loves the English language — Governor Gedalje Hehler. But now, gracious reader, follow me willingly to the Continental Café, which is just across the street and is the heart of the German part of Prague.
+styleSize=4em
+aboutFont=Mechanically condensed grotesque typeface with italics that are extra slanted. Generally inspired by the 90s trend of using condensed type on various ephemera like album sleeves and magazines. The typeface name originates from Empedocles, who is best known for originating the cosmogonic theory of the four classical elements (air, fire, earth, water). Used for body text in the Czech culture magazine 'živel' issue 41.
+aboutDesigner=Kintija Karasa<br><a href="https://www.behance.net/kintijakarasa#">www.behance.net/kintijakarasa</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>kintija.elina@gmail.com
+mainStyleNo=1
+tags=

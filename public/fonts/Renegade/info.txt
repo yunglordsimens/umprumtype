@@ -1,0 +1,11 @@
+name=Renegade
+designer=Anna Sherlupenkova
+date=2024
+mainText=That's hot!
+mainSize=6em
+styleText0=The Serbs are having a soirée. ‘Hoo-hoo-hoo,’ they sing and play the piano. It's already quarter to eleven, and they're still singing — hoo-hoo-hoo. Mr Richtov's stomach is rumbling. The daughter of the house is painted white. Finally, the table is set. Crayfish on a platter, small, hard as stone — for it is a special occasion. But in the middle (of the platter, of course) lies a lobster. They stab it, it cracks; the lobster is a fake. So, on to the crayfish! There is one for each guest. Suddenly there is a screech — one gentleman's knife slips and the plate almost breaks. And his crayfish flies across the table and under the buffet. The other guests lose their courage, do not touch their crayfish, and the food is taken away. Voices are heard saying that one or the other of the crayfish was definitely a paperweight. Salmon appears on the table — with potatoes. They want to dig in. No way! The salmon is raw. It hasn't even been gutted. So they eat the potatoes. Of course, the salmon hasn't been cooked on purpose. It will be cooked tomorrow at noon.
+styleSize=4em
+aboutFont=Renegade was inspired by my admiration for Memphis, a 1920s typeface by Rudolf Wolf. My goal here was to honor everything that made Memphis special without turning it into something unrecognizable. It already has elegant shapes, so instead of making dramatic changes, I concentrated on refining its proportions, softening some curves, and ensuring consistency across the letterforms. These subtle adjustments may seem minor, but they significantly enhance the typeface’s balance, clarity, and functionality. I wanted Renegade to retain Memphis’s strict, geometric structure while avoiding any sense of coldness, preserving the elegance in its simplicity while making it feel more contemporary.
+aboutDesigner=Anna Sherlupenkova<br><a href="https://www.instagram.com/cawcawke/">@cawcacke</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>sherlupenkova@gmail.com
+mainStyleNo=0
+tags=

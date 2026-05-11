@@ -1,0 +1,11 @@
+name=Osten
+designer=Šimon Brzobohatý
+date=2022
+mainText=To show you the way
+mainSize=6em
+styleText0=There is also sunshine on Příkopy Street. But only the commercial council Slunitschko. (Today, there is no doubt that Prague was indeed founded by Oriental merchants, as the legend says.) Mr Slunitschko likes to stand outside the Waldek & Wagner shop, which sells rubber goods and utensils, and his face often has that gleam that has always characterised great merchants: Marco Polo, Fugger, Li-hung-cang. Rád tam postává — je to uprostřed mezi dvěma bankami, Českou zemskou bankou a Úvěrním ústavem, a to dělá vždycky dobrý dojem. Mimoto chodí stále oblečen černě. Je to pan Feldeck von Howiessi. Bystrá hlava. Náprsní taška naditá. Má v ní stearínové svíčky. Vyndává je pokaždé z luceren své ekvipáže, aby je koží neukradl. Otočíme se: Ach! To šla kolem nás neškodná ženuška, paní doktorová Kokerhelová. Klap, klap, klap.
+styleSize=4em
+aboutFont=The Osten typeface was created in 2022 as part of a semester assignment to design a text font for a new edition of Živel magazine. It is intended to ensure smooth readability for both short and long texts, particularly at smaller sizes. As this was the author’s first major experience designing a complete typeface, inspiration was drawn from established text fonts such as Lido and LL Bradford. A workshop at school with typographer Yevgeniy Anfalov, focused on drawing Cyrillic characters, also led to the development of a full character set for writing in various Slavic and Eastern European languages.
+aboutDesigner=Šimon Brzobohatý<br><a href="https://www.instagram.com/l8pure/">@l8pure</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>latepoor@gmail.com
+mainStyleNo=0
+tags=

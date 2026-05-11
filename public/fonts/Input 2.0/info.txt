@@ -1,0 +1,11 @@
+name=Input 2.0
+designer=Pavla Nečásková
+date=2022
+mainText=Shared Messages
+mainSize=6em
+styleText0=There is also sunshine on Příkopy Street. But only the commercial council Slunitschko. (Today, there is no doubt that Prague was indeed founded by Oriental merchants, as the legend says.) Mr Slunitschko likes to stand outside the Waldek & Wagner shop, which sells rubber goods and utensils, and his face often has that gleam that has always characterised great merchants: Marco Polo, Fugger, Li-hung-cang. He likes to stand there — it is in the middle between two banks, Česká zemská banka and Úvěrní ústav, and that always makes a good impression. Besides, he always dresses in black. It is Mr Feldeck von Howiessi. A sharp mind. His breast pocket is bulging. He has stearin candles in it. He takes them out of his carriage lanterns every time so that they won't be stolen. We turn around: Ah! The harmless Mrs Kokerhelová, the doctor's wife, is walking past us. Clack, clack, clack.
+styleSize=4em
+aboutFont=Input 2.0 emphasises the most significant and obvious distortions caused by printing. Shapes become organic and fluid. At what point should we focus more on light and counter than on the body itself? I didn't make any major changes to the final version, compared to rough scans, only minor tweaks that were required. I remained on the outside, observing.
+aboutDesigner=Pavla Nečásková<br><a href="https://www.instagram.com/nacasejepavla/">@nacasejepavla</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>necaskovapavla@gmail.com
+mainStyleNo=0
+tags=

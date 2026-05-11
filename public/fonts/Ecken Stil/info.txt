@@ -1,0 +1,11 @@
+name=Ecken Stil
+designer=Victoria Naumuk
+date=2024
+mainText=Літери з краєм
+mainSize=6em
+styleText0=Вона імітує запальний погляд, тріумфально, ніби винайшла якийсь новий порок. І тут зупиняється карета. Яка прекрасна ландо! Давайте подивимося! The wife of the millionaire Kostertsche is sitting in it, eating cold lentils from her pompadour with her bare fingers. Her daughter, who is just passing by, calls out to her in embarrassment: ‘But Mama, what are you eating?!’ Але це не діє на стару даму. Ну, а хто це? — Може, він уже повернувся з Відня? — О, Боже мій: це капітан Аарон Гедальє Гелер із 202-го піхотного полку. — З адміністративного відділу, звичайно. Хто його не знає! Важить сорок п'ять кілограмів, він — легковаговик par excellence.
+styleSize=4em
+aboutFont=Rooted in the angular structure of Fraktur and early Gothic lettering, it revives the sharp elegance of historical forms while reinterpreting them through a contemporary Cyrillic lens. The font preserves the strong geometric character of traditional inscriptions while offering a modern, legible structure for contemporary use.
+aboutDesigner=Victoria Naumuk<br><a href="https://www.instagram.com/ndnoone/">@ndnoone</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>viktoria09020123@gmail.com
+mainStyleNo=0
+tags=

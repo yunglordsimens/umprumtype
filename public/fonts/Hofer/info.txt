@@ -1,0 +1,11 @@
+name=Hofer
+designer=Matěj Kolesa
+date=2024
+mainText=Biathlon squad
+mainSize=6em
+styleText0=Salmon appears on the table — with potatoes. They want to dig in. No way! The salmon is raw. It hasn't even been gutted. So they eat the potatoes. Of course, the salmon hasn't been cooked on purpose. It will be cooked tomorrow at noon. Something is squeaking again; the house terrier has crawled under the sideboard and is gnawing on a crayfish. So it wasn't a paperweight after all.
+styleSize=4em
+aboutFont=Hofer originated from a study of gravestone lettering. Rather than replicating the inscriptions directly, I aimed to reinterpret their formal qualities. I took the name Hofer from the surname that was carved in the grave i chose. It has ligatures!
+aboutDesigner=Matěj Kolesa<br><a href="https://www.instagram.com/matej_kolesa/">@matej_kolesa</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>matthewkolesa@gmail.com
+mainStyleNo=0
+tags=

@@ -1,0 +1,11 @@
+name=Strojka Grotesk
+designer=Nikola Iljučoková
+date=2024
+mainText=What a STROJKA GROTESK!
+mainSize=6em
+styleText0=Jeho jméno jsem zapomněl, prý provádí nárazové obchody, říká se. Asi to znamená, že obchoduje se vším, na co narazí. Malá očka, tenký varhánkovitý krk a ohromný kondoří zoban — hrůza na něho pohledět; ví bůh, že by se nikdo nepodivil, kdyby zčistajasna sáhl do brašny, vytáhl hromadu střev a s chraplavým supím křikem je polykal. A teď najednou všecko povstává a přeuctivě zdraví!? Právě vystoupil důstojně vypadající pán, v knoflíkové dírce malou stužku, a blahosklonně děkuje na všechny strany. Dříve býval důstojníkem. Teď je falešným svědkem z povolání. Proto ta všeobecná oblíbenost.
+styleSize=4em
+aboutFont=Among legends like Garamond and Baskerville, an odd typeface surfaced in a letterpress studio — wood grotesk, its origin unknown. Likely a geometric sans-serif with monoline strokes, it echoes 1920s constructivism and interwar German design. Its imperfections intrigued me: strange forms, clashing angles, a tension between mechanical and humanist traits. I saw these flaws as inspiration. Some letters I redrew completely, others I merely adjusted. The goal was to calm the chaos, yet preserve its raw, distinct character.
+aboutDesigner=Nikola Iljučoková<br><a href="https://www.instagram.com/ilju.nik/">@ilju.nik</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>iljucokova.n@gmail.com
+mainStyleNo=0
+tags=

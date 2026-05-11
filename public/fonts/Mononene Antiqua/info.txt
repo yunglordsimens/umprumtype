@@ -1,0 +1,11 @@
+name=Mononene Antiqua
+designer=Matěj Kolesa
+date=2024
+mainText=Electromechanical machine
+mainSize=6em
+styleText0=Dcera domu je nalakována bíle. Konečně se prostírá. Raci na míse, malí, jako kámen tvrdí ráčkové — neboť je vysoké datum. Ale uprostřed (samozřejmě mísy) leží humr. Píchne se do něho, zapraská to; humr je atrapa. Tedy do raků! Pro každého hosta je tu jeden. Najednou to zaskřípe — jednomu pánovi sklouzl nůž a talíř se málem rozbil. A jeho rak přeletěl přes stůl až pod bufet. Ostatní hosté ztratí odvahu, do svých raků se nepustí a jídlo je odneseno. Ozývají se hlasy, že ten nebo onen z raků byl určitě těžítko. Na stole se objeví losos — s bramborami. Chtějí do něho píchnout. Vyloučeno! Losos je syrový. Dokonce nevykuchaný. So they eat the potatoes. Of course, the salmon hasn't been cooked on purpose. It will be cooked tomorrow at noon. Something is squeaking again; the house terrier has crawled under the sideboard and is gnawing on a crayfish. So it wasn't a paperweight after all. Next course: — — — gingerbread hearts. Yes, gingerbread hearts! And then comes dessert: the two maids bring a child's coffin on a tray. All around it are ice cream in egg cups. But unfortunately, the coffin is empty. Then he is supposed to sing again — — hoo — hoo — but Mr. Richtov finds this silly, so he goes to the kitchen and sends the maids to the pub to bring back a hundred hot sausages and twenty litres of beer on his account.
+styleSize=4em
+aboutFont=If I succeeded in anything with this typeface, it was naming it – Mononene Antiqua. It perfectly captures what I was trying to achieve during the winter semester of 2024. I started with a monospaced template, but the result is not monospaced, and I enriched it with Antiqua elements. That summary would be more than enough to describe it.
+aboutDesigner=Matěj Kolesa<br><a href="https://www.instagram.com/matej_kolesa/">@matej_kolesa</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>matthewkolesa@gmail.com
+mainStyleNo=0
+tags=

@@ -1,0 +1,11 @@
+name=Nová Šafaříkova Hlaholice
+designer=Victoria Naumuk
+date=2024
+mainText=ⰕⰂⰑⰓⰣ ⰒⰋⱄⰿⰅⰐⰀ ⰄⰖⰘⰑⰿ, Ⰻ ⰀⱎⰅ ⰍⱅⰑ ⰁⰅⱈⰖⰿⰅⰐ ⰓⰀⱈⰖⰿⰅⰤ.
+mainSize=6em
+styleText0=ⱄ ⰰ ⱈⰻⱄⱅⱁⱃⰻⱌⰰⰾⰾ ⰻⱀⱇⱁⱃⰿⰵⰴ ⰴⰻⰳⰻⱅⰰⰾ ⱅyⱂⰵⱇⰰⱌⰵ ⰱⰰⱄⰵⰴ ⱁⱀ ⱅⱈⰵ Ⰳⰾⰰⰳⱁⰾⰻⱅⰻⱌ ⰾⰵⱅⱅⰵⱃⱇⱁⱃⰿⱄ ⱆⱄⰵⰴ ⰻⱀ ⱅⱈⰵ ⰿⰻⰴ-19ⱅⱈ ⱌⰵⱀⱅⱆⱃy ⰱy Ⱌⰸⰵⱌⱈ ⱂⱃⰻⱀⱅⰻⱀⰳ ⱈⱁⱆⱄⰵ Ⱈⰰⰰⱄⰵ ⱆⱀⰴ Ⱄöⱈⱀⰵ, ⰿⱁⱄⱅ ⱀⱁⱅⰰⰱⰾy ⰻⱀ ⱌⱁⰾⰾⰰⰱⱁⱃⰰⱅⰻⱁⱀ wⰻⱅⱈ Ⱄⰾⰰⰲⰻⱌ ⱄⱌⱈⱁⰾⰰⱃ Ⱂⰰⰲⰵⰾ Ⱖⰸⰵⱇ ⰞⰰⱇⰭⱃⰻⰽ. Ⱅⱈⰵ ⱅyⱂⰵⱇⰰⱌⰵ ⱇⰰⰻⱅⱈⱇⱆⰾⰾy ⱃⰵⰲⰻⰲⰵⱄ ⱅⱈⰵ ⰵⰾⰵⰳⰰⱀⱅ, ⰳⰵⱁⰿⰵⱅⱃⰻⱌ, ⰰⱀⰴ ⱄⰾⰻⰳⱈⱅⰾy ⱁⱃⱀⰰⰿⰵⱀⱅⰰⰾ ⱄⱅyⰾⰵ ⱇⱁⱆⱀⰴ ⰻⱀ ⰽⰵy ⱂⱆⰱⰾⰻⱌⰰⱅⰻⱁⱀⱄ ⱄⱆⱌⱈ ⰰⱄ ⰒⰰⰿⰭⱅⰽy ⱈⰾⰰⱈⱁⰾⱄⰽéⱈⱁ ⱂíⱄⰵⰿⱀⰻⱌⱅⰲí (1853) ⰰⱀⰴ Ⰳⰾⰰⰳⱁⰾⰻⱅⰻⱄⱌⱈⰵ Ⱇⱃⰰⰳⰿⰵⱀⱅⰵ (1857), wⱈⰻⱌⱈ wⰵⱃⰵ ⰰⰿⱁⱀⰳ ⱅⱈⰵ ⱇⰻⱃⱄⱅ ⱂⱃⰻⱀⱅⰵⰴ ⰵⱇⱇⱁⱃⱅⱄ ⱅⱁ ⱂⱃⰵⱄⰵⱃⰲⰵ ⰰⱀⰴ ⱄⱅⱆⰴy Ⱁⰾⰴ Ⱌⱈⱆⱃⱌⱈ Ⱄⰾⰰⰲⱁⱀⰻⱌ ⱅⰵxⱅⱄ ⰻⱀ Ⰳⰾⰰⰳⱁⰾⰻⱅⰻⱌ ⱄⱌⱃⰻⱂⱅ. Ⱇⱆⰾⰾ Ⰳⰾⰰⰳⱁⰾⰻⱅⰻⱌ ⱌⱈⰰⱃⰰⱌⱅⰵⱃ ⱄⰵⱅ ⰱⰰⱄⰵⰴ ⱁⱀ ⱅⱈⰵ Ⰱⱆⰾⰳⰰⱃⰻⱌ (ⱃⱁⱆⱀⰴⰵⰴ) ⰲⰰⱃⰻⰰⱀⱅ. Ⱈⰻⱄⱅⱁⱃⰻⱌⰰⰾ ⱀⱆⰿⰵⱃⰰⰾⱄ ⰰⱀⰴ ⱂⱆⱀⱌⱅⱆⰰⱅⰻⱁⱀ ⰱⰰⱄⰵⰴ ⱁⱀ ⱂⰵⱃⰻⱁⰴ ⱆⱄⰰⰳⰵ. Ⱁⱂⱅⰻⰿⰻⰸⰵⰴ ⱇⱁⱃ ⰴⰻⱄⱂⰾⰰy ⱆⱄⰵ.
+styleSize=4em
+aboutFont=Is a historically informed digital typeface based on the Glagolitic letterforms used in the mid-19th century by Czech printing house Haase und Söhne, most notably in collaboration with Slavic scholar Pavel Jozef Šafárik. The typeface faithfully revives the elegant, geometric, and slightly ornamental style found in key publications such as Památky hlaholského písemnictví (1853) and Glagolitische Fragmente (1857), which were among the first printed efforts to preserve and study Old Church Slavonic texts in Glagolitic script. Full Glagolitic character set based on the Bulgaric (rounded) variant. Historical numerals and punctuation based on period usage. Optimized for display use.
+aboutDesigner=Victoria Naumuk<br><a href="https://www.instagram.com/ndnoone/">@ndnoone</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>viktoria09020123@gmail.com
+mainStyleNo=0
+tags=

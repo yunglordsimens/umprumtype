@@ -1,0 +1,12 @@
+name=Mapa
+designer=Victoria Naumuk
+date=2024
+mainText=CITY PLANNING AS THE NATURE
+mainSize=6em
+styleText0=SALMON APPEARS ON THE TABLE — WITH POTATOES. THEY WANT TO DIG IN. NO WAY! THE SALMON IS RAW. IT HASN'T EVEN BEEN GUTTED. SO THEY EAT THE POTATOES. OF COURSE, THE SALMON HASN'T BEEN COOKED ON PURPOSE. IT WILL BE COOKED TOMORROW AT NOON. SOMETHING IS SQUEAKING AGAIN; THE HOUSE TERRIER HAS CRAWLED UNDER THE SIDEBOARD AND IS GNAWING ON A CRAYFISH. SO IT WASN'T A PAPERWEIGHT AFTER ALL.
+styleSize=4em
+aboutFont=Urban planning can be a good tool in creating a font. When looking from above, the imagination can find many unexpected forms and connections of letters, which are directly formed from streets, highways or parks and at the same time contain the logic that exists in the structure of the city. Just change the angle of view and freely walk around the city map!
+The font preserves the original forms that were found on the city map, as well as their alternative versions. At the same time, in the second version, all letters are combined with the help of an additional element-street, which creates the feeling of a continuous walk through the text.
+aboutDesigner=Victoria Naumuk<br><a href="https://www.instagram.com/ndnoone/">@ndnoone</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>viktoria09020123@gmail.com
+mainStyleNo=0
+tags=

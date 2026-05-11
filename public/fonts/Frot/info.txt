@@ -1,0 +1,11 @@
+name=Frot
+designer=Jaromír Květoň
+date=2024
+mainText=Eleanor Wawes Rigby
+mainSize=6em
+styleText0=Působí nejvýš opovážlivým dojmem, a není na tom nic divného, neboť jeden z jeho předků pronikl odvážně až k nebožtíkovi Hermannu Cheruskovi, aby si nenechal ujít duběnkový obchod v Teutoburském lese. Teprve nedávno byl zase dekorován, ten pan Hehler — z Arménie, zároveň s kadeřníkem Schicketanzem a s diurnistou Oberkneiferem z Mariánskách Lázní, ale určitě ne pro svou nebojácnost nebo jedinečnou schopnost vykládat pojmy cti ve smyslu kabaly, nýbrž zřejmě pro zásluhy, které si získal o Arménii a přilehlé země v dobách, kdy byl ještě nekřtěným příručím v cikorkové branži. „Moje Karla, to je lejdy,“ prozpěvuje si rád večer při víně, neboť miluje anglickou řeč — hejtman Gedalje Hehler. Ale teď, blahosklonný čtenáři, sleduj mě ochotně do kavárny Continental, je zrovna naproti a je srdcem německé části Prahy.
+styleSize=4em
+aboutFont=Frot is based on hand-carved lettering on a gravestone from an area inhabited by Czech Germans before 1945. It takes inspiration from traditional Didone fonts and features narrow proportions and distinctive non-joining strokes.
+aboutDesigner=Jaromír Květoň<br><a href="https://www.jaromirkveton.com">jaromirkveton.com</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>hello@jaromirkveton.com
+mainStyleNo=0
+tags=

@@ -1,0 +1,11 @@
+name=Furikake
+designer=Elina Semenova
+date=2022
+mainText=Jelly Dancers
+mainSize=6em
+styleText0=He makes a very bold impression, and there is nothing strange about that, because one of his ancestors bravely made his way to the late Hermann Cherusko so as not to miss out on the oak trade in the Teutoburg Forest. Mr Hehler was recently decorated again — from Armenia, along with hairdresser Schicketanz and diurnist Oberkneifer from Mariánské Lázně, but certainly not for his fearlessness or unique ability to interpret concepts of honour in the sense of Kabbalah, but apparently for his merits he earned in Armenia and neighbouring countries when he was still an unbaptised assistant in the chicory industry. ‘My Karla, she's a lady,’ he likes to sing in the evening over a glass of wine, because he loves the English language — Governor Gedalje Hehler. But now, gracious reader, follow me willingly to the Continental Café, which is just across the street and is the heart of the German part of Prague.
+styleSize=4em
+aboutFont=Furikake is a sans-serif typeface designed for use at small sizes, particularly for text and captions. Unlike most sans-serif fonts, Furikake reflects the anatomy of a serif typeface — featuring a slanted axis, open counters, and noticeable contrast. The classic series is complemented by a wavy cursive style that subtly deviates from conventional norms.
+aboutDesigner=Elina Semenova<br><a href="https://www.instagram.com/pandotype?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">@pandotype</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>pandotype@gmail.com
+mainStyleNo=1
+tags=

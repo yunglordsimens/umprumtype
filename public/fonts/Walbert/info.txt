@@ -1,0 +1,12 @@
+name=Walbert
+designer=Pavla Nečásková
+date=2023
+mainText=Radical simplicity
+mainSize=6em
+styleText0=Salmon appears on the table — with potatoes. They want to dig in. No way! The salmon is raw. It hasn't even been gutted. So they eat the potatoes. Of course, the salmon hasn't been cooked on purpose. It will be cooked tomorrow at noon. Something is squeaking again; the house terrier has crawled under the sideboard and is gnawing on a crayfish. So it wasn't a paperweight after all.
+styleText1=She imitates a fiery gaze, triumphantly, as if she had invented some new vice. And there a carriage stops. What a beautiful landau! Let's take a look! The wife of the millionaire Kostertsche is sitting in it, eating cold lentils from her pompadour with her bare fingers. Her daughter, who is just passing by, calls out to her in embarrassment: ‘But Mama, what are you eating?!’ But that doesn't work on the old lady. Well, who's this? — Could he be back from Vienna already? — Oh, my goodness: it's Captain Aaron Gedalje Hehler from the 202nd Infantry Regiment. — From the clerical department, of course. Who wouldn't know him! Weighing forty-five kilos, he is a lightweight par excellence.
+styleSize=4em
+aboutFont=Walbert is inspired by a frottage of a German gravestone found near the German border. However, to avoid a purely revivalist approach, I used the reference as a source of inspiration rather than a direct model. While maintaining the proportions and character of the Art Nouveau typeface, I aimed to redesign it with a more contemporary feel. With its monolinear nature, I believe it is on its way to fulfilling my vision.
+aboutDesigner=Pavla Nečásková<br><a href="https://www.instagram.com/nacasejepavla/">@nacasejepavla</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>necaskovapavla@gmail.com
+mainStyleNo=0
+tags=

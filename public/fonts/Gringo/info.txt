@@ -1,0 +1,11 @@
+name=Gringo
+designer=Šárka Blažková
+date=2024
+mainText=Amalgam
+mainSize=6em
+styleText0=Salmon appears on the table — with potatoes. They want to dig in. No way! The salmon is raw. It hasn't even been gutted. So they eat the potatoes. Of course, the salmon hasn't been cooked on purpose. It will be cooked tomorrow at noon. Something is squeaking again; the house terrier has crawled under the sideboard and is gnawing on a crayfish. So it wasn't a paperweight after all.
+styleSize=4em
+aboutFont=Numismatic typeface is a specific typeface used on coins. The font is designed to be highly legible on small surfaces, being dynamic and rhythmic at the same time. The numismatic set is unique for its variation of individual characters. In the Middle Ages, symbols were hand-engraved, and as a result, the number of types and variations of individual symbols was “infinite“. However, this is not the case with the set found in the school letterpress workshop, where the only letter that has more than two variations is practically just the letter A (which has four variations). Therefore additional research followed beyond the school’s resources, incorporating other studies and typefaces. I chose this character set for its striking appearance. My goal was to break free from the font’s original function, which was irreversibly linked to coins, and create a modern interpretation that brings the font into a new context. The design took a monolinear approach, preserving the rhythm of the strokes and introducing distinctive serifs, whose shapes resemble bones. This approach was followed by replacing the original Art Nouveau inspiration with a style evoking the aesthetics of the Wild West. The result is a typeface that blends classic character variations with a bold and playful feel.
+aboutDesigner=Šárka Blažková<br><a href="https://www.antianti.cz">antianti.cz</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>sarka.blazkova@icloud.com
+mainStyleNo=0
+tags=

@@ -1,0 +1,11 @@
+name=Haase Englische Antiqua
+designer=Šimon Brzobohatý, Konrád Karlík
+date=2024
+mainText=Haase Von Wranau
+mainSize=6em
+styleText0=Imituje žhavý pohled, vítězně, jako kdyby vynalezla nějakou novou neřest. A tamhle zastavuje vůz. Jaký nádherný landauer! Podívejme se! Manželka milionáře Kostertsche v něm sedí a holými prsty pojídá ze své pompadúrky studenou čočku. Verlegen ruft ihre Tochter, die gerade vorbeikommt, ihr zu: „Aber Mama, was isst du denn da?!“ Aber das beeindruckt die alte Dame nicht. Nun, und wer ist das? – Ist er schon aus Wien zurück? – Ach, meine Güte: Es ist Oberst Aaron Gedalje Hehler vom 202. Infanterieregiment. – Natürlich aus der Schreibabteilung. Wer würde ihn nicht kennen! Er wiegt fünfundvierzig Kilo, ein Leichtgewicht par excellence.
+styleSize=4em
+aboutFont=Haase Englische Antiqua is a text typeface originally used for letterpress printing, revived through a semester project focused on the Prague printing house Gottlieb Haase und Söhne. Developed collaboratively, the digital version reinterprets a historical design likely created in the late 19th century, when Haase und Söhne were active in producing high-quality types. Typefounding during this period was marked by technical innovation and stylistic refinement, blending German precision with Central European aesthetics. This revival pays homage to the craftsmanship of the time, adapting a forgotten type for contemporary use.
+aboutDesigner=Šimon Brzobohatý, Konrád Karlík<br><a href="https://www.instagram.com/l8pure/">@l8pure</a><br><a href="https://www.instagram.com/konrad_karlik/">@konrad_karlik</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>konrad.karlik@gmail.com<br>latepoor@gmail.com
+mainStyleNo=0
+tags=

@@ -1,0 +1,11 @@
+name=Input 1.0
+designer=Pavla Nečásková
+date=2022
+mainText=Mixed Emotions
+mainSize=6em
+styleText0=Na Příkopech je také sluníčko. Ovšem jen komerční rada Slunitschko. (Dnes už vůbec není nejmenší pochybnosti, že Prahu skutečně založili orientální kupci, jak praví pověst.) Pan Slunitschko rád postává u krámu firmy Waldek & Wagner, gumové zboží a uterusilie, a na jeho tváři bývá onen odlesk, kterým se odjakživa vyznačovali velcí obchodníci: Marco Polo, Fugger, Li-hung-cang. Rád tam postává — je to uprostřed mezi dvěma bankami, Českou zemskou bankou a Úvěrním ústavem, a to dělá vždycky dobrý dojem. Mimoto chodí stále oblečen černě. Je to pan Feldeck von Howiessi. Bytrá hlava. Náprsní taška naditá. Má v ní stearínové svíčky. Vyndává je pokaždé z luceren své ekvipáže, aby je koží neukradl. Otočíme se: Ach! To šla kolem nás neškodná ženuška, paní doktorová Kokerhelová. Klap, klap, klap.
+styleSize=4em
+aboutFont=In very small text sizes (4–6 pt), details in typefaces fade and new, sometimes more important moments we need to shine light on emerge. We are faced with "poor image" documents that circulate daily and the type-forms start to fall apart as a result. This idea shaped the final design of Input 1.0. The loss of detail became a tool for discovering new, organic forms.
+aboutDesigner=Pavla Nečásková<br><a href="https://www.instagram.com/nacasejepavla/">@nacasejepavla</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>necaskovapavla@gmail.com
+mainStyleNo=0
+tags=

@@ -1,0 +1,11 @@
+name=Eclipse
+designer=Jessica Ledoux
+date=2023
+mainText=total eclipse of the heart
+mainSize=6em
+styleText0=he makes a very bold impression, and there is nothing strange about that, because one of his ancestors bravely made his way to the late hermann cherusko so as not to miss out on the oak trade in the teutoburg forest. mr hehler was recently decorated again — from armenia, along with hairdresser schicketanz and diurnist oberkneifer from mariánské lázně, but certainly not for his fearlessness or unique ability to interpret concepts of honour in the sense of kabbalah, but apparently for his merits he earned in armenia and neighbouring countries when he was still an unbaptised assistant in the chicory industry. ‘my karla, she’s a lady,’ he likes to sing in the evening over a glass of wine, because he loves the english language — governor gedalje hehler. but now, gracious reader, follow me willingly to the continental café, which is just across the street and is the heart of the german part of prague.
+styleSize=4em
+aboutFont=This font called Eclipse explores the limits of legibility based on the concept of a solar eclipse, with geometrical shape to create cutouts in letters. The result of this experimentation is an impactful font, which reminds of the Letraset era in a modern way, that can be used for display purposes.
+aboutDesigner=Jessica Ledoux<br><a href="https://www.instagram.com/madameledoux">@madameledoux</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>bonjour@jessicaledoux.ca
+mainStyleNo=0
+tags=

@@ -1,0 +1,11 @@
+name=Asystematik
+designer=Jaroslav Lekeš
+date=2024
+mainText=Lino & Dřevo
+mainSize=6em
+styleText0=He makes a very bold impression, and there is nothing strange about that, because one of his ancestors bravely made his way to the late Hermann Cherusko so as not to miss out on the oak trade in the Teutoburg Forest. Mr Hehler was recently decorated again — from Armenia, along with hairdresser Schicketanz and diurnist Oberkneifer from Mariánské Lázně, but certainly not for his fearlessness or unique ability to interpret concepts of honour in the sense of Kabbalah, but apparently for his merits he earned in Armenia and neighbouring countries when he was still an unbaptised assistant in the chicory industry. ‘My Karla, she's a lady,’ he likes to sing in the evening over a glass of wine, because he loves the English language — Governor Gedalje Hehler. But now, gracious reader, follow me willingly to the Continental Café, which is just across the street and is the heart of the German part of Prague.
+styleSize=4em
+aboutFont=Asystematik draws inspiration from Oldřich Menhart’s handwritten Manuskript (1943). The project focused on analyzing and defining each of his letterforms to better understand their construction. The final design reflects my interpretation, shaped by technical insight into calligraphic techniques. With its organic forms, Asystematik pairs especially well with illustrations, complementing their expressive character.
+aboutDesigner=Jaroslav Lekeš<br><a href="https://www.instagram.com/jaroslav_lekes/">@jaroslav_lekes</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>lekesjara@gmail.com
+mainStyleNo=0
+tags=

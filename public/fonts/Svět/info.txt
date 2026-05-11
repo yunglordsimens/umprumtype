@@ -1,0 +1,11 @@
+name=Svět
+designer=Luigi Gorlero
+date=2020
+mainText=Devil's Disciple
+mainSize=6em
+styleText0=He makes a very bold impression, and there is nothing strange about that, because one of his ancestors bravely made his way to the late Hermann Cherusko so as not to miss out on the oak trade in the Teutoburg Forest. Mr Hehler was recently decorated again — from Armenia, along with hairdresser Schicketanz and diurnist Oberkneifer from Mariánské Lázně, but certainly not for his fearlessness or unique ability to interpret concepts of honour in the sense of Kabbalah, but apparently for his merits he earned in Armenia and neighbouring countries when he was still an unbaptised assistant in the chicory industry. ‘My Karla, she's a lady,’ he likes to sing in the evening over a glass of wine, because he loves the English language — Governor Gedalje Hehler. But now, gracious reader, follow me willingly to the Continental Café, which is just across the street and is the heart of the German part of Prague.
+styleSize=4em
+aboutFont=Svět was born from an attempt at digitalizing the text typeface found in the letterpressed Czech book series “Světová knihovna” (Books from the world) from 1906. It mainly tries to reinterpret the peculiar looks of its aged, lower-quality print through round and enlarged serifs and chamfered connections.
+aboutDesigner=Luigi Gorlero<br><a href="https://www.luigigorlero.com/">luigigorlero.com</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>gorliluigi@gmail.com
+mainStyleNo=0
+tags=

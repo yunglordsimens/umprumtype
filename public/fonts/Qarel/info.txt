@@ -1,0 +1,11 @@
+name=Qarel
+designer=Pavla Nečásková
+date=2022
+mainText=Qarel is not Times
+mainSize=6em
+styleText0=During the Thirty Years' War, the Swedes wanted to use it to penetrate from Malá Strana into the city, but in the end they were afraid. Prague is supposedly divided into several parts, but that is just an empty promise. It is easy to reach from the south, east and north, but in the west, the Czech Western Railway successfully prevents this. But if you are determined, you can easily walk from Železná Ruda. Goodness, the roads aren't that bad. Anyway, everyone has to take care of themselves once they decide to visit Prague. The ‘Association for the Promotion of Foreign Tourism’ on Ferdinandova Street opposite Platejz, diagonally opposite the Gürtler hairdresser's, the eleventh house from the north, numero conscriptionis 78144781189 b, will be happy to answer any questions. In Czech, of course.
+styleSize=4em
+aboutFont=Qarel is based on the proportions of 1990s serif fonts with a higher x-height, therefore saving you space in typesetting. It is best used in newspaper and magazine layouts where the Medium cut is ideal for reading in smaller text sizes, and showcases it's easy legibility. In larger sizes, specific chopped details are revealed that otherwise remain somewhat hidden.
+aboutDesigner=Pavla Nečásková<br><a href="https://www.instagram.com/nacasejepavla/">@nacasejepavla</a><br><br>For licensing, collaboration, or any inquiries, please contact the author at:<br>necaskovapavla@gmail.com
+mainStyleNo=0
+tags=
