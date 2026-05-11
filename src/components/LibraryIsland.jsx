@@ -130,14 +130,7 @@ function BookDetail({ book }) {
         {book.tags.length > 0 && (
           <ul className="book-detail__tags">
             {book.tags.map(t => (
-              <li
-                key={t}
-                className="book-detail__tag"
-                style={TAG_COVERS[t]
-                  ? { background: TAG_COVERS[t].bg, color: TAG_COVERS[t].text, borderColor: 'transparent' }
-                  : undefined
-                }
-              >{t}</li>
+              <li key={t} className="book-detail__tag">{t}</li>
             ))}
           </ul>
         )}

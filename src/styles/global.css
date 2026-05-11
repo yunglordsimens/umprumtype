@@ -985,57 +985,81 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   flex-direction: column;
   transform: translateX(100%);
   transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: hidden;
 }
-.detail-panel.is-open {
-  transform: translateX(0);
-}
-.detail-panel__header {
-  position: sticky;
-  top: 0;
-  background: var(--surface);
-  display: flex;
-  justify-content: flex-end;
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--border);
-  z-index: 1;
-}
+.detail-panel.is-open { transform: translateX(0); }
+
+/* Back / close button — fixed in panel, not scrolled */
 .detail-panel__close {
-  font-size: var(--step-2);
-  line-height: 1;
+  position: absolute;
+  top: 2rem;
+  left: 1.5rem;
   color: var(--text-muted);
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0 var(--space-1);
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  z-index: 2;
   transition: color var(--dur-fast) var(--ease);
 }
 .detail-panel__close:hover { color: var(--text); }
+
+/* Scrollable inner area */
+.detail-panel__scroll {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
 .detail-panel__body {
-  padding: var(--space-5) var(--space-6) var(--space-9);
+  padding: 6rem var(--space-6) var(--space-7);
   flex: 1;
 }
+
+/* "Details" label above content */
+.detail-panel__label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  padding-bottom: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Footer */
+.detail-panel__footer {
+  border-top: 1px solid rgba(0,0,0,0.1);
+  padding: 2rem;
+  text-align: center;
+  font-size: 0.75rem;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
 @media (max-width: 720px) {
   .detail-panel { top: 0; width: 100vw; }
 }
 
-/* Accent (orange) variant — cascades CSS vars so all child styles adapt */
+/* Accent (orange) variant — black text on orange */
 .detail-panel--accent {
   --surface: var(--accent);
-  --text: #ffffff;
-  --text-muted: rgba(255,255,255,0.75);
-  --text-subtle: rgba(255,255,255,0.5);
-  --border: rgba(255,255,255,0.18);
+  --text-muted: rgba(0,0,0,0.65);
+  --text-subtle: rgba(0,0,0,0.45);
+  --border: rgba(0,0,0,0.12);
   background: var(--accent);
-  color: #fff;
+  color: #111;
   border-left-color: transparent;
 }
 .detail-panel--accent .detail-panel__close {
-  color: rgba(255,255,255,0.6);
+  color: rgba(0,0,0,0.5);
 }
 .detail-panel--accent .detail-panel__close:hover {
-  color: #fff;
+  color: #111;
 }
 
 /* ---------- GridCard ---------- */
@@ -1253,9 +1277,15 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
 
 /* Large cover (detail panel) */
 .book-cover--lg {
-  width: 160px;
-  height: 238px;
-  box-shadow: 14px 22px 40px rgba(0,0,0,0.22);
+  width: 192px;
+  height: 288px;
+  box-shadow: 15px 25px 40px rgba(0,0,0,0.25);
+}
+@media (min-width: 768px) {
+  .book-cover--lg {
+    width: 224px;
+    height: 320px;
+  }
 }
 
 /* Book card (grid item) */
@@ -1333,12 +1363,13 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
 }
 .book-detail__tag {
   padding: 0.2em 0.75em;
-  background: color-mix(in srgb, var(--text) 6%, transparent);
-  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.05);
+  border: none;
   border-radius: 999px;
-  font-size: var(--step--2);
+  font-size: 0.75rem;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.05em;
 }
 
 /* Add Book modal */

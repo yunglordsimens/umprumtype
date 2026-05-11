@@ -1,7 +1,12 @@
 import { useEffect } from 'react';
 
+const ChevronLeft = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="15 18 9 12 15 6" />
+  </svg>
+);
+
 export default function DetailPanel({ children, onClose, isOpen = false, variant = '' }) {
-  // close on Escape
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e) => { if (e.key === 'Escape') onClose?.(); };
@@ -9,31 +14,33 @@ export default function DetailPanel({ children, onClose, isOpen = false, variant
     return () => window.removeEventListener('keydown', onKey);
   }, [isOpen, onClose]);
 
+  const cls = [
+    'detail-panel',
+    variant && `detail-panel--${variant}`,
+    isOpen  && 'is-open',
+  ].filter(Boolean).join(' ');
+
   return (
     <>
-      {/* backdrop */}
       <div
         className={`detail-panel-backdrop${isOpen ? ' is-open' : ''}`}
         onClick={onClose}
         aria-hidden="true"
       />
 
-      <aside
-        className={`detail-panel${variant ? ` detail-panel--${variant}` : ''}${isOpen ? ' is-open' : ''}`}
-        aria-modal="true"
-        role="dialog"
-      >
-        <div className="detail-panel__header">
-          <button
-            className="detail-panel__close"
-            onClick={onClose}
-            aria-label="Close panel"
-          >
-            ×
-          </button>
-        </div>
-        <div className="detail-panel__body">
-          {children}
+      <aside className={cls} aria-modal="true" role="dialog">
+        <button className="detail-panel__close" onClick={onClose} aria-label="Back">
+          <ChevronLeft />
+        </button>
+
+        <div className="detail-panel__scroll">
+          <div className="detail-panel__body">
+            <span className="detail-panel__label">Details</span>
+            {children}
+          </div>
+          <div className="detail-panel__footer">
+            UMPRUM Type Library × 2026
+          </div>
         </div>
       </aside>
     </>
