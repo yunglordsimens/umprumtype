@@ -14,17 +14,11 @@ const fontFaces = all
   )
   .join('\n');
 ---
-<Base title="Typefaces — Umprum Type" description="Archive of typefaces designed at the type class of UMPRUM, Prague.">
+<Base
+  title="Typefaces — Umprum Type"
+  description="Archive of typefaces designed at the type class of UMPRUM, Prague."
+  bodyClass="tf-page"
+>
   <style set:html={fontFaces}></style>
-
-  <section class="container">
-    <header class="page-head" data-reveal>
-      <h1>Typefaces</h1>
-      <p class="muted">{all.length} designs from the UMPRUM type class.</p>
-    </header>
-  </section>
-
-  <div class="container">
-    <TypefaceIsland client:load typefaces={all} />
-  </div>
+  <TypefaceIsland client:load typefaces={all} />
 </Base>

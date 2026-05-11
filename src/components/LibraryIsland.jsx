@@ -234,7 +234,11 @@ export default function LibraryIsland() {
               {ALL_TAGS.map(tag => {
                 const active = activeTags.includes(tag);
                 return (
-                  <label key={tag} className={`lib-filter__tag${active ? ' is-active' : ''}`}>
+                  <label
+                    key={tag}
+                    className={`lib-filter__tag${active ? ' is-active' : ''}`}
+                    onClick={() => toggleTag(tag)}
+                  >
                     <div className="lib-filter__check">
                       {active && <CheckIcon />}
                     </div>

@@ -1580,14 +1580,17 @@ body.home-page .site-nav__burger::after {
    Library page — full-viewport layout (lib-*)
    ================================================================ */
 
-body.lib-page { overflow: hidden; }
-body.lib-page #main {
+body.lib-page,
+body.tf-page { overflow: hidden; }
+body.lib-page #main,
+body.tf-page #main {
   height: calc(100dvh - var(--nav-h));
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
-body.lib-page .site-footer { display: none; }
+body.lib-page .site-footer,
+body.tf-page .site-footer { display: none; }
 
 .lib-loading {
   display: flex;
@@ -1877,6 +1880,24 @@ body.lib-page .site-footer { display: none; }
 .lib-count {
   margin-top: 64px; text-align: center;
   font-size: 0.75rem; color: var(--text-subtle);
+}
+
+/* ── Typeface island tweaks inside lib-scroll ── */
+.tf-island__count {
+  font-size: var(--step--1);
+  color: var(--text-subtle);
+  margin-bottom: var(--space-4);
+}
+/* Full-width row hover: extend trigger to fill lib-scroll's 48px padding */
+.tf-island__scroll .tfa-trigger {
+  margin-inline: calc(-1 * var(--space-7));
+  padding-inline: var(--space-7);
+}
+@media (max-width: 767px) {
+  .tf-island__scroll .tfa-trigger {
+    margin-inline: calc(-1 * 20px);
+    padding-inline: 20px;
+  }
 }
 
 /* Mobile: panels become fixed overlays */
