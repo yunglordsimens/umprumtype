@@ -1,21 +1,17 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getCollection } from 'astro:content';
+import { getAllTypefaces } from '../../lib/typefaces';
 
-const all = await getCollection('typefaces');
-all.sort((a, b) => b.data.year - a.data.year || a.data.name.localeCompare(b.data.name));
+const all = getAllTypefaces();
+const years = [...new Set(all.map(t => t.year).filter(Boolean))].sort((a, b) => (b ?? 0) - (a ?? 0));
 
-const classifications = [...new Set(all.map(t => t.data.classification))].sort();
-const years = [...new Set(all.map(t => t.data.year))].sort((a, b) => b - a);
-const scripts = [...new Set(all.flatMap(t => t.data.scripts))].sort();
-
-const fontFaces = all.flatMap(t =>
-  t.data.fonts.map(f =>
-    `@font-face{font-family:"${t.data.name}";src:url("${f.file}") format("woff2");font-weight:${f.weight};font-style:${f.style};font-display:swap;}`
-  )
-).join('\n');
-
-const slugOf = (entry) => entry.id.replace(/\.md$/, '');
+const fontFaces = all
+  .filter(t => t.defaultVariant)
+  .map(t => {
+    const v = t.defaultVariant!;
+    return `@font-face{font-family:"${t.title.replace(/"/g, '\\"')}";src:url("${v.webPath}") format("opentype");font-weight:${v.weight};font-style:${v.style};font-display:swap;}`;
+  })
+  .join('\n');
 ---
 <Base title="Typefaces — Umprum Type" description="Archive of typefaces designed at the type class of UMPRUM, Prague.">
   <style set:html={fontFaces}></style>
@@ -26,33 +22,21 @@ const slugOf = (entry) => entry.id.replace(/\.md$/, '');
     </header>
 
     <div class="tf-controls" data-reveal>
-      <input type="search" placeholder="Search by name or author…" class="tf-search" id="tfSearch" />
+      <input type="search" placeholder="Search by name or designer…" class="tf-search" id="tfSearch" />
       <div class="tf-sort">
         <button data-sort="shuffle" aria-pressed="true">shuffle</button>
         <button data-sort="year">year</button>
         <button data-sort="name">name</button>
-        <button data-sort="author">author</button>
+        <button data-sort="author">designer</button>
         <button id="tfRandom">→ random</button>
       </div>
     </div>
 
     <div class="tf-filters" data-reveal>
-      <div class="tf-filter-row" data-group="classification">
-        <span class="tf-filter-label">class</span>
-        {classifications.map(c => (
-          <button data-filter="classification" data-value={c}>{c}</button>
-        ))}
-      </div>
       <div class="tf-filter-row" data-group="year">
         <span class="tf-filter-label">year</span>
         {years.map(y => (
           <button data-filter="year" data-value={String(y)}>{y}</button>
-        ))}
-      </div>
-      <div class="tf-filter-row" data-group="script">
-        <span class="tf-filter-label">script</span>
-        {scripts.map(s => (
-          <button data-filter="script" data-value={s}>{s}</button>
         ))}
       </div>
     </div>
@@ -62,17 +46,18 @@ const slugOf = (entry) => entry.id.replace(/\.md$/, '');
         <li
           class="tf-row"
           data-row
-          data-name={t.data.name.toLowerCase()}
-          data-author={(t.data.author || '').toLowerCase()}
-          data-year={t.data.year}
-          data-classification={t.data.classification}
-          data-scripts={(t.data.scripts || []).join(',')}
+          data-name={t.title.toLowerCase()}
+          data-author={t.designer.toLowerCase()}
+          data-year={t.year ?? ''}
         >
-          <a href={`/typefaces/${slugOf(t)}`} class="tf-row__link">
-            <span class="tf-row__name" style={`font-family:"${t.data.name}",var(--font-ui)`}>{t.data.name}</span>
-            <span class="tf-row__class">{t.data.classification}</span>
-            <span class="tf-row__author">{t.data.author}</span>
-            <span class="tf-row__year">{t.data.year}</span>
+          <a href={`/typefaces/${t.slug}`} class="tf-row__link">
+            <span
+              class="tf-row__name"
+              style={`font-family:"${t.title.replace(/"/g, '\\"')}",var(--font-ui)`}
+            >{t.mainText || t.title}</span>
+            <span class="tf-row__class">{t.title}</span>
+            <span class="tf-row__author">{t.designer}</span>
+            <span class="tf-row__year">{t.year}</span>
           </a>
         </li>
       ))}
@@ -81,55 +66,46 @@ const slugOf = (entry) => entry.id.replace(/\.md$/, '');
 
   <script>
     const list = document.getElementById('tfList');
-    if (!list) { /* noop */ }
-    const rows = () => Array.from(document.querySelectorAll('[data-row]'));
+    const rows = () => Array.from(document.querySelectorAll('[data-row]')) as HTMLElement[];
 
-    // ----- Filters -----
-    const active = { classification: new Set(), year: new Set(), script: new Set() };
+    const active: Record<string, Set<string>> = { year: new Set() };
     document.querySelectorAll('[data-filter]').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const group = btn.getAttribute('data-filter');
-        const val = btn.getAttribute('data-value');
-        const set = active[group];
+        const group = (btn as HTMLElement).dataset.filter!;
+        const val   = (btn as HTMLElement).dataset.value!;
+        const set   = active[group];
         if (set.has(val)) { set.delete(val); btn.setAttribute('aria-pressed', 'false'); }
-        else { set.add(val); btn.setAttribute('aria-pressed', 'true'); }
+        else              { set.add(val);    btn.setAttribute('aria-pressed', 'true'); }
         applyFilters();
       });
     });
 
-    const q = document.getElementById('tfSearch');
+    const q = document.getElementById('tfSearch') as HTMLInputElement | null;
     q?.addEventListener('input', applyFilters);
 
     function applyFilters() {
-      const needle = (q?.value || '').trim().toLowerCase();
+      const needle = (q?.value ?? '').trim().toLowerCase();
       rows().forEach((r) => {
-        const name = r.dataset.name || '';
-        const author = r.dataset.author || '';
-        const cls = r.dataset.classification || '';
-        const yr = r.dataset.year || '';
-        const scr = (r.dataset.scripts || '').split(',');
-
+        const name   = r.dataset.name   ?? '';
+        const author = r.dataset.author ?? '';
+        const yr     = r.dataset.year   ?? '';
         const matchSearch = !needle || name.includes(needle) || author.includes(needle);
-        const matchCls = active.classification.size === 0 || active.classification.has(cls);
-        const matchYr = active.year.size === 0 || active.year.has(yr);
-        const matchScr = active.script.size === 0 || scr.some((s) => active.script.has(s));
-
-        r.dataset.hidden = String(!(matchSearch && matchCls && matchYr && matchScr));
+        const matchYr     = active.year.size === 0 || active.year.has(yr);
+        r.dataset.hidden  = String(!(matchSearch && matchYr));
       });
     }
 
-    // ----- Sort -----
     let currentSort = 'shuffle';
     const sortBtns = document.querySelectorAll('[data-sort]');
     sortBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
-        currentSort = btn.getAttribute('data-sort');
+        currentSort = (btn as HTMLElement).dataset.sort!;
         sortBtns.forEach((b) => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
         applySort();
       });
     });
 
-    function shuffle(arr) {
+    function shuffle<T>(arr: T[]): T[] {
       const a = arr.slice();
       for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -140,23 +116,25 @@ const slugOf = (entry) => entry.id.replace(/\.md$/, '');
 
     function applySort() {
       const items = rows();
-      let sorted;
-      if (currentSort === 'shuffle') sorted = shuffle(items);
-      else if (currentSort === 'year') sorted = items.slice().sort((a, b) => (+b.dataset.year) - (+a.dataset.year));
-      else if (currentSort === 'name') sorted = items.slice().sort((a, b) => a.dataset.name.localeCompare(b.dataset.name));
-      else if (currentSort === 'author') sorted = items.slice().sort((a, b) => (a.dataset.author || '').localeCompare(b.dataset.author || ''));
+      let sorted: HTMLElement[];
+      if      (currentSort === 'shuffle') sorted = shuffle(items);
+      else if (currentSort === 'year')    sorted = items.slice().sort((a, b) => +(b.dataset.year ?? 0) - +(a.dataset.year ?? 0));
+      else if (currentSort === 'name')    sorted = items.slice().sort((a, b) => (a.dataset.name ?? '').localeCompare(b.dataset.name ?? ''));
+      else if (currentSort === 'author')  sorted = items.slice().sort((a, b) => (a.dataset.author ?? '').localeCompare(b.dataset.author ?? ''));
       else sorted = items;
-      sorted.forEach((el) => list.appendChild(el));
+      sorted.forEach((el) => list?.appendChild(el));
     }
     applySort();
 
-    // ----- Random -----
     document.getElementById('tfRandom')?.addEventListener('click', () => {
       const visible = rows().filter((r) => r.dataset.hidden !== 'true');
       if (!visible.length) return;
       const pick = visible[Math.floor(Math.random() * visible.length)];
       pick.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      pick.animate([{ background: 'var(--surface-alt)' }, { background: 'transparent' }], { duration: 1200, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' });
+      pick.animate(
+        [{ background: 'var(--surface-alt)' }, { background: 'transparent' }],
+        { duration: 1200, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }
+      );
     });
   </script>
 </Base>
