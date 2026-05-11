@@ -14,7 +14,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
   const defaultText = tf.styleTexts[clampedIdx] || tf.styleTexts[0] || tf.title;
   const initialSizePx = Math.round((parseFloat(tf.mainSize) || 6) * 16);
 
-  const [size, setSize] = useState(nearest(initialSizePx, SIZE_STEPS));
+  const [size, setSize] = useState(nearest(Math.max(72, initialSizePx), SIZE_STEPS));
   const [variantIdx, setVariantIdx] = useState(clampedIdx);
   const [text, setText] = useState(defaultText);
   const textRef = useRef(null);

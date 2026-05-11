@@ -167,16 +167,17 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   .site-nav__links {
     position: fixed;
     inset: var(--nav-h) 0 0 0;
-    background: var(--bg);
+    background: color-mix(in srgb, var(--surface, #fafaf8) 98%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-5);
     padding: var(--space-6) var(--space-5);
-    transform: translateY(-8px);
+    transform: translateY(-10px);
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
-    border-bottom: 1px solid var(--border);
   }
   .site-nav__links a { font-size: var(--step-2); color: var(--text); }
   .site-nav[data-menu="open"] .site-nav__links {
