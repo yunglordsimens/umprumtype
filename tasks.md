@@ -68,6 +68,64 @@
 
 *Результат: можно добавлять посты через веб-интерфейс.*
 
+## Этап 3: Настройка CMS для Journal и Projects
+
+В проекте уже есть Decap CMS, доступная по /admin. Нужно добавить две коллекции:
+journal и projects. Они будут иметь одинаковую структуру полей.
+
+### 1. Обновить `public/admin/config.yml` (или `src/admin/config.yml`)
+Добавь в секцию collections:
+
+collections:
+  - name: 'journal'
+    label: 'Journal'
+    folder: 'src/content/journal'
+    create: true
+    fields:
+      - { label: 'Title', name: 'title', widget: 'string' }
+      - { label: 'Date', name: 'date', widget: 'datetime' }
+      - { label: 'Tags', name: 'tags', widget: 'list', default: [] }
+      - { label: 'Author', name: 'author', widget: 'string', required: false }
+      - { label: 'Body', name: 'body', widget: 'markdown' }
+      - { label: 'Gallery', name: 'gallery', widget: 'list', required: false, fields: [
+          { label: 'Image', name: 'image', widget: 'image' }
+        ]}
+      - { label: 'Purchasable', name: 'purchasable', widget: 'boolean', default: false }
+      - { label: 'Contact', name: 'contact', widget: 'text', required: false }
+
+  - name: 'projects'
+    label: 'Projects'
+    folder: 'src/content/projects'
+    create: true
+    fields:
+      # Точно такие же поля, как у journal
+      - { label: 'Title', name: 'title', widget: 'string' }
+      - { label: 'Date', name: 'date', widget: 'datetime' }
+      - { label: 'Tags', name: 'tags', widget: 'list', default: [] }
+      - { label: 'Author', name: 'author', widget: 'string', required: false }
+      - { label: 'Body', name: 'body', widget: 'markdown' }
+      - { label: 'Gallery', name: 'gallery', widget: 'list', required: false, fields: [
+          { label: 'Image', name: 'image', widget: 'image' }
+        ]}
+      - { label: 'Purchasable', name: 'purchasable', widget: 'boolean', default: false }
+      - { label: 'Contact', name: 'contact', widget: 'text', required: false }
+2. Проверить
+
+После пуша убедись, что:
+
+В админке по адресу /admin появились разделы Journal и Projects.
+Можно создать новый пост, загрузить картинки в галерею.
+Сохраняется markdown-файл в соответствующей папке (src/content/journal или projects).
+3. Создать тестовые посты
+
+Создай 1-2 тестовых поста через админку для проверки (потом можно удалить).
+
+text
+
+---
+
+Когда этот этап будет готов, мы сразу перейдём к **Этапу 4** — страницам-архивам Journal и Projects, которые будут использовать созданные компоненты и данные из CMS.
+
 ---
 
 ### 📚 ЭТАП 4 — СТРАНИЦЫ АРХИВОВ (Journal / Projects)
