@@ -1,144 +1,133 @@
 ---
 import Base from '../../layouts/Base.astro';
+import TypefaceAccordion from '../../components/TypefaceAccordion.jsx';
 import { getAllTypefaces } from '../../lib/typefaces';
 
 const all = getAllTypefaces();
-const years = [...new Set(all.map(t => t.year).filter(Boolean))]
-  .sort((a, b) => (b ?? 0) - (a ?? 0));
 
 const fontFaces = all
-  .filter(t => t.defaultVariant)
-  .map(t => {
-    const v = t.defaultVariant!;
-    const fam = t.title.replace(/"/g, '\\"');
-    return `@font-face{font-family:"${fam}";src:url("${v.webPath}") format("opentype");font-weight:${v.weight};font-style:${v.style};font-display:swap;}`;
-  })
+  .flatMap(t =>
+    t.otfVariants.map(v => {
+      const fam = t.title.replace(/"/g, '\\"');
+      return `@font-face{font-family:"${fam}";src:url("${v.webPath}") format("opentype");font-weight:${v.weight};font-style:${v.style};font-display:swap;}`;
+    })
+  )
   .join('\n');
 ---
 <Base title="Typefaces — Umprum Type" description="Archive of typefaces designed at the type class of UMPRUM, Prague.">
   <style set:html={fontFaces}></style>
+
+  <style>
+    /* Accordion list */
+    .tfa-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tfa-item {
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Trigger row */
+    .tfa-trigger {
+      width: 100%;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-5);
+      padding: var(--space-4) 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      transition: background var(--dur-fast) var(--ease);
+    }
+    .tfa-trigger:hover {
+      background: var(--surface-alt);
+    }
+    .tfa-trigger__name {
+      font-size: var(--step-3);
+      line-height: 1;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+    .tfa-trigger__meta {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-4);
+      flex-shrink: 0;
+      font-size: var(--step--1);
+      color: var(--text-muted);
+    }
+    .tfa-trigger__arrow {
+      color: var(--text-subtle);
+      transition: transform var(--dur-fast) var(--ease);
+      display: inline-block;
+    }
+    .tfa-trigger.is-open .tfa-trigger__arrow {
+      transform: rotate(180deg);
+    }
+    @media (max-width: 720px) {
+      .tfa-trigger__designer { display: none; }
+    }
+
+    /* Panel */
+    .tfa-panel {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition:
+        max-height 600ms cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 400ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tfa-panel__inner {
+      padding-bottom: var(--space-7);
+    }
+
+    /* About blocks inside accordion */
+    .tfa-about {
+      margin-top: var(--space-6);
+      max-width: var(--measure);
+    }
+    .tfa-about h3 {
+      font-size: var(--step--1);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-subtle);
+      margin-bottom: var(--space-3);
+      font-weight: 400;
+    }
+    .tfa-about p,
+    .tfa-about--designer p {
+      font-size: var(--step-0);
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .tfa-about--designer a {
+      color: var(--text);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .tfa-about--designer a:hover { color: var(--text-muted); }
+
+    /* specimen reset button inside accordion */
+    :global(.tfa-panel .specimen__reset) {
+      font-size: var(--step-0);
+      color: var(--text-subtle);
+      border: none !important;
+      padding: 0 var(--space-2) !important;
+    }
+    :global(.tfa-panel .specimen__reset:hover) { color: var(--text) !important; }
+  </style>
+
   <section class="container">
     <header class="page-head" data-reveal>
       <h1>Typefaces</h1>
-      <p class="muted">{all.length} designs from the UMPRUM type class. Filters combine AND across rows, OR within.</p>
+      <p class="muted">{all.length} designs from the UMPRUM type class.</p>
     </header>
 
-    <div class="tf-controls" data-reveal>
-      <input type="search" placeholder="Search by name or designer…" class="tf-search" id="tfSearch" />
-      <div class="tf-sort">
-        <button data-sort="shuffle" aria-pressed="true">shuffle</button>
-        <button data-sort="year">year</button>
-        <button data-sort="name">name</button>
-        <button data-sort="author">designer</button>
-        <button id="tfRandom">→ random</button>
-      </div>
-    </div>
-
-    <div class="tf-filters" data-reveal>
-      <div class="tf-filter-row" data-group="year">
-        <span class="tf-filter-label">year</span>
-        {years.map(y => (
-          <button data-filter="year" data-value={String(y)}>{y}</button>
-        ))}
-      </div>
-    </div>
-
-    <ul class="tf-list" id="tfList" data-reveal-stagger>
-      {all.map(t => (
-        <li
-          class="tf-row"
-          data-row
-          data-name={t.title.toLowerCase()}
-          data-author={t.designer.toLowerCase()}
-          data-year={t.year ?? ''}
-        >
-          <a href={`/typefaces/${t.slug}`} class="tf-row__link">
-            <span
-              class="tf-row__name"
-              style={`font-family:"${t.title.replace(/"/g, '\\"')}",var(--font-ui);font-weight:${t.defaultVariant?.weight ?? 400}`}
-            >{t.title}</span>
-            <span class="tf-row__class">{t.mainText}</span>
-            <span class="tf-row__author">{t.designer}</span>
-            <span class="tf-row__year">{t.year}</span>
-          </a>
-        </li>
-      ))}
-    </ul>
+    <TypefaceAccordion client:load typefaces={all} />
   </section>
-
-  <script>
-    const list = document.getElementById('tfList')!;
-    const rows = () => Array.from(document.querySelectorAll('[data-row]')) as HTMLElement[];
-
-    const active: Record<string, Set<string>> = { year: new Set() };
-
-    document.querySelectorAll('[data-filter]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const el    = btn as HTMLElement;
-        const group = el.dataset.filter!;
-        const val   = el.dataset.value!;
-        const set   = active[group];
-        if (set.has(val)) { set.delete(val); btn.setAttribute('aria-pressed', 'false'); }
-        else              { set.add(val);    btn.setAttribute('aria-pressed', 'true'); }
-        applyFilters();
-      });
-    });
-
-    const q = document.getElementById('tfSearch') as HTMLInputElement | null;
-    q?.addEventListener('input', applyFilters);
-
-    function applyFilters() {
-      const needle = (q?.value ?? '').trim().toLowerCase();
-      rows().forEach((r) => {
-        const name   = r.dataset.name   ?? '';
-        const author = r.dataset.author ?? '';
-        const yr     = r.dataset.year   ?? '';
-        const matchSearch = !needle || name.includes(needle) || author.includes(needle);
-        const matchYr     = active.year.size === 0 || active.year.has(yr);
-        r.dataset.hidden  = String(!(matchSearch && matchYr));
-      });
-    }
-
-    let currentSort = 'shuffle';
-    const sortBtns = document.querySelectorAll('[data-sort]');
-    sortBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        currentSort = (btn as HTMLElement).dataset.sort!;
-        sortBtns.forEach((b) => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
-        applySort();
-      });
-    });
-
-    function shuffle<T>(arr: T[]): T[] {
-      const a = arr.slice();
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
-
-    function applySort() {
-      const items = rows();
-      let sorted: HTMLElement[];
-      if      (currentSort === 'shuffle') sorted = shuffle(items);
-      else if (currentSort === 'year')    sorted = items.slice().sort((a, b) => +(b.dataset.year ?? 0) - +(a.dataset.year ?? 0));
-      else if (currentSort === 'name')    sorted = items.slice().sort((a, b) => (a.dataset.name ?? '').localeCompare(b.dataset.name ?? ''));
-      else if (currentSort === 'author')  sorted = items.slice().sort((a, b) => (a.dataset.author ?? '').localeCompare(b.dataset.author ?? ''));
-      else sorted = items;
-      sorted.forEach((el) => list.appendChild(el));
-    }
-    applySort();
-
-    document.getElementById('tfRandom')?.addEventListener('click', () => {
-      const visible = rows().filter((r) => r.dataset.hidden !== 'true');
-      if (!visible.length) return;
-      const pick = visible[Math.floor(Math.random() * visible.length)];
-      pick.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      pick.animate(
-        [{ background: 'var(--surface-alt)' }, { background: 'transparent' }],
-        { duration: 1200, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }
-      );
-    });
-  </script>
 </Base>
