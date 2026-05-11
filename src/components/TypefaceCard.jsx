@@ -6,12 +6,7 @@ function nearest(val, steps) {
   return steps.reduce((a, b) => (Math.abs(b - val) < Math.abs(a - val) ? b : a));
 }
 
-// auto column count from font size
-function autoCols(size) {
-  if (size <= 48) return 1;
-  if (size <= 96) return 2;
-  return 3;
-}
+const autoCols = (s) => s <= 32 ? 3 : s <= 56 ? 2 : 1;
 
 export default function TypefaceCard({ tf, isOpen, onOpen }) {
   const clampedIdx = Math.min(
