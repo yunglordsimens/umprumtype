@@ -16,8 +16,10 @@ function titleHue(title = '') {
   return h;
 }
 
-export default function GridCard({ title = '', author, year, image, tags = [], onClick }) {
+export default function GridCard({ title = '', author, year, image, tags = [], onClick, coverBg, coverText }) {
   const hue = titleHue(title);
+  const bg  = coverBg  || `hsl(${hue} 35% 55%)`;
+  const fg  = coverText || '#fff';
 
   return (
     <article
@@ -33,7 +35,7 @@ export default function GridCard({ title = '', author, year, image, tags = [], o
         ) : (
           <span
             className="grid-card__initials"
-            style={{ background: `hsl(${hue} 35% 55%)` }}
+            style={{ background: bg, color: fg }}
           >
             {initials(title)}
           </span>

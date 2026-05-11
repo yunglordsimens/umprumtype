@@ -2,6 +2,34 @@ import { useState } from 'react';
 import GridCard from './GridCard.jsx';
 import DetailPanel from './DetailPanel.jsx';
 
+const TAG_COVERS = {
+  'type':                  { bg: '#18181b', text: '#ffffff' },
+  'teorie':                { bg: '#e7e5e4', text: '#18181b' },
+  'history':               { bg: '#78350f', text: '#ffffff' },
+  'graphic design':        { bg: '#1e3a5f', text: '#ffffff' },
+  'magazine':              { bg: '#dc2626', text: '#ffffff' },
+  'cyrillic':              { bg: '#3730a3', text: '#ffffff' },
+  'book making':           { bg: '#064e3b', text: '#ffffff' },
+  'katalog':               { bg: '#52525b', text: '#ffffff' },
+  'polygraphy and print':  { bg: '#7c2d12', text: '#ffffff' },
+  'umprumtype':            { bg: '#4c1d95', text: '#ffffff' },
+  'umprum':                { bg: '#6b21a8', text: '#ffffff' },
+  'specimen':              { bg: '#9f1239', text: '#ffffff' },
+  'beletrie':              { bg: '#115e59', text: '#ffffff' },
+  'fine art':              { bg: '#be185d', text: '#ffffff' },
+  'other':                 { bg: '#404040', text: '#ffffff' },
+  'bachelor/diploma work': { bg: '#365314', text: '#ffffff' },
+  'final work':            { bg: '#164e63', text: '#ffffff' },
+  'artists book':          { bg: '#4a044e', text: '#ffffff' },
+};
+
+function coverFromTags(tags = []) {
+  for (const t of tags) {
+    if (TAG_COVERS[t]) return TAG_COVERS[t];
+  }
+  return null;
+}
+
 function getPostHtml(slug) {
   const el = document.querySelector(`[data-post-slug="${slug}"]`);
   return el ? el.innerHTML : '';
@@ -31,20 +59,25 @@ export default function StoreIsland({ items }) {
   return (
     <>
       <div className="store-grid">
-        {items.map(item => (
-          <GridCard
-            key={item.slug}
-            title={item.title}
-            author={item.author}
-            year={item.year}
-            image={item.image}
-            tags={item.tags}
-            onClick={() => openItem(item)}
-          />
-        ))}
+        {items.map(item => {
+          const cover = coverFromTags(item.tags);
+          return (
+            <GridCard
+              key={item.slug}
+              title={item.title}
+              author={item.author}
+              year={item.year}
+              image={item.image}
+              tags={item.tags}
+              coverBg={cover?.bg}
+              coverText={cover?.text}
+              onClick={() => openItem(item)}
+            />
+          );
+        })}
       </div>
 
-      <DetailPanel isOpen={!!openSlug} onClose={closeItem}>
+      <DetailPanel isOpen={!!openSlug} onClose={closeItem} variant="accent">
         {activeItem && (
           <StoreDetail item={activeItem} html={panelHtml} />
         )}
@@ -81,7 +114,6 @@ function StoreDetail({ item, html }) {
         dangerouslySetInnerHTML={{ __html: html }}
       />
 
-      {/* contact block — primary CTA for store items */}
       {item.contact && (
         <aside className="post-detail__contact store-contact">
           <h3>Contact author</h3>

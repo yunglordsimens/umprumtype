@@ -75,7 +75,7 @@ export default function ArchiveIsland({ posts }) {
       </section>
 
       {/* right detail panel */}
-      <DetailPanel isOpen={!!openSlug} onClose={closePost}>
+      <DetailPanel isOpen={!!openSlug} onClose={closePost} variant="accent">
         {activePost && (
           <PostContent post={activePost} html={panelHtml} />
         )}

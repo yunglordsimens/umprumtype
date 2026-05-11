@@ -11,7 +11,7 @@ export default function FilterPanel({ allTags = [], activeTags = [], onToggle })
         aria-expanded={open}
       >
         <span>Filters</span>
-        <span className="filter-panel__arrow" aria-hidden="true">{open ? '↑' : '↓'}</span>
+        <span className="filter-panel__arrow" aria-hidden="true">›</span>
       </button>
 
       <div className="filter-panel__body" aria-hidden={!open}>

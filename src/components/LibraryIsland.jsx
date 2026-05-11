@@ -129,7 +129,16 @@ function BookDetail({ book }) {
         {book.year   && <p className="book-detail__year">{book.year}</p>}
         {book.tags.length > 0 && (
           <ul className="book-detail__tags">
-            {book.tags.map(t => <li key={t} className="book-detail__tag">{t}</li>)}
+            {book.tags.map(t => (
+              <li
+                key={t}
+                className="book-detail__tag"
+                style={TAG_COVERS[t]
+                  ? { background: TAG_COVERS[t].bg, color: TAG_COVERS[t].text, borderColor: 'transparent' }
+                  : undefined
+                }
+              >{t}</li>
+            ))}
           </ul>
         )}
       </div>
@@ -238,7 +247,7 @@ export default function LibraryIsland() {
         </div>
       </div>
 
-      <DetailPanel isOpen={!!selectedBook} onClose={() => setSelectedBook(null)}>
+      <DetailPanel isOpen={!!selectedBook} onClose={() => setSelectedBook(null)} variant="accent">
         <BookDetail book={selectedBook} />
       </DetailPanel>
 

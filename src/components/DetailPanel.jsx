@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export default function DetailPanel({ children, onClose, isOpen = false }) {
+export default function DetailPanel({ children, onClose, isOpen = false, variant = '' }) {
   // close on Escape
   useEffect(() => {
     if (!isOpen) return;
@@ -19,7 +19,7 @@ export default function DetailPanel({ children, onClose, isOpen = false }) {
       />
 
       <aside
-        className={`detail-panel${isOpen ? ' is-open' : ''}`}
+        className={`detail-panel${variant ? ` detail-panel--${variant}` : ''}${isOpen ? ' is-open' : ''}`}
         aria-modal="true"
         role="dialog"
       >
