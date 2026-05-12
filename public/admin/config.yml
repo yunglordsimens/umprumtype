@@ -130,7 +130,8 @@ collections:
         required: false
         hint: "How to reach the author for purchase or collaboration (email, link, etc.)"
       - { label: "Product Title", name: "productTitle", widget: "string", required: false }
-      - { label: "Product Image", name: "productImage", widget: "image",  required: false }\n      - { label: "Store Image", name: "storeImage", widget: "image", required: false, hint: "Shown in Store grid; falls back to first gallery image" }
+      - { label: "Product Image", name: "productImage", widget: "image",  required: false }
+      - { label: "Store Image", name: "storeImage", widget: "image", required: false, hint: "Shown in Store grid; falls back to first gallery image" }
       - { label: "Price",    name: "price",    widget: "string",  required: false }
       - label: "Content Blocks"
         name: "blocks"
