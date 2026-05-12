@@ -25,7 +25,7 @@ const rendered = await Promise.all(
 const items = purchasable.map(e => {
   const d = e.data;
   // first usable image: gallery[0] → heroImage → cover → productImage
-  const image = d.gallery?.[0] ?? d.heroImage ?? (d as any).cover ?? (d as any).productImage ?? null;
+  const image = (d as any).storeImage ?? d.gallery?.[0] ?? d.heroImage ?? (d as any).cover ?? (d as any).productImage ?? null;
   return {
     slug:     slugOf(e),
     title:    (d as any).productTitle || d.title,
@@ -39,6 +39,7 @@ const items = purchasable.map(e => {
     gallery:  d.gallery  ?? [],
     contact:  d.contact  ?? null,
     image,
+    storeImage: (d as any).storeImage ?? null,
   };
 });
 ---

@@ -1,8 +1,15 @@
 import { useState, useEffect, useMemo } from 'react';
 
-const FilterIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+const ExpandIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" />
+    <line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
+  </svg>
+);
+const CollapseIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="4 14 10 14 10 20" /><polyline points="20 10 14 10 14 4" />
+    <line x1="10" y1="14" x2="3" y2="21" /><line x1="21" y1="3" x2="14" y2="10" />
   </svg>
 );
 const CloseIcon = () => (
@@ -47,12 +54,9 @@ const TAG_COVERS = {
   'artists book':          { bg: '#4a044e', text: '#ffffff' },
 };
 
-// deterministic hue from title string — matches GridCard
 function titleHue(title = '') {
   let h = 0;
-  for (let i = 0; i < title.length; i++) {
-    h = (h * 31 + title.charCodeAt(i)) % 360;
-  }
+  for (let i = 0; i < title.length; i++) h = (h * 31 + title.charCodeAt(i)) % 360;
   return h;
 }
 
@@ -69,34 +73,35 @@ function getPostHtml(slug) {
   return el ? el.innerHTML : '';
 }
 
+// storeImage > gallery image > null
+function itemImage(item) {
+  return item.storeImage ?? item.image ?? null;
+}
+
 function StoreCard({ item, onClick }) {
   const cover = getCover(item);
+  const img   = itemImage(item);
   return (
     <div
-      className="lib-card"
+      className="store-card"
       onClick={onClick}
       role="button"
       tabIndex={0}
       onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onClick?.()}
     >
-      <div className="lib-book">
-        <div className="lib-book__cover" style={{ background: cover.bg }}>
-          {item.image ? (
-            <img src={item.image} alt={item.title} className="lib-book__img" loading="lazy" />
-          ) : (
-            <div className="lib-book__text" style={{ color: cover.text }}>
-              <span className="lib-book__text-title">{item.title}</span>
-              {item.author && <span className="lib-book__text-author">{item.author}</span>}
-            </div>
-          )}
-          <div className="lib-book__spine" />
-          <div className="lib-book__shine" />
-        </div>
+      <div className="store-card__cover" style={{ background: cover.bg }}>
+        {img ? (
+          <img src={img} alt={item.title} loading="lazy" />
+        ) : (
+          <span className="store-card__initials" style={{ color: cover.text }}>
+            {item.title.slice(0, 2).toUpperCase()}
+          </span>
+        )}
       </div>
-      <div className="lib-card__info">
-        <h4 className="lib-card__title">{item.title}</h4>
-        <p className="lib-card__author">{item.author || <em>—</em>}</p>
-        {item.year && <p className="lib-card__year">{item.year}</p>}
+      <div className="store-card__info">
+        <h4 className="store-card__title">{item.title}</h4>
+        <p className="store-card__author">{item.author || <em>—</em>}</p>
+        {item.year && <p className="store-card__year">{item.year}</p>}
       </div>
     </div>
   );
@@ -108,6 +113,7 @@ export default function StoreIsland({ items }) {
   const [showFilters, setShowFilters] = useState(false);
   const [openSlug, setOpenSlug]       = useState(null);
   const [panelHtml, setPanelHtml]     = useState('');
+  const [expanded, setExpanded]       = useState(false);
 
   const allTags = useMemo(
     () => [...new Set(items.flatMap(i => i.tags ?? []))].sort(),
@@ -134,7 +140,7 @@ export default function StoreIsland({ items }) {
     setPanelHtml(getPostHtml(item.slug));
   }
 
-  function closeItem() { setOpenSlug(null); }
+  function closeItem() { setOpenSlug(null); setExpanded(false); }
 
   function toggleTag(tag) {
     setActiveTags(prev =>
@@ -149,8 +155,9 @@ export default function StoreIsland({ items }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [openSlug]);
 
-  const activeItem = items.find(i => i.slug === openSlug) ?? null;
+  const activeItem  = items.find(i => i.slug === openSlug) ?? null;
   const activeCover = activeItem ? getCover(activeItem) : null;
+  const activeImg   = activeItem ? itemImage(activeItem) : null;
 
   if (items.length === 0) {
     return (
@@ -158,7 +165,7 @@ export default function StoreIsland({ items }) {
         <div className="lib-main">
           <header className="lib-toolbar">
             <div className="lib-right" style={{ marginLeft: 'auto' }}>
-              <span className="lib-wordmark">UMPRUM STORE</span>
+              <span className="lib-wordmark">UMPRUM Type Store</span>
             </div>
           </header>
           <div className="lib-scroll">
@@ -215,7 +222,6 @@ export default function StoreIsland({ items }) {
             onClick={() => setShowFilters(f => !f)}
             aria-pressed={showFilters}
           >
-            <FilterIcon />
             <span className="lib-filter-btn__label">
               {showFilters ? 'Hide filters' : 'Filters'}
             </span>
@@ -233,7 +239,7 @@ export default function StoreIsland({ items }) {
             </div>
           </div>
           <div className="lib-right">
-            <span className="lib-wordmark">UMPRUM STORE</span>
+            <span className="lib-wordmark">UMPRUM Type Store</span>
           </div>
         </header>
 
@@ -245,7 +251,7 @@ export default function StoreIsland({ items }) {
               <p className="tf-island__count">
                 {filtered.length}{filtered.length < items.length ? ` of ${items.length}` : ''} items
               </p>
-              <div className="lib-grid">
+              <div className="store-grid">
                 {filtered.map(item => (
                   <StoreCard key={item.slug} item={item} onClick={() => openItem(item)} />
                 ))}
@@ -256,31 +262,31 @@ export default function StoreIsland({ items }) {
       </div>
 
       {/* ── Right detail panel ── */}
-      <aside className={`lib-detail${activeItem ? ' is-open' : ''}`}>
+      <aside className={`lib-detail${activeItem ? ' is-open' : ''}${expanded ? ' is-expanded' : ''}`}>
         <div className="lib-detail__inner">
           <button className="lib-detail__close" onClick={closeItem} aria-label="Close">
             <ChevronLeftIcon />
           </button>
+          {activeItem && (
+            <button className="lib-detail__expand" onClick={() => setExpanded(e => !e)} aria-label={expanded ? 'Collapse' : 'Expand'}>
+              {expanded ? <CollapseIcon /> : <ExpandIcon />}
+            </button>
+          )}
           <div className="lib-detail__scroll">
             <span className="lib-detail__label">Item details</span>
             {activeItem && (
               <div className="store-detail">
-                {/* Centered cover + meta */}
                 <div className="store-detail__header">
                   <div className="lib-detail__cover" style={{ background: activeCover.bg }}>
-                    {activeItem.image ? (
-                      <img src={activeItem.image} alt={activeItem.title} className="lib-book__img" />
+                    {activeImg ? (
+                      <img src={activeImg} alt={activeItem.title} className="lib-book__img" />
                     ) : (
-                      <>
-                        <div className="lib-book__spine" />
-                        <div className="lib-book__shine" />
-                        <div className="lib-detail__cover-text" style={{ color: activeCover.text }}>
-                          <span className="lib-detail__cover-title">{activeItem.title}</span>
-                          {activeItem.author && (
-                            <span className="lib-detail__cover-author">{activeItem.author}</span>
-                          )}
-                        </div>
-                      </>
+                      <div className="lib-detail__cover-text" style={{ color: activeCover.text }}>
+                        <span className="lib-detail__cover-title">{activeItem.title}</span>
+                        {activeItem.author && (
+                          <span className="lib-detail__cover-author">{activeItem.author}</span>
+                        )}
+                      </div>
                     )}
                   </div>
                   <div className="lib-detail__meta">
@@ -296,8 +302,6 @@ export default function StoreIsland({ items }) {
                     )}
                   </div>
                 </div>
-
-                {/* Full-width body + contact */}
                 {panelHtml && (
                   <div
                     className="post__body post-detail__body store-detail__body"

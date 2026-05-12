@@ -1,3 +1,15 @@
+/* ---------- Svar UI font ---------- */
+@font-face {
+  font-family: 'Svar';
+  src: url('/fonts/Svar/3_Svar%20Regular.otf') format('opentype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Svar';
+  src: url('/fonts/Svar/2_Svar%20Light.otf') format('opentype');
+  font-weight: 300; font-style: normal; font-display: swap;
+}
+
 /* ---------- Tokens ---------- */
 :root {
   --bg: #f8f8f8;
@@ -10,7 +22,7 @@
   --surface: #ffffff;
   --surface-alt: #f2f2ee;
 
-  --font-ui: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-ui: 'Svar', 'Helvetica Neue', system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --step--1: clamp(0.78rem, 0.76rem + 0.1vw, 0.85rem);
@@ -78,10 +90,9 @@ button { background: none; border: none; cursor: pointer; }
 a { color: inherit; text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 ul, ol { list-style: none; }
-h1, h2, h3, h4, h5, h6 { font-weight: 500; line-height: 1.15; letter-spacing: -0.01em; }
-h1 { font-size: var(--step-4); }
-h2 { font-size: var(--step-3); }
-h3 { font-size: var(--step-2); }
+h1, h2, h3, h4, h5, h6 { line-height: 1.3; }
+h1, h2 { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; }
+h3, h4 { font-size: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
 p { font-size: var(--step-0); }
 hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
 
@@ -93,6 +104,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   max-width: var(--wide);
   margin-inline: auto;
   padding-inline: var(--space-5);
+  padding-left: 0;
 }
 @media (min-width: 720px) {
   .container { padding-inline: var(--space-6); }
@@ -656,6 +668,29 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   transition: opacity var(--dur-fast) var(--ease);
 }
 .store-card:hover .store-card__cta { opacity: 1; }
+/* Simple cover for StoreIsland (no 3D book effect) */
+.store-card__cover {
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.store-card__cover img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform 500ms var(--ease);
+}
+.store-card:hover .store-card__cover img { transform: scale(1.03); }
+.store-card__initials {
+  font-size: 2.5rem; font-weight: 700;
+  letter-spacing: -0.02em; opacity: 0.75;
+}
+.store-card__title  { font-size: var(--step-0); font-weight: 600; line-height: 1.2; }
+.store-card__author { font-size: var(--step--1); color: var(--text-muted); }
+.store-card__year   { font-size: var(--step--1); color: var(--text-subtle); }
 
 /* ---------- Typefaces accordion ---------- */
 .tfa-list {
@@ -669,11 +704,8 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
 
 .tfa-trigger {
   width: 100%;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-5);
-  padding: var(--space-5) 0;
+  display: block;
+  padding: var(--space-4) 0;
   background: none;
   border: none;
   cursor: pointer;
@@ -682,21 +714,31 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
 }
 .tfa-trigger:hover { background: var(--surface-alt); }
 
+.tfa-trigger__tags {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  display: block;
+}
 .tfa-trigger__name {
-  /* fluid: ~29px mobile → ~80px 1440px desktop */
-  font-size: clamp(1.8rem, 5vw + 0.5rem, 7rem);
+  font-size: clamp(3rem, 15vw, 15rem);
   font-weight: 500;
-  line-height: 1;
+  line-height: 0.85;
   letter-spacing: -0.02em;
+  word-break: break-all;
   color: var(--text);
+  display: block;
+  padding-block: clamp(1rem, 3vw, 4rem);
 }
 .tfa-trigger__meta {
   display: flex;
   align-items: baseline;
   gap: var(--space-4);
-  flex-shrink: 0;
   font-size: var(--step--1);
   color: var(--text-muted);
+  margin-top: var(--space-2);
 }
 .tfa-trigger__arrow {
   color: var(--text-subtle);
@@ -713,9 +755,12 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   max-height: 0;
   opacity: 0;
   overflow: hidden;
+  transform: scaleY(0.96);
+  transform-origin: top;
   transition:
     max-height 500ms cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 350ms cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 400ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .tfa-panel__inner { padding-bottom: var(--space-7); }
 
@@ -1760,9 +1805,12 @@ body.lib-page .site-footer { display: none; }
 }
 .lib-book {
   position: relative; width: 140px; height: 210px;
-  transition: transform 500ms cubic-bezier(0.16,1,0.3,1);
+  transition: transform 500ms cubic-bezier(0.16,1,0.3,1), box-shadow 500ms cubic-bezier(0.16,1,0.3,1);
 }
-.lib-card:hover .lib-book { transform: translateY(-12px); }
+.lib-card:hover .lib-book {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+}
 .lib-book__cover {
   position: absolute; inset: 0;
   border-radius: 2px 4px 4px 2px; overflow: hidden;
@@ -1812,11 +1860,13 @@ body.lib-page .site-footer { display: none; }
   width: 0; opacity: 0;
 }
 .lib-detail.is-open { width: 420px; opacity: 1; }
+.lib-detail.is-open.is-expanded { width: min(100vw, calc(100vw - 288px)); }
 .lib-detail__inner {
   width: 420px; height: 100%;
   display: flex; flex-direction: column;
   position: relative; flex-shrink: 0;
 }
+.lib-detail.is-expanded .lib-detail__inner { width: 100%; }
 .lib-detail__close {
   position: absolute; top: 32px; left: 24px;
   padding: 8px; background: none; border: none; cursor: pointer;
@@ -1824,6 +1874,13 @@ body.lib-page .site-footer { display: none; }
   transition: color 150ms; z-index: 1;
 }
 .lib-detail__close:hover { color: #000; }
+.lib-detail__expand {
+  position: absolute; top: 32px; right: 24px;
+  padding: 8px; background: none; border: none; cursor: pointer;
+  color: rgba(0,0,0,0.5); display: flex; align-items: center;
+  transition: color 150ms; z-index: 1;
+}
+.lib-detail__expand:hover { color: #000; }
 .lib-detail__scroll {
   flex: 1; overflow-y: auto;
   padding: 96px 48px 48px;
@@ -1931,8 +1988,20 @@ body.lib-page .site-footer { display: none; }
 .lib-detail .post__body h3 { color: #000; }
 /* Gallery: match lib-detail__scroll's 48px horizontal padding */
 .lib-detail .post-detail__gallery {
-  margin-inline: calc(-1 * var(--space-7));
-  padding-inline: var(--space-7);
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  overflow-x: visible !important;
+  scroll-snap-type: none !important;
+  margin: var(--space-5) 0 !important;
+  padding: 0 !important;
+}
+.lib-detail .post-detail__gallery img {
+  height: auto !important;
+  width: 100% !important;
+  aspect-ratio: 4/3;
+  flex-shrink: unset !important;
+  object-fit: cover;
 }
 /* Contact block: use translucent dark instead of CSS-var surface */
 .lib-detail .post-detail__contact {

@@ -48,9 +48,11 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
     if (isOpen) {
       panel.style.maxHeight = panel.scrollHeight + 'px';
       panel.style.opacity = '1';
+      panel.style.transform = 'scaleY(1)';
     } else {
       panel.style.maxHeight = '0';
       panel.style.opacity = '0';
+      panel.style.transform = 'scaleY(0.96)';
     }
   }, [isOpen]);
 
@@ -76,6 +78,9 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
         onClick={onOpen}
         aria-expanded={isOpen}
       >
+        {tf.tags && tf.tags.length > 0 && (
+          <span className="tfa-trigger__tags">{tf.tags.join(' · ')}</span>
+        )}
         <span
           className="tfa-trigger__name"
           style={{

@@ -1,11 +1,6 @@
 import { useState, useMemo } from 'react';
 import TypefaceCard from './TypefaceCard.jsx';
 
-const FilterIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-  </svg>
-);
 
 const CloseIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -190,7 +185,6 @@ export default function TypefaceIsland({ typefaces }) {
             onClick={() => setShowFilters(f => !f)}
             aria-pressed={showFilters}
           >
-            <FilterIcon />
             <span className="lib-filter-btn__label">
               {showFilters ? 'Hide filters' : 'Filters'}
             </span>
@@ -222,7 +216,7 @@ export default function TypefaceIsland({ typefaces }) {
           </div>
 
           <div className="lib-right">
-            <span className="lib-wordmark">UMPRUM TYPEFACES</span>
+            <span className="lib-wordmark">UMPRUM Typefaces</span>
           </div>
         </header>
 

@@ -1,8 +1,15 @@
 import { useState, useEffect, useMemo } from 'react';
 
-const FilterIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+const ExpandIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" />
+    <line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
+  </svg>
+);
+const CollapseIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="4 14 10 14 10 20" /><polyline points="20 10 14 10 14 4" />
+    <line x1="10" y1="14" x2="3" y2="21" /><line x1="21" y1="3" x2="14" y2="10" />
   </svg>
 );
 const CloseIcon = () => (
@@ -37,6 +44,7 @@ export default function JournalIsland({ posts }) {
   const [showFilters, setShowFilters] = useState(false);
   const [openSlug, setOpenSlug]       = useState(null);
   const [panelHtml, setPanelHtml]     = useState('');
+  const [expanded, setExpanded]       = useState(false);
 
   const allTags = useMemo(
     () => [...new Set(posts.flatMap(p => p.tags))].sort(),
@@ -63,7 +71,7 @@ export default function JournalIsland({ posts }) {
     setPanelHtml(getPostHtml(post.slug));
   }
 
-  function closePost() { setOpenSlug(null); }
+  function closePost() { setOpenSlug(null); setExpanded(false); }
 
   function toggleTag(tag) {
     setActiveTags(prev =>
@@ -126,7 +134,6 @@ export default function JournalIsland({ posts }) {
             onClick={() => setShowFilters(f => !f)}
             aria-pressed={showFilters}
           >
-            <FilterIcon />
             <span className="lib-filter-btn__label">
               {showFilters ? 'Hide filters' : 'Filters'}
             </span>
@@ -144,7 +151,7 @@ export default function JournalIsland({ posts }) {
             </div>
           </div>
           <div className="lib-right">
-            <span className="lib-wordmark">UMPRUM JOURNAL</span>
+            <span className="lib-wordmark">UMPRUM Type Journal</span>
           </div>
         </header>
 
@@ -173,11 +180,16 @@ export default function JournalIsland({ posts }) {
       </div>
 
       {/* ── Right detail panel ── */}
-      <aside className={`lib-detail${activePost ? ' is-open' : ''}`}>
+      <aside className={`lib-detail${activePost ? ' is-open' : ''}${expanded ? ' is-expanded' : ''}`}>
         <div className="lib-detail__inner">
           <button className="lib-detail__close" onClick={closePost} aria-label="Close">
             <ChevronLeftIcon />
           </button>
+          {activePost && (
+            <button className="lib-detail__expand" onClick={() => setExpanded(e => !e)} aria-label={expanded ? 'Collapse' : 'Expand'}>
+              {expanded ? <CollapseIcon /> : <ExpandIcon />}
+            </button>
+          )}
           <div className="lib-detail__scroll">
             <span className="lib-detail__label">Post details</span>
             {activePost && (
