@@ -25,31 +25,69 @@ const CheckIcon = () => (
   </svg>
 );
 
+const SORTS = [
+  { key: 'name',     label: 'A–Z' },
+  { key: 'year',     label: 'Year' },
+  { key: 'designer', label: 'Designer' },
+];
+
+// Flat list of filter-able values for a typeface:
+// explicit tags if present; otherwise year + designer as fallback.
+function effectiveTags(tf) {
+  if (tf.tags && tf.tags.length > 0) return tf.tags;
+  const out = [];
+  if (tf.year) out.push(String(tf.year));
+  if (tf.designer && tf.designer !== 'Unknown') out.push(tf.designer);
+  return out;
+}
+
 export default function TypefaceIsland({ typefaces }) {
   const [activeTags, setActiveTags]   = useState([]);
   const [search, setSearch]           = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [openSlug, setOpenSlug]       = useState(null);
+  const [sort, setSort]               = useState('name');
 
-  const allTags = useMemo(
-    () => [...new Set(typefaces.flatMap(t => t.tags ?? []))].sort(),
+  // Derive year and designer lists for filter panel
+  const allYears = useMemo(
+    () => [...new Set(typefaces.map(tf => tf.year).filter(Boolean))]
+            .sort((a, b) => b - a)
+            .map(String),
+    [typefaces]
+  );
+  const allDesigners = useMemo(
+    () => [...new Set(typefaces.map(tf => tf.designer).filter(d => d && d !== 'Unknown'))]
+            .sort((a, b) => a.localeCompare(b, 'cs')),
     [typefaces]
   );
 
   const filtered = useMemo(() => {
     let list = typefaces;
+
     if (activeTags.length > 0) {
-      list = list.filter(t => (t.tags ?? []).some(tag => activeTags.includes(tag)));
-    }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(t =>
-        t.title.toLowerCase().includes(q) ||
-        (t.designer && t.designer.toLowerCase().includes(q))
+      list = list.filter(tf =>
+        activeTags.some(tag => effectiveTags(tf).includes(tag))
       );
     }
-    return list;
-  }, [activeTags, search, typefaces]);
+
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter(tf =>
+        tf.title.toLowerCase().includes(q) ||
+        (tf.designer && tf.designer.toLowerCase().includes(q))
+      );
+    }
+
+    const out = [...list];
+    if (sort === 'year') {
+      out.sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+    } else if (sort === 'designer') {
+      out.sort((a, b) => (a.designer ?? '').localeCompare(b.designer ?? '', 'cs'));
+    } else {
+      out.sort((a, b) => a.title.localeCompare(b.title, 'cs'));
+    }
+    return out;
+  }, [activeTags, search, sort, typefaces]);
 
   function toggleTag(tag) {
     setActiveTags(prev =>
@@ -60,6 +98,8 @@ export default function TypefaceIsland({ typefaces }) {
   function toggleSlug(slug) {
     setOpenSlug(prev => prev === slug ? null : slug);
   }
+
+  const hasExplicitTags = typefaces.some(tf => tf.tags && tf.tags.length > 0);
 
   return (
     <div className="lib-layout">
@@ -73,38 +113,77 @@ export default function TypefaceIsland({ typefaces }) {
               <CloseIcon />
             </button>
           </div>
+
+          {hasExplicitTags && (
+            <div>
+              <h3 className="lib-filter__section-title">Tags</h3>
+              <div className="lib-filter__tags">
+                {[...new Set(typefaces.flatMap(tf => tf.tags ?? []))].sort().map(tag => {
+                  const active = activeTags.includes(tag);
+                  return (
+                    <label
+                      key={tag}
+                      className={`lib-filter__tag${active ? ' is-active' : ''}`}
+                      onClick={() => toggleTag(tag)}
+                    >
+                      <div className="lib-filter__check">{active && <CheckIcon />}</div>
+                      <span className="lib-filter__tag-label">{tag}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div>
-            <h3 className="lib-filter__section-title">Tags</h3>
+            <h3 className="lib-filter__section-title">Year</h3>
             <div className="lib-filter__tags">
-              {allTags.map(tag => {
-                const active = activeTags.includes(tag);
+              {allYears.map(year => {
+                const active = activeTags.includes(year);
                 return (
                   <label
-                    key={tag}
+                    key={year}
                     className={`lib-filter__tag${active ? ' is-active' : ''}`}
-                    onClick={() => toggleTag(tag)}
+                    onClick={() => toggleTag(year)}
                   >
-                    <div className="lib-filter__check">
-                      {active && <CheckIcon />}
-                    </div>
-                    <span className="lib-filter__tag-label">{tag}</span>
+                    <div className="lib-filter__check">{active && <CheckIcon />}</div>
+                    <span className="lib-filter__tag-label">{year}</span>
                   </label>
                 );
               })}
             </div>
-            {activeTags.length > 0 && (
-              <button className="lib-filter__clear" onClick={() => setActiveTags([])}>
-                Clear filters
-              </button>
-            )}
           </div>
+
+          <div>
+            <h3 className="lib-filter__section-title">Designer</h3>
+            <div className="lib-filter__tags">
+              {allDesigners.map(designer => {
+                const active = activeTags.includes(designer);
+                return (
+                  <label
+                    key={designer}
+                    className={`lib-filter__tag${active ? ' is-active' : ''}`}
+                    onClick={() => toggleTag(designer)}
+                  >
+                    <div className="lib-filter__check">{active && <CheckIcon />}</div>
+                    <span className="lib-filter__tag-label">{designer}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
+          {activeTags.length > 0 && (
+            <button className="lib-filter__clear" onClick={() => setActiveTags([])}>
+              Clear filters
+            </button>
+          )}
         </div>
       </aside>
 
       {/* ── Main area ── */}
       <div className="lib-main">
 
-        {/* Toolbar */}
         <header className="lib-toolbar">
           <button
             className="lib-filter-btn"
@@ -130,12 +209,23 @@ export default function TypefaceIsland({ typefaces }) {
             </div>
           </div>
 
+          <div className="tf-sort">
+            {SORTS.map(s => (
+              <button
+                key={s.key}
+                aria-pressed={sort === s.key}
+                onClick={() => setSort(s.key)}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+
           <div className="lib-right">
             <span className="lib-wordmark">UMPRUM TYPEFACES</span>
           </div>
         </header>
 
-        {/* Scrollable list */}
         <div className="lib-scroll tf-island__scroll">
           {filtered.length === 0 ? (
             <div className="lib-empty">No typefaces match.</div>

@@ -1730,6 +1730,8 @@ body.tf-page .site-footer { display: none; }
 }
 
 .lib-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+/* Sort pills inside lib-toolbar must not wrap or grow */
+.lib-toolbar .tf-sort { flex-wrap: nowrap; flex-shrink: 0; }
 .lib-wordmark {
   font-size: 0.6875rem; color: var(--text-subtle);
   letter-spacing: 0.12em; text-transform: uppercase; display: none;
