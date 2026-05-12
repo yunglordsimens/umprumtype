@@ -129,8 +129,8 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-5);
+  justify-content: flex-start;
+  gap: var(--space-8);
 }
 .site-nav__logo {
   font-weight: 500;
@@ -139,12 +139,13 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
 }
 .site-nav__links {
   display: flex;
-  gap: var(--space-6);
+  gap: 0;
   align-items: center;
 }
 .site-nav__links a {
   font-size: var(--step--1);
   color: var(--text-muted);
+  padding-inline: var(--space-3);
   transition: color var(--dur-fast) var(--ease);
 }
 .site-nav__links a:hover,
@@ -269,8 +270,6 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
 
 /* ---------- Page header ---------- */
 .page-head {
-  padding-top: var(--space-7);
-  padding-bottom: var(--space-6);
   border-bottom: 1px solid var(--border);
   margin-bottom: var(--space-6);
 }
@@ -357,7 +356,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.4fr) auto;
   gap: var(--space-5);
   align-items: baseline;
-  padding: var(--space-4) 0;
+  padding: var(--space-4) 0 0;
   transition: background var(--dur-fast) var(--ease);
 }
 .tf-row__link:hover { text-decoration: none; background: var(--surface-alt); }
@@ -581,7 +580,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   scroll-snap-align: start;
   object-fit: cover;
 }
-.post__head { padding-top: var(--space-6); }
+.post__head { }
 .post__meta {
   display: flex;
   gap: var(--space-4);
@@ -598,10 +597,11 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   word-break: break-word;
 }
 .post__body {
-  padding-top: var(--space-5);
   font-size: var(--step-1);
   line-height: 1.6;
 }
+.measure p,
+.post__body p { margin: 0; }
 .post__body p + p { margin-top: 1em; }
 .post__body h2 { margin: 1.6em 0 0.4em; font-size: var(--step-2); }
 .post__body h3 { margin: 1.4em 0 0.3em; font-size: var(--step-1); }
@@ -705,7 +705,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
 .tfa-trigger {
   width: 100%;
   display: block;
-  padding: var(--space-4) 0;
+  padding: 0;
   background: none;
   border: none;
   cursor: pointer;
@@ -728,9 +728,17 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   line-height: 0.85;
   letter-spacing: -0.02em;
   word-break: break-all;
+  white-space: normal;
   color: var(--text);
   display: block;
   padding-block: clamp(1rem, 3vw, 4rem);
+}
+.tfa-trigger__preview {
+  display: block;
+  font-size: var(--step-0);
+  line-height: 1.4;
+  color: var(--text-muted);
+  padding-bottom: var(--space-3);
 }
 .tfa-trigger__meta {
   display: flex;
@@ -846,7 +854,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   grid-template-columns: 120px 1fr auto;
   gap: var(--space-5);
   align-items: baseline;
-  padding: var(--space-4) 0;
+  padding: var(--space-4) 0 0;
   width: 100%;
   background: none;
   border: none;
@@ -1868,22 +1876,22 @@ body.lib-page .site-footer { display: none; }
 }
 .lib-detail.is-expanded .lib-detail__inner { width: 100%; }
 .lib-detail__close {
-  position: absolute; top: 32px; left: 24px;
-  padding: 8px; background: none; border: none; cursor: pointer;
+  position: absolute; top: 0; left: 0;
+  padding: 1rem; background: none; border: none; cursor: pointer;
   color: rgba(0,0,0,0.6); display: flex; align-items: center;
   transition: color 150ms; z-index: 1;
 }
 .lib-detail__close:hover { color: #000; }
 .lib-detail__expand {
-  position: absolute; top: 32px; right: 24px;
-  padding: 8px; background: none; border: none; cursor: pointer;
+  position: absolute; top: 0; right: 0;
+  padding: 1rem; background: none; border: none; cursor: pointer;
   color: rgba(0,0,0,0.5); display: flex; align-items: center;
   transition: color 150ms; z-index: 1;
 }
 .lib-detail__expand:hover { color: #000; }
 .lib-detail__scroll {
   flex: 1; overflow-y: auto;
-  padding: 96px 48px 48px;
+  padding: 56px 48px 48px;
   display: flex; flex-direction: column;
 }
 .lib-detail__label {

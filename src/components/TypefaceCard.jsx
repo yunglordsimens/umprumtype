@@ -91,6 +91,16 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
         >
           {tf.title}
         </span>
+        <span
+          className="tfa-trigger__preview"
+          style={{
+            fontFamily: `"${fam}", var(--font-ui)`,
+            fontWeight: current?.weight || 400,
+            fontStyle: current?.style || 'normal',
+          }}
+        >
+          {tf.styleTexts[0] || defaultText}
+        </span>
         <span className="tfa-trigger__meta">
           {tf.designer && <span className="tfa-trigger__designer">{tf.designer}</span>}
           {tf.year && <span className="tfa-trigger__year">{tf.year}</span>}
