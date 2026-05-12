@@ -81,15 +81,10 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
         {tf.tags && tf.tags.length > 0 && (
           <span className="tfa-trigger__tags">{tf.tags.join(' · ')}</span>
         )}
-        <span
-          className="tfa-trigger__name"
-          style={{
-            fontFamily: `"${fam}", var(--font-ui)`,
-            fontWeight: current?.weight || 400,
-            fontStyle: current?.style || 'normal',
-          }}
-        >
-          {tf.title}
+        <span className="tfa-trigger__meta-inline">
+          {tf.designer && <span>{tf.designer}</span>}
+          {tf.designer && tf.year && ', '}
+          {tf.year && <span>{tf.year}</span>}
         </span>
         <span
           className="tfa-trigger__preview"
@@ -100,11 +95,6 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
           }}
         >
           {tf.styleTexts[0] || defaultText}
-        </span>
-        <span className="tfa-trigger__meta">
-          {tf.designer && <span className="tfa-trigger__designer">{tf.designer}</span>}
-          {tf.year && <span className="tfa-trigger__year">{tf.year}</span>}
-          <span className="tfa-trigger__arrow" aria-hidden="true">{isOpen ? '↑' : '↓'}</span>
         </span>
       </button>
 
