@@ -1580,17 +1580,14 @@ body.home-page .site-nav__burger::after {
    Library page — full-viewport layout (lib-*)
    ================================================================ */
 
-body.lib-page,
-body.tf-page { overflow: hidden; }
-body.lib-page #main,
-body.tf-page #main {
+body.lib-page { overflow: hidden; }
+body.lib-page #main {
   height: calc(100dvh - var(--nav-h));
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
-body.lib-page .site-footer,
-body.tf-page .site-footer { display: none; }
+body.lib-page .site-footer { display: none; }
 
 .lib-loading {
   display: flex;
