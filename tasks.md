@@ -1,143 +1,151 @@
-
-
----
-
-### 🔬 Анализ Velvetyne.fr (шрифты и предпоказ)
-
-**Что мы видим на главной:**
-- Каждая карточка шрифта занимает всю ширину. Название шрифта набрано **им самим**.
-- Кегль гигантский: используется `clamp(3rem, 15vw, 15rem)` (на всю ширину окна).
-- Текст разбивается на слоги/буквы, чтобы занять всю строку: `letter-spacing: -0.01em; word-break: break-all;`.
-- Высота строки: `line-height: 0.85`.
-- Внутренний отступ у строки: `padding: 0 2rem`.
-- **Наведение:** при наведении появляется тень текста или меняется начертание.
-
-**Вывод:**  
-Нам нужно сделать так же, адаптировав значения под нашу сетку и наши шрифты.
+Готово. Вот финальная инструкция для Клода, которая добавит гибкие блоки в CMS и на страницы постов. Ты можешь скопировать её и отправить.
 
 ---
 
-### 📋 Финальная инструкция для Claude Code (копировать и отправить)
+```
+## Задача: добавить гибкие блоки контента (текст/изображения) в проекты и журнал
 
-```text
-## UMPRUM Type — ФИНАЛЬНЫЙ ЧЕК-ЛИСТ ПРАВОК (точная спецификация)
+### 1. ОБНОВИТЬ CMS (public/admin/config.yml или src/admin/config.yml)
 
-### 1. ГЛОБАЛЬНАЯ ТИПОГРАФИКА И МЕНЮ
+В коллекциях `projects` и `journal` добавить новое поле `blocks`:
 
-1.1. **Основной шрифт Svar:**
-   - В `global.css`, в `:root` заменить `--font-ui` на:
-     `--font-ui: 'Svar', 'Helvetica Neue', system-ui, sans-serif;`
-   - **Важно:** все элементы UI (меню, кнопки, инпуты, фильтры) теперь должны рендериться шрифтом Svar.
+```yaml
+- label: "Content Blocks"
+  name: "blocks"
+  widget: "list"
+  hint: "Build the page by adding text and image blocks in any order."
+  types:
+    - label: "Text"
+      name: "text"
+      widget: "object"
+      fields:
+        - { label: "Content", name: "content", widget: "markdown", default: "Write your text here..." }
+    - label: "Images"
+      name: "images"
+      widget: "object"
+      fields:
+        - label: "Images"
+          name: "items"
+          widget: "list"
+          field: { label: "Image", name: "image", widget: "image" }
+  default:
+    - type: text
+      content: "Enter your opening text."
+    - type: images
+      items: []
+```
 
-1.2. **Единый размер текста:**
-   - Глобально: `--step-0: 1rem;` (16px).
-   - Заголовки `h1, h2, h3` должны использовать `font-size: 1rem;` (тот же размер, что и основной текст).
-   - Визуальная иерархия заголовков достигается ТОЛЬКО через `font-weight: 600` (bold) или `text-transform: uppercase; letter-spacing: 0.06em`.
+**Важно:**  
+Убедись, что старые поля `body` и `gallery` остаются в коллекциях, но будут использоваться как fallback (см. шаг 3).
 
-1.3. **Сдвиг меню и панели фильтров:**
-   - `.site-nav__inner` и `.container`: `padding-left: 0;`
-   - Логотип "UMPRUM Type", кнопка "Filters" (без иконки!), поле поиска — всё должно быть выровнено по одной левой вертикали.
-   - Удалить `gap` или выравнивающие отступы, которые сдвигают их с общей оси.
-   - Кнопку "Filters" очистить от SVG-иконки, оставить только текст.
+### 2. СОЗДАТЬ КОМПОНЕНТ FLEXCONTENT
 
-### 2. TYPEFACES (аккордеон и предпоказ)
+Создать `src/components/FlexContent.astro`:
 
-2.1. **Предпоказ шрифта (до раскрытия):**
-   - Название шрифта в `.tfa-trigger__name` должно рендериться как на velvetyne.fr:
-     `font-size: clamp(3rem, 15vw, 15rem);`
-     `line-height: 0.85;`
-     `padding: 4rem 0;`
-     `letter-spacing: -0.02em;`
-     `word-break: break-all;`
-   - Теги (`.tfa-trigger__tags`) должны быть над названием:
-     `font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem;`
-   - Автор и год: вынести в отдельную строку под названием.
+```astro
+---
+import { Image } from 'astro:assets';
 
-2.2. **Анимация аккордеона "наплывом":**
-   - При открытии `.tfa-panel`:
-     - Начальное состояние: `opacity: 0; transform: scaleY(0.95);`
-     - Конечное состояние: `opacity: 1; transform: scaleY(1);`
-     - Переход: `cubic-bezier(0.16, 1, 0.3, 1) 500ms`.
+interface Block {
+  type: 'text' | 'images';
+  content?: string;
+  items?: string[];
+}
 
-2.3. **Строки в списке шрифтов:**
-   - При наведении на `.tfa-item` или `.tfa-trigger`:
-     - Фон: `var(--surface-alt)`. Он должен **гарантированно касаться краев окна** (убедись, что `padding` внутри элемента или родителя обнулён).
-     - Если используется грид/флекс, добавить `calc` для отрицательных отступов, как мы делали ранее.
+const { blocks = [] } = Astro.props as { blocks: Block[] };
+---
 
-### 3. БАГИ JOURNAL & PROJECTS
+{
+  blocks.map((block) => {
+    if (block.type === 'text' && block.content) {
+      return (
+        <div class="flex-content__text" data-reveal>
+          <div class="measure" set:html={block.content} />
+        </div>
+      );
+    }
+    if (block.type === 'images' && block.items?.length) {
+      return (
+        <div class="flex-content__images" data-reveal>
+          <div class="flex-content__grid">
+            {block.items.map((img, i) => (
+              <img src={img} alt="" loading="lazy" />
+            ))}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  })
+}
+```
 
-3.1. **Journal:**
-   - Проверить, что `getCollection('journal')` возвращает данные. Если нет, починить `content.config.ts`.
-   - Проверить, что `JournalIsland.jsx` получает валидный массив `posts`.
-   - Если посты загружаются но фильтры пустые — значит проблема в том же, что было с Library: пробелы в тегах или несовпадение данных.
+Добавить в `global.css`:
 
-3.2. **Projects:**
-   - Аналогично Journal. Проверить `getCollection('projects')`.
+```css
+.flex-content__text {
+  margin-bottom: var(--space-8);
+}
+.flex-content__images {
+  margin-bottom: var(--space-8);
+}
+.flex-content__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+.flex-content__grid img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+@media (max-width: 640px) {
+  .flex-content__grid {
+    grid-template-columns: 1fr;
+  }
+}
+```
 
-### 4. STORE
+### 3. ОБНОВИТЬ СТРАНИЦЫ ПОСТОВ (projects/[slug].astro и journal/[slug].astro)
 
-4.1. **Убрать имитацию книг:**
-   - В `StoreIsland.jsx` удалить все классы `.book-cover`, `.book-cover__spine-shadow` и т.д.
-   - Оставить простую сетку `.store-grid`.
-   - Высота изображений в сетке: `height: auto; aspect-ratio: 4/3;`.
+Заменить текущий рендеринг контента на использование `FlexContent`.
 
-4.2. **Кастомное фото для Store:**
-   - В CMS (`config.yml`) в коллекциях `projects` и `journal` добавить поле:
-     `{ label: "Store Image", name: "storeImage", widget: "image", required: false }`
-   - В `StoreIsland`: если у объекта есть `storeImage`, показывать его. Если нет — показывать первое фото из `gallery`. Если и его нет — цветной блок с инициалами.
+**Для `projects/[slug].astro`:**
 
-### 5. СТРАНИЦА ПРОЕКТА / ЖУРНАЛА
+Удалить или закомментировать старые блоки `<div class="post__body">`, `<div class="post__gallery">`, `<Content />`.
 
-5.1. **Новая вёрстка (вместо слайдера):**
-   - Создать компонент `FlexContent.astro` (или внутри острова).
-   - В CMS для `projects` и `journal` добавить поле `blocks` (виджет `list`) с возможностью чередовать:
-     - `{ label: "Text", name: "text", widget: "markdown" }`
-     - `{ label: "Images", name: "images", widget: "list", fields: [{ label: "Image", name: "url", widget: "image" }] }`
-   - На странице поста рендерить эти блоки последовательно: там где текст — узкая колонка (640px), где картинки — галерея на всю ширину (или в две колонки).
+Вставить вместо них:
 
-5.2. **Галерея на странице поста:**
-   - Все изображения видны сразу, друг под другом или в `grid-template-columns: 1fr 1fr;`.
-   - Ширина изображений: 100% ширины контейнера.
-   - Отступы между изображениями: `1rem`.
+```astro
+{
+  d.blocks && d.blocks.length > 0 ? (
+    <FlexContent blocks={d.blocks} />
+  ) : (
+    <>
+      {d.gallery && d.gallery.length > 0 && (
+        <div class="post__gallery" data-reveal>
+          {d.gallery.map(img => <img src={img} alt="" loading="lazy" />)}
+        </div>
+      )}
+      <div class="post__body measure" data-reveal>
+        <Content />
+      </div>
+    </>
+  )
+}
+```
 
-### 6. LIBRARY — НАСЛОЕНИЕ КНИГ
+Импортировать `FlexContent`:
 
-6.1. **Эффект наслоения:**
-   - Вернуть в `.book-card` или `.library-grid` стили, которые были в оригинальном `App.jsx`:
-     ```css
-     .book-card {
-       transition: transform 0.3s var(--ease);
-       position: relative;
-       z-index: 1;
-     }
-     .book-card:hover {
-       transform: translateY(-5px) scale(1.02);
-       z-index: 10;
-       box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-     }
-     ```
-   - Убедиться, что сетка не разъезжается при наведении (зафиксировать grid).
+```astro
+import FlexContent from '../../components/FlexContent.astro';
+```
 
-### 7. ОРАНЖЕВАЯ ПАНЕЛЬ (РАЗВОРОТ НА ВСЮ ШИРИНУ)
+Аналогично обновить `journal/[slug].astro`.
 
-7.1. **Поведение:**
-   - В `DetailPanel.jsx` (или в каждом острове) добавить логику:
-     - Есть состояние `expanded` (boolean).
-     - При клике на кнопку разворота (стрелку или фон панели) переключать `expanded`.
+### 4. ПРОВЕРИТЬ ОБРАТНУЮ СОВМЕСТИМОСТЬ
 
-7.2. **Стили:**
-   - В обычном режиме: `width: min(420px, 100vw);`
-   - В развёрнутом режиме (`expanded: true`): `width: 100vw;` (или `width: calc(100vw - 288px)` с учётом фильтров).
-   - Анимация через `cubic-bezier(0.16, 1, 0.3, 1) 600ms`.
-
-### 8. НАЗВАНИЯ РАЗДЕЛОВ (WORDMARK)
-
-8.1. **Заменить в каждом острове:**
-   - `LibraryIsland.jsx` → `UMPRUM Type Library`
-   - `TypefaceIsland.jsx` → `UMPRUM Typefaces`
-   - `ProjectsIsland.jsx` → `UMPRUM Type Projects`
-   - `JournalIsland.jsx` → `UMPRUM Type Journal`
-   - `StoreIsland.jsx` → `UMPRUM Type Store`
-
-После выполнения всех пунктов предоставить отчёт об изменениях.
+- Если пост создан без `blocks` (старый формат), он должен показать `gallery` + `body` как раньше.
+- Если в посте заполнены `blocks`, они заменяют старый вывод.
+- Убедиться, что `post-content-store` (для ArchiveIsland) всё ещё получает корректный HTML предпросмотра. Если нужно, добавить туда поддержку `blocks` или оставить как есть — для предпросмотра в списке можно использовать первый текстовый блок из `blocks` или `excerpt`.
 ```
