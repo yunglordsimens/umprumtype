@@ -1,0 +1,21 @@
+---
+interface Block {
+  type: 'text' | 'images';
+  content?: string;
+  items?: string[];
+}
+const { blocks = [] } = Astro.props as { blocks: Block[] };
+---
+{blocks.map((block) => {
+  if (block.type === 'text' && block.content)
+    return <div class="flex-content__text" data-reveal><div class="measure" set:html={block.content} /></div>;
+  if (block.type === 'images' && block.items?.length)
+    return (
+      <div class="flex-content__images" data-reveal>
+        <div class="flex-content__grid">
+          {block.items.map(img => <img src={img} alt="" loading="lazy" />)}
+        </div>
+      </div>
+    );
+  return null;
+})}

@@ -2054,6 +2054,37 @@ body.lib-page .site-footer { display: none; }
   .lib-detail__inner { width: 100%; }
 }
 
+/* ---------- FlexContent blocks ---------- */
+.flex-content__text {
+  padding-block: var(--space-4);
+}
+.flex-content__text .measure {
+  max-width: 72ch;
+  margin-inline: auto;
+}
+.flex-content__images {
+  padding-block: var(--space-4);
+}
+.flex-content__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+.flex-content__grid img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+@media (max-width: 640px) {
+  .flex-content__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---------- Print ---------- */
 @media print {
   .site-nav, .site-footer, .bottom-bar, .specimen__controls { display: none !important; }

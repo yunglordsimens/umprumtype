@@ -132,6 +132,25 @@ collections:
       - { label: "Product Title", name: "productTitle", widget: "string", required: false }
       - { label: "Product Image", name: "productImage", widget: "image",  required: false }\n      - { label: "Store Image", name: "storeImage", widget: "image", required: false, hint: "Shown in Store grid; falls back to first gallery image" }
       - { label: "Price",    name: "price",    widget: "string",  required: false }
+      - label: "Content Blocks"
+        name: "blocks"
+        widget: "list"
+        required: false
+        hint: "Flexible text/image blocks. If present, replaces body + gallery on the post page."
+        types:
+          - label: "Text"
+            name: "text"
+            widget: "object"
+            fields:
+              - { label: "Content", name: "content", widget: "markdown" }
+          - label: "Images"
+            name: "images"
+            widget: "object"
+            fields:
+              - label: "Images"
+                name: "items"
+                widget: "list"
+                field: { label: "Image", name: "image", widget: "image" }
       - { label: "Body",     name: "body",     widget: "markdown" }
 
   # -------------------------------------------------------------------------
@@ -165,4 +184,24 @@ collections:
         widget: "text"
         required: false
         hint: "How to reach the author (email, link, etc.)"
-      - { label: "Store Image", name: "storeImage", widget: "image", required: false, hint: "Shown in Store grid; falls back to first gallery image" }\n      - { label: "Body",    name: "body",    widget: "markdown" }
+      - { label: "Store Image", name: "storeImage", widget: "image", required: false, hint: "Shown in Store grid; falls back to first gallery image" }
+      - label: "Content Blocks"
+        name: "blocks"
+        widget: "list"
+        required: false
+        hint: "Flexible text/image blocks. If present, replaces body + gallery on the post page."
+        types:
+          - label: "Text"
+            name: "text"
+            widget: "object"
+            fields:
+              - { label: "Content", name: "content", widget: "markdown" }
+          - label: "Images"
+            name: "images"
+            widget: "object"
+            fields:
+              - label: "Images"
+                name: "items"
+                widget: "list"
+                field: { label: "Image", name: "image", widget: "image" }
+      - { label: "Body",    name: "body",    widget: "markdown" }

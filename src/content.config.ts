@@ -55,8 +55,14 @@ const projects = defineCollection({
     contact: z.string().optional(),
     productTitle: z.string().optional(),
     productImage: z.string().optional(),
+    storeImage: z.string().optional(),
     price: z.string().optional(),
     featured: z.boolean().default(false),
+    blocks: z.array(z.object({
+      type: z.enum(['text', 'images']),
+      content: z.string().optional(),
+      items: z.array(z.string()).optional(),
+    })).optional(),
   }),
 });
 
@@ -75,7 +81,13 @@ const journal = defineCollection({
     excerpt: z.string().optional(),
     purchasable: z.boolean().default(false),
     contact: z.string().optional(),
+    storeImage: z.string().optional(),
     featured: z.boolean().default(false),
+    blocks: z.array(z.object({
+      type: z.enum(['text', 'images']),
+      content: z.string().optional(),
+      items: z.array(z.string()).optional(),
+    })).optional(),
   }),
 });
 
