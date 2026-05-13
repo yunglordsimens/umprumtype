@@ -82,9 +82,9 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
           <span className="tfa-trigger__tags">{tf.tags.join(' · ')}</span>
         )}
         <span className="tfa-trigger__meta-inline">
-          {tf.designer && <span>{tf.designer}</span>}
-          {tf.designer && tf.year && ', '}
-          {tf.year && <span>{tf.year}</span>}
+          <span className="tfa-trigger__meta-name">{tf.title}</span>
+          {tf.designer && <span className="tfa-trigger__meta-designer">{tf.designer}</span>}
+          {tf.year && <span className="tfa-trigger__meta-year">{tf.year}</span>}
         </span>
         <span
           className="tfa-trigger__preview"

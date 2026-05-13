@@ -175,6 +175,9 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
 .site-nav[data-menu="open"] .site-nav__burger::before { top: 16px; transform: rotate(45deg); }
 .site-nav[data-menu="open"] .site-nav__burger::after  { top: 16px; transform: rotate(-45deg); }
 
+/* On the full-viewport lib layout, align logo with the Filters button */
+body.lib-page .site-nav__inner { padding-left: 0; }
+
 @media (max-width: 720px) {
   .site-nav__burger { display: block; }
   .site-nav__links {
@@ -706,7 +709,8 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   width: 100%;
   display: block;
   padding: 0;
-  overflow: visible;
+  overflow: hidden;
+  max-width: 100%;
   background: none;
   border: none;
   cursor: pointer;
@@ -724,11 +728,18 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   display: block;
 }
 .tfa-trigger__meta-inline {
-  display: block;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
   font-size: var(--step--1);
   color: var(--text-muted);
   font-family: var(--font-ui);
   margin-bottom: 0.25em;
+}
+.tfa-trigger__meta-inline span {
+  margin-right: 2em;
+  display: inline-block;
+  white-space: nowrap;
 }
 .tfa-trigger__preview {
   display: block;
@@ -1735,7 +1746,7 @@ body.lib-page .site-footer { display: none; }
 /* ── Toolbar ── */
 .lib-toolbar {
   height: 80px; display: flex; align-items: center;
-  padding: 0 48px; gap: 16px; flex-shrink: 0;
+  padding: 0 48px 0 0; gap: 16px; flex-shrink: 0;
   border-bottom: 1px solid var(--border);
 }
 .lib-filter-btn {
