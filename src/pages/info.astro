@@ -2,29 +2,29 @@
 import Base from '../layouts/Base.astro';
 ---
 <Base title="Info — Umprum Type" description="Type design studio at UMPRUM, Prague.">
-  <section class="container" style="padding-top:var(--space-7);padding-bottom:var(--space-9);">
-    <header data-reveal>
-      <h1 style="font-size:var(--step-4);margin-bottom:var(--space-5);">Info</h1>
+  <section class="container">
+    <header class="page-head">
+      <h1>Info</h1>
+      <p class="muted">О проекте и колофон</p>
     </header>
+    <div class="measure post__body">
+      <p>UMPRUM Type — архив и библиотека студии типографики UMPRUM. Сайт создан в 2025–2026 годах.</p>
 
-    <div data-reveal style="font-size:var(--step-1);line-height:1.6;">
-      <p>UMPRUM Type is the type design studio at the Academy of Arts, Architecture and Design in Prague (UMPRUM). The class is dedicated to typeface design, calligraphy, and typographic research — from historical reconstructions to experimental display type.</p>
-      <p style="margin-top:1em;">This site is an evolving archive of work produced in and around the class: typefaces, projects, and writing.</p>
-    </div>
+      <h2>Colophon</h2>
+      <ul>
+        <li>Дизайн и разработка: [имя]</li>
+        <li>Фреймворк: Astro 6</li>
+        <li>CMS: Decap CMS</li>
+        <li>Хостинг: Vercel</li>
+        <li>Шрифты: студенческие работы студии типографики UMPRUM</li>
+        <li>Библиотека: Google Sheets API</li>
+      </ul>
 
-    <section data-reveal style="margin-top:var(--space-8);">
-      <h2 style="font-size:var(--step-0);text-transform:uppercase;letter-spacing:0.1em;color:var(--text-subtle);margin-bottom:var(--space-3);">Contact</h2>
+      <h2>Контакт</h2>
       <p><a href="mailto:typo@umprum.cz">typo@umprum.cz</a></p>
-    </section>
 
-    <section data-reveal style="margin-top:var(--space-6);">
-      <h2 style="font-size:var(--step-0);text-transform:uppercase;letter-spacing:0.1em;color:var(--text-subtle);margin-bottom:var(--space-3);">Address</h2>
+      <h2>Адрес</h2>
       <p>UMPRUM<br/>náměstí Jana Palacha 80<br/>110 00 Praha 1</p>
-    </section>
-
-    <section data-reveal style="margin-top:var(--space-6);">
-      <h2 style="font-size:var(--step-0);text-transform:uppercase;letter-spacing:0.1em;color:var(--text-subtle);margin-bottom:var(--space-3);">Colophon</h2>
-      <p class="muted">Site built with Astro. Content managed with Decap CMS. Hosted on Vercel.</p>
-    </section>
+    </div>
   </section>
 </Base>
