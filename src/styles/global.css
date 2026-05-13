@@ -858,7 +858,7 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
   grid-template-columns: 120px 1fr auto;
   gap: var(--space-5);
   align-items: baseline;
-  padding: var(--space-4) var(--space-7) 0;
+  padding: var(--space-4) 0 0;
   width: 100%;
   background: none;
   border: none;
@@ -874,6 +874,7 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
   color: var(--text-subtle);
   font-variant-numeric: tabular-nums;
   font-size: var(--step--1);
+  padding-left: var(--space-7);
 }
 .post-row__title {
   font-size: var(--step-2);
@@ -1802,7 +1803,7 @@ body.lib-page .site-footer { display: none; }
 .lib-add-btn:hover { opacity: 0.8; }
 
 /* ── Scroll area ── */
-.lib-scroll { flex: 1; overflow-y: auto; padding: 40px 0 48px; }
+.lib-scroll { flex: 1; overflow-y: auto; padding: 40px 48px 48px; }
 
 /* ── Book grid ── */
 .lib-grid {
@@ -1950,6 +1951,10 @@ body.lib-page .site-footer { display: none; }
   font-size: 0.75rem; color: var(--text-subtle);
 }
 
+/* ── Typeface / Post islands: no horizontal padding — content adds its own ── */
+.tf-island__scroll,
+.post-island__scroll { padding-inline: 0; }
+
 /* ── Typeface island tweaks inside lib-scroll ── */
 .tf-island__count {
   font-size: var(--step--1);
@@ -2027,13 +2032,14 @@ body.lib-page .site-footer { display: none; }
 /* Mobile: panels become fixed overlays */
 @media (max-width: 767px) {
   .lib-toolbar { padding: 0 20px 0 var(--space-5); height: 64px; }
-  .lib-scroll { padding: 24px 0 40px; }
+  .lib-scroll { padding: 24px 20px 40px; }
+  .tf-island__scroll,
+  .post-island__scroll { padding-inline: 0; }
   .tfa-trigger__tags,
-  .tfa-trigger__meta-inline,
   .tfa-trigger__preview { padding-left: 20px; }
-  .tfa-trigger__meta-inline { padding-right: 20px; padding-inline: 20px; }
+  .tfa-trigger__meta-inline { padding-inline: 20px; }
   .tf-island__count { padding-inline: 20px; }
-  .post-row__btn { padding-inline: 20px; }
+  .post-row__date { padding-left: 20px; }
   .lib-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 48px 20px; }
   .lib-filter.is-open {
     position: fixed; top: var(--nav-h); left: 0;
