@@ -176,7 +176,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
 .site-nav[data-menu="open"] .site-nav__burger::after  { top: 16px; transform: rotate(-45deg); }
 
 /* On the full-viewport lib layout, align logo with the Filters button */
-body.lib-page .site-nav__inner { padding-left: 0; }
+body.lib-page .site-nav__inner { padding-left: var(--space-5); }
 
 @media (max-width: 720px) {
   .site-nav__burger { display: block; }
@@ -527,6 +527,7 @@ body.lib-page .site-nav__inner { padding-left: 0; }
 .post-list { margin-top: var(--space-5); }
 .post-row {
   border-bottom: 1px solid var(--border);
+  overflow: hidden;
 }
 .post-row[data-hidden="true"] { display: none; }
 .post-row a {
@@ -703,6 +704,7 @@ body.lib-page .site-nav__inner { padding-left: 0; }
 }
 .tfa-item {
   border-bottom: 1px solid var(--border);
+  overflow: hidden;
 }
 
 .tfa-trigger {
@@ -710,7 +712,6 @@ body.lib-page .site-nav__inner { padding-left: 0; }
   display: block;
   padding: 0;
   overflow: hidden;
-  max-width: 100%;
   background: none;
   border: none;
   cursor: pointer;
@@ -726,6 +727,7 @@ body.lib-page .site-nav__inner { padding-left: 0; }
   color: var(--text-muted);
   margin-bottom: 0.5em;
   display: block;
+  padding-left: var(--space-7);
 }
 .tfa-trigger__meta-inline {
   display: flex;
@@ -735,6 +737,7 @@ body.lib-page .site-nav__inner { padding-left: 0; }
   color: var(--text-muted);
   font-family: var(--font-ui);
   margin-bottom: 0.25em;
+  padding-inline: var(--space-7);
 }
 .tfa-trigger__meta-inline span {
   margin-right: 2em;
@@ -749,7 +752,7 @@ body.lib-page .site-nav__inner { padding-left: 0; }
   word-break: normal;
   white-space: nowrap;
   overflow: visible;
-  padding: 0;
+  padding: 0 0 0 var(--space-7);
 }
 .tfa-trigger__meta {
   display: flex;
@@ -855,7 +858,7 @@ body.lib-page .site-nav__inner { padding-left: 0; }
   grid-template-columns: 120px 1fr auto;
   gap: var(--space-5);
   align-items: baseline;
-  padding: var(--space-4) 0 0;
+  padding: var(--space-4) var(--space-7) 0;
   width: 100%;
   background: none;
   border: none;
@@ -1746,7 +1749,7 @@ body.lib-page .site-footer { display: none; }
 /* ── Toolbar ── */
 .lib-toolbar {
   height: 80px; display: flex; align-items: center;
-  padding: 0 48px 0 0; gap: 16px; flex-shrink: 0;
+  padding: 0 48px 0 var(--space-5); gap: 16px; flex-shrink: 0;
   border-bottom: 1px solid var(--border);
 }
 .lib-filter-btn {
@@ -1799,7 +1802,7 @@ body.lib-page .site-footer { display: none; }
 .lib-add-btn:hover { opacity: 0.8; }
 
 /* ── Scroll area ── */
-.lib-scroll { flex: 1; overflow-y: auto; padding: 40px 48px 48px; }
+.lib-scroll { flex: 1; overflow-y: auto; padding: 40px 0 48px; }
 
 /* ── Book grid ── */
 .lib-grid {
@@ -1952,35 +1955,12 @@ body.lib-page .site-footer { display: none; }
   font-size: var(--step--1);
   color: var(--text-subtle);
   margin-bottom: var(--space-4);
-}
-/* Full-width row hover: extend trigger to fill lib-scroll's 48px padding */
-.tf-island__scroll .tfa-trigger {
-  margin-inline: calc(-1 * var(--space-7));
   padding-inline: var(--space-7);
 }
-@media (max-width: 767px) {
-  .tf-island__scroll .tfa-trigger {
-    margin-inline: calc(-1 * 20px);
-    padding-inline: 20px;
-  }
-}
-
 /* ── Post island (Journal / Projects) inside lib-scroll ── */
 
 /* No double top-margin between count and list */
 .post-island__list { margin-top: 0; }
-
-/* Full-width row hover — extends to lib-scroll's 48px padding edges */
-.post-island__scroll .post-row__btn {
-  margin-inline: calc(-1 * var(--space-7));
-  padding-inline: var(--space-7);
-}
-@media (max-width: 767px) {
-  .post-island__scroll .post-row__btn {
-    margin-inline: calc(-1 * 20px);
-    padding-inline: 20px;
-  }
-}
 
 /* Post detail inside the orange lib-detail panel — pin to dark text
    so it's readable regardless of prefers-color-scheme               */
@@ -2046,8 +2026,14 @@ body.lib-page .site-footer { display: none; }
 
 /* Mobile: panels become fixed overlays */
 @media (max-width: 767px) {
-  .lib-toolbar { padding: 0 20px; height: 64px; }
-  .lib-scroll { padding: 24px 20px 40px; }
+  .lib-toolbar { padding: 0 20px 0 var(--space-5); height: 64px; }
+  .lib-scroll { padding: 24px 0 40px; }
+  .tfa-trigger__tags,
+  .tfa-trigger__meta-inline,
+  .tfa-trigger__preview { padding-left: 20px; }
+  .tfa-trigger__meta-inline { padding-right: 20px; padding-inline: 20px; }
+  .tf-island__count { padding-inline: 20px; }
+  .post-row__btn { padding-inline: 20px; }
   .lib-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 48px 20px; }
   .lib-filter.is-open {
     position: fixed; top: var(--nav-h); left: 0;
