@@ -14,36 +14,9 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const d = entry.data;
 const { Content } = await render(entry);
-
-let titleFamily = null;
-let fontFaceCss = '';
-
-if (d.relatedTypeface) {
-  const typefaces = await getCollection('typefaces');
-  const tf = typefaces.find(t => t.id.replace(/\.md$/, '') === d.relatedTypeface);
-  if (tf) {
-    titleFamily = tf.data.name;
-    fontFaceCss = tf.data.fonts.map(f =>
-      `@font-face{font-family:"${tf.data.name}";src:url("${f.file}") format("woff2");font-weight:${f.weight};font-style:${f.style};font-display:swap;}`
-    ).join('\n');
-  }
-}
 ---
-<Base title={`${d.title} — Umprum Type`} description={d.excerpt || d.title} image={d.heroImage || d.cover}>
-  {fontFaceCss && <style set:html={fontFaceCss}></style>}
+<Base title={`${d.title} — Umprum Type`} description={d.excerpt || d.title}>
   <article class="post">
-    {d.heroImage && (
-      <figure class="post__hero" data-reveal>
-        <img src={d.heroImage} alt={d.title} loading="eager" />
-      </figure>
-    )}
-
-    {(!d.blocks || d.blocks.length === 0) && d.gallery && d.gallery.length > 0 && (
-      <div class="post__gallery" data-reveal>
-        {d.gallery.map(img => <img src={img} alt="" loading="lazy" />)}
-      </div>
-    )}
-
     <div class="container">
       <header class="post__head measure" data-reveal>
         <div class="post__meta">
@@ -51,7 +24,7 @@ if (d.relatedTypeface) {
           <span>{d.category}</span>
           {d.author && <span>{d.author}</span>}
         </div>
-        <h1 class="post__title" style={titleFamily ? `font-family:"${titleFamily}",var(--font-ui)` : ''}>{d.title}</h1>
+        <h1 class="post__title">{d.title}</h1>
         {d.excerpt && <p class="muted" style="font-size:var(--step-1);">{d.excerpt}</p>}
       </header>
 

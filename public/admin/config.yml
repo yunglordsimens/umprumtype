@@ -107,43 +107,25 @@ collections:
     slug: "{{year}}-{{slug}}"
     extension: "md"
     fields:
-      - { label: "Title",    name: "title",    widget: "string" }
-      - { label: "Author",   name: "author",   widget: "string",   required: false }
-      - { label: "Date",     name: "date",     widget: "datetime" }
+      - { label: "Title",  name: "title",  widget: "string" }
+      - { label: "Author", name: "author", widget: "string", required: false }
+      - { label: "Date",   name: "date",   widget: "datetime" }
       - label: "Category"
         name: "category"
         widget: "select"
         options: ["exhibition", "workshop", "publication", "collaboration", "lecture"]
-      - { label: "Tags",    name: "tags",    widget: "list",  default: [] }
-      - { label: "Cover",   name: "cover",   widget: "image", required: false }
-      - { label: "Hero Image", name: "heroImage", widget: "image", required: false, hint: "Full-width image at top of post" }
-      - { label: "Gallery", name: "gallery", widget: "list",  required: false, field: { label: "Image", name: "image", widget: "image" } }
-      - { label: "Related Typeface", name: "relatedTypeface", widget: "string", required: false, hint: "Slug of typeface (e.g. ananas, marz-grotesk)" }
-      - { label: "Custom Font File", name: "customFont", widget: "file", required: false, hint: ".woff2 for the project title" }
-      - { label: "Show Custom Font in Archive", name: "showCustomFontInArchive", widget: "boolean", default: false }
-      - { label: "Excerpt",  name: "excerpt",  widget: "text",    required: false }
-      - { label: "Featured", name: "featured", widget: "boolean", default: false }
-      - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
-      - label: "Contact info"
-        name: "contact"
-        widget: "text"
-        required: false
-        hint: "How to reach the author for purchase or collaboration (email, link, etc.)"
-      - { label: "Product Title", name: "productTitle", widget: "string", required: false }
-      - { label: "Product Image", name: "productImage", widget: "image",  required: false }
-      - { label: "Store Image", name: "storeImage", widget: "image", required: false, hint: "Shown in Store grid; falls back to first gallery image" }
-      - { label: "Price",    name: "price",    widget: "string",  required: false }
+      - { label: "Tags", name: "tags", widget: "list", default: [] }
+      - { label: "Store Image", name: "storeImage", widget: "image", required: false, hint: "Зображення для картки в Store. Якщо не завантажено — перше зображення з блоків." }
       - label: "Content Blocks"
         name: "blocks"
         widget: "list"
-        required: false
-        hint: "Flexible text/image blocks. If present, replaces body + gallery on the post page."
+        hint: "Контент сторінки: текстові блоки та галереї в будь-якому порядку."
         types:
           - label: "Text"
             name: "text"
             widget: "object"
             fields:
-              - { label: "Content", name: "content", widget: "markdown" }
+              - { label: "Content", name: "content", widget: "markdown", default: "Введіть текст..." }
           - label: "Images"
             name: "images"
             widget: "object"
@@ -152,7 +134,19 @@ collections:
                 name: "items"
                 widget: "list"
                 field: { label: "Image", name: "image", widget: "image" }
-      - { label: "Body",     name: "body",     widget: "markdown" }
+        default:
+          - type: text
+            content: "Введіть вступний текст."
+          - type: images
+            items: []
+      - { label: "Excerpt",    name: "excerpt",    widget: "text",    required: false }
+      - { label: "Featured",   name: "featured",   widget: "boolean", default: false }
+      - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
+      - label: "Contact info"
+        name: "contact"
+        widget: "text"
+        required: false
+        hint: "Як зв'язатися з автором для покупки або співпраці (email, посилання тощо)"
 
   # -------------------------------------------------------------------------
   # JOURNAL
@@ -172,31 +166,18 @@ collections:
         name: "category"
         widget: "select"
         options: ["essay", "interview", "process", "review", "news"]
-      - { label: "Tags",    name: "tags",    widget: "list",  default: [] }
-      - { label: "Cover",   name: "cover",   widget: "image", required: false }
-      - { label: "Hero Image", name: "heroImage", widget: "image", required: false }
-      - { label: "Gallery", name: "gallery", widget: "list",  required: false, field: { label: "Image", name: "image", widget: "image" } }
-      - { label: "Related Typeface", name: "relatedTypeface", widget: "string", required: false, hint: "Slug of typeface" }
-      - { label: "Excerpt", name: "excerpt", widget: "text",    required: false }
-      - { label: "Featured",     name: "featured",     widget: "boolean", default: false }
-      - { label: "Purchasable",  name: "purchasable",  widget: "boolean", default: false }
-      - label: "Contact info"
-        name: "contact"
-        widget: "text"
-        required: false
-        hint: "How to reach the author (email, link, etc.)"
-      - { label: "Store Image", name: "storeImage", widget: "image", required: false, hint: "Shown in Store grid; falls back to first gallery image" }
+      - { label: "Tags", name: "tags", widget: "list", default: [] }
+      - { label: "Store Image", name: "storeImage", widget: "image", required: false, hint: "Зображення для картки в Store. Якщо не завантажено — перше зображення з блоків." }
       - label: "Content Blocks"
         name: "blocks"
         widget: "list"
-        required: false
-        hint: "Flexible text/image blocks. If present, replaces body + gallery on the post page."
+        hint: "Контент сторінки: текстові блоки та галереї в будь-якому порядку."
         types:
           - label: "Text"
             name: "text"
             widget: "object"
             fields:
-              - { label: "Content", name: "content", widget: "markdown" }
+              - { label: "Content", name: "content", widget: "markdown", default: "Введіть текст..." }
           - label: "Images"
             name: "images"
             widget: "object"
@@ -205,4 +186,16 @@ collections:
                 name: "items"
                 widget: "list"
                 field: { label: "Image", name: "image", widget: "image" }
-      - { label: "Body",    name: "body",    widget: "markdown" }
+        default:
+          - type: text
+            content: "Введіть вступний текст."
+          - type: images
+            items: []
+      - { label: "Excerpt",    name: "excerpt",    widget: "text",    required: false }
+      - { label: "Featured",   name: "featured",   widget: "boolean", default: false }
+      - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
+      - label: "Contact info"
+        name: "contact"
+        widget: "text"
+        required: false
+        hint: "Як зв'язатися з автором для покупки або співпраці (email, посилання тощо)"

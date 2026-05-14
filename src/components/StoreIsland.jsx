@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import GridCard from './GridCard.jsx';
 
 const ExpandIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -73,39 +74,10 @@ function getPostHtml(slug) {
   return el ? el.innerHTML : '';
 }
 
-// storeImage > gallery image > null
 function itemImage(item) {
-  return item.storeImage ?? item.image ?? null;
+  return item.storeImage || item.gallery?.[0] || null;
 }
 
-function StoreCard({ item, onClick }) {
-  const cover = getCover(item);
-  const img   = itemImage(item);
-  return (
-    <div
-      className="store-card"
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onClick?.()}
-    >
-      <div className="store-card__cover" style={{ background: cover.bg }}>
-        {img ? (
-          <img src={img} alt={item.title} loading="lazy" />
-        ) : (
-          <span className="store-card__initials" style={{ color: cover.text }}>
-            {item.title.slice(0, 2).toUpperCase()}
-          </span>
-        )}
-      </div>
-      <div className="store-card__info">
-        <h4 className="store-card__title">{item.title}</h4>
-        <p className="store-card__author">{item.author || <em>—</em>}</p>
-        {item.year && <p className="store-card__year">{item.year}</p>}
-      </div>
-    </div>
-  );
-}
 
 export default function StoreIsland({ items }) {
   const [activeTags, setActiveTags]   = useState([]);
@@ -168,7 +140,7 @@ export default function StoreIsland({ items }) {
               <span className="lib-wordmark">UMPRUM Type Store</span>
             </div>
           </header>
-          <div className="lib-scroll">
+          <div className="lib-scroll store-island__scroll">
             <div className="lib-empty">No items available right now — check back soon.</div>
           </div>
         </div>
@@ -243,7 +215,7 @@ export default function StoreIsland({ items }) {
           </div>
         </header>
 
-        <div className="lib-scroll">
+        <div className="lib-scroll store-island__scroll">
           {filtered.length === 0 ? (
             <div className="lib-empty">No items match.</div>
           ) : (
@@ -251,10 +223,23 @@ export default function StoreIsland({ items }) {
               <p className="tf-island__count">
                 {filtered.length}{filtered.length < items.length ? ` of ${items.length}` : ''} items
               </p>
-              <div className="store-grid">
-                {filtered.map(item => (
-                  <StoreCard key={item.slug} item={item} onClick={() => openItem(item)} />
-                ))}
+              <div className="library-grid">
+                {filtered.map(item => {
+                  const cover = getCover(item);
+                  return (
+                    <GridCard
+                      key={item.slug}
+                      title={item.title}
+                      author={item.author}
+                      year={item.year}
+                      image={itemImage(item)}
+                      tags={item.tags}
+                      coverBg={cover.bg}
+                      coverText={cover.text}
+                      onClick={() => openItem(item)}
+                    />
+                  );
+                })}
               </div>
             </>
           )}

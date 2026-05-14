@@ -4,27 +4,20 @@ import Base from '../layouts/Base.astro';
 <Base title="Info — Umprum Type" description="Type design studio at UMPRUM, Prague.">
   <section class="container">
     <header class="page-head">
-      <h1>Info</h1>
-      <p class="muted">О проекте и колофон</p>
+      <h1 class="info-h1">Info</h1>
     </header>
-    <div class="measure post__body">
-      <p>UMPRUM Type — архив и библиотека студии типографики UMPRUM. Сайт создан в 2025–2026 годах.</p>
-
-      <h2>Colophon</h2>
-      <ul>
-        <li>Дизайн и разработка: [имя]</li>
-        <li>Фреймворк: Astro 6</li>
-        <li>CMS: Decap CMS</li>
-        <li>Хостинг: Vercel</li>
-        <li>Шрифты: студенческие работы студии типографики UMPRUM</li>
-        <li>Библиотека: Google Sheets API</li>
-      </ul>
-
-      <h2>Контакт</h2>
-      <p><a href="mailto:typo@umprum.cz">typo@umprum.cz</a></p>
-
-      <h2>Адрес</h2>
-      <p>UMPRUM<br/>náměstí Jana Palacha 80<br/>110 00 Praha 1</p>
+    <div class="measure info-body">
+      <p>UMPRUM Type is the type design studio at the Academy of Arts, Architecture and Design in Prague (UMPRUM). The class is dedicated to typeface design, calligraphy, and typographic research — from historical reconstructions to experimental display type.</p>
+      <p>This site is an evolving archive of work produced in and around the class: typefaces, projects, and writing. It also hosts a library of typography books collected by the studio.</p>
     </div>
   </section>
 </Base>
+
+<style>
+  .info-h1 {
+    font-size: var(--step-0);
+  }
+  .info-body {
+    font-size: var(--step-0);
+  }
+</style>

@@ -638,8 +638,9 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
 /* ---------- Store ---------- */
 .store-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-7) var(--space-5);
+  padding-inline: var(--space-5);
   margin-top: var(--space-6);
 }
 .store-card {
@@ -1332,12 +1333,13 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
   padding: var(--space-7) 0;
 }
 
-/* Book grid */
+/* Book grid — used by Store and any other card grid */
 .library-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  column-gap: var(--space-5);
-  row-gap: 64px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-7) var(--space-5);
+  padding-left: var(--space-5);
+  padding-right: var(--space-5);
   padding-bottom: var(--space-8);
 }
 
@@ -1810,21 +1812,24 @@ body.lib-page .site-footer { display: none; }
 /* ── Book grid ── */
 .lib-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 64px 32px;
 }
 
 /* ── Book card ── */
 .lib-card {
   display: flex; flex-direction: column; align-items: center; cursor: pointer;
+  position: relative; z-index: 1;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), z-index 0s 300ms;
+}
+.lib-card:hover {
+  transform: scale(1.05);
+  z-index: 10;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), z-index 0s;
 }
 .lib-book {
   position: relative; width: 140px; height: 210px;
-  transition: transform 500ms cubic-bezier(0.16,1,0.3,1), box-shadow 500ms cubic-bezier(0.16,1,0.3,1);
-}
-.lib-card:hover .lib-book {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.18);
 }
 .lib-book__cover {
   position: absolute; inset: 0;
@@ -1953,9 +1958,10 @@ body.lib-page .site-footer { display: none; }
   font-size: 0.75rem; color: var(--text-subtle);
 }
 
-/* ── Typeface / Post islands: no horizontal padding — content adds its own ── */
+/* ── Typeface / Post / Store islands: no horizontal padding — content adds its own ── */
 .tf-island__scroll,
-.post-island__scroll { padding-inline: 0; }
+.post-island__scroll,
+.store-island__scroll { padding-inline: 0; }
 
 /* ── Typeface island tweaks inside lib-scroll ── */
 .tf-island__count {
@@ -2036,8 +2042,10 @@ body.lib-page .site-footer { display: none; }
   .lib-toolbar { padding: 0 var(--space-5); height: 64px; }
   .lib-scroll { padding: 24px 20px 40px; }
   .tf-island__scroll,
-  .post-island__scroll { padding-inline: 0; }
-  .lib-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 48px 20px; }
+  .post-island__scroll,
+  .store-island__scroll { padding-inline: 0; }
+  .lib-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 48px 16px; }
+  .store-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); padding-inline: var(--space-4); gap: var(--space-6) var(--space-4); }
   .lib-filter.is-open {
     position: fixed; top: var(--nav-h); left: 0;
     height: calc(100dvh - var(--nav-h));
