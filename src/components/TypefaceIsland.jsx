@@ -235,6 +235,7 @@ export default function TypefaceIsland({ typefaces }) {
                     tf={tf}
                     isOpen={openSlug === tf.slug}
                     onOpen={() => toggleSlug(tf.slug)}
+                    onTagClick={tag => { setOpenSlug(null); setActiveTags([tag]); }}
                   />
                 ))}
               </ul>

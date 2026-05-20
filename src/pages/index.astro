@@ -1,53 +1,21 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getCollection } from 'astro:content';
 import { getAllTypefaces } from '../lib/typefaces';
 
 const allTypefaces = getAllTypefaces();
+const usable = allTypefaces.filter(t => t.defaultVariant && t.defaultVariant.webPath);
 
-function seededShuffle<T>(arr: T[]): T[] {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = (i * 7 + 13) % (i + 1);
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-const tfSample = seededShuffle(allTypefaces).slice(0, 14);
+const fontFaces = usable.map(t => {
+  const v = t.defaultVariant!;
+  const fam = t.title.replace(/"/g, '\\"');
+  return `@font-face{font-family:"${fam}";src:url("${v.webPath}") format("opentype");font-weight:${v.weight};font-style:${v.style};font-display:swap;}`;
+}).join('\n');
 
-const fontFaces = tfSample
-  .filter(t => t.defaultVariant)
-  .map(t => {
-    const v = t.defaultVariant!;
-    const fam = t.title.replace(/"/g, '\\"');
-    return `@font-face{font-family:"${fam}";src:url("${v.webPath}") format("opentype");font-weight:${v.weight};font-style:${v.style};font-display:swap;}`;
-  })
-  .join('\n');
-
-const projects = await getCollection('projects');
-const journal  = await getCollection('journal');
-const slugOf   = (e: { id: string }) => e.id.replace(/\.md$/, '');
-
-const posts = [...projects, ...journal]
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 6);
-
-const postsWithCollection = posts.map(p => ({
-  entry: p,
-  collection: projects.includes(p as any) ? 'projects' : 'journal',
+const fontsData = usable.map(t => ({
+  title: t.title,
+  weight: t.defaultVariant!.weight,
+  style: t.defaultVariant!.style,
 }));
-
-const blocks: any[] = [];
-tfSample.forEach(tf => blocks.push({ kind: 'tf', slug: tf.slug, tf }));
-postsWithCollection.forEach(({ entry, collection }) =>
-  blocks.push({ kind: 'post', slug: slugOf(entry), collection, data: entry.data })
-);
-
-function split(arr: any[]) {
-  const half = Math.ceil(arr.length / 2);
-  return [arr.slice(0, half), arr.slice(half)];
-}
-const [rowA, rowB] = split(blocks);
 
 const year = new Date().getFullYear();
 ---
@@ -58,333 +26,134 @@ const year = new Date().getFullYear();
 >
   <style set:html={fontFaces}></style>
   <style>
-    :root {
-      --home-fg: #f2f2ef;
-      --home-muted: rgba(242,242,239,0.6);
-      --home-faint: rgba(242,242,239,0.35);
-    }
-
     .home {
       position: fixed;
       top: var(--nav-h);
-      right: 0;
-      bottom: 0;
-      left: 0;
+      right: 0; bottom: 0; left: 0;
       display: grid;
       grid-template-rows: 1fr auto;
       background: #111118;
     }
 
-    /* ---- Bento ---- */
-    .bento {
+    .poster {
       position: relative;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
     }
-    .bento__row {
-      flex: 1;
-      display: flex;
-      align-items: stretch;
-      min-height: 0;
-      will-change: transform;
-    }
-    .bento__row--top { border-bottom: 1px solid rgba(255,255,255,0.06); }
 
-    .bento-block {
-      position: relative;
-      flex: 0 0 auto;
-      overflow: hidden;
-      cursor: pointer;
-      border-right: 1px solid rgba(255,255,255,0.06);
-      isolation: isolate;
-    }
-    .bento-block::before {
-      content: "";
-      position: absolute; inset: 0;
-      background-image:
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.22 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
-        var(--b-gradient, linear-gradient(135deg, #2a2a3a, #151520));
-      background-size: 140px 140px, cover;
-      background-blend-mode: overlay, normal;
-      z-index: -1;
-      transition: filter 500ms cubic-bezier(0.16,1,0.3,1);
-    }
-    .bento-block:hover::before { filter: brightness(1.18) saturate(1.12); }
-
-    .bento-block__content {
-      position: absolute; inset: 0;
-      padding: 18px 22px;
-      display: flex; align-items: center; justify-content: center;
-      text-align: center;
-      contain: strict;
-    }
-    .bento-block__name {
-      font-size: clamp(2rem, 6vw, 7rem);
-      line-height: 0.95;
-      letter-spacing: -0.02em;
-      word-break: break-word;
+    .poster-word {
+      position: absolute;
+      color: #f2f2ef;
+      white-space: nowrap;
       font-synthesis: none;
-      color: var(--home-fg);
-    }
-    .bento-block__title {
-      font-size: clamp(0.9rem, 1.3vw, 1.3rem);
-      line-height: 1.2;
-      letter-spacing: -0.005em;
-      font-weight: 500;
-      max-width: 90%;
-      color: var(--home-fg);
-    }
-    .bento-block__kind {
-      position: absolute;
-      top: 10px; left: 14px;
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--home-faint);
-    }
-    .bento-block__hover {
-      position: absolute;
-      left: 14px; right: 14px; bottom: 12px;
-      display: flex; flex-wrap: wrap; gap: 6px;
+      line-height: 1;
       opacity: 0;
-      transform: translateY(6px);
-      transition: opacity 280ms cubic-bezier(0.16,1,0.3,1), transform 280ms cubic-bezier(0.16,1,0.3,1);
+      transition:
+        opacity 900ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
       pointer-events: none;
-    }
-    .bento-block:hover .bento-block__hover { opacity: 1; transform: none; }
-    .bento-block__tag {
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.18);
-      color: var(--home-fg);
+      user-select: none;
     }
 
-    /* ---- Footer ---- */
     .home-foot {
-      position: relative; z-index: 10;
-      display: flex; justify-content: space-between; align-items: center;
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding: 10px 22px;
-      font-size: 11px; letter-spacing: 0.05em;
-      color: var(--home-faint);
-      border-top: 1px solid rgba(255,255,255,0.08);
-      background: rgba(17,17,24,0.5);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      color: rgba(242, 242, 239, 0.35);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(17, 17, 24, 0.5);
     }
-    .home-foot .hint { display: none; }
-    @media (min-width: 900px) { .home-foot .hint { display: inline; } }
 
-    /* ---- Mobile: vertical card stack ---- */
     @media (max-width: 640px) {
-      .home { position: static; top: 0; height: auto; min-height: calc(100dvh - var(--nav-h)); }
-      .bento {
-        overflow: visible;
-        flex-direction: row;
-        flex-wrap: wrap;
+      .home {
+        position: static;
+        min-height: calc(100dvh - var(--nav-h));
       }
-      .bento__row { display: contents; }
-      .bento-block {
-        flex: 0 0 calc(50% - 0.5px);
-        height: 150px;
-      }
-      .bento-block--dup { display: none !important; }
-      .bento-block__name { font-size: clamp(1.4rem, 7vw, 2.8rem); }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .bento-block::before { transition: none !important; }
-      .bento-block__hover { transition: none !important; }
+      .poster-word {
+        transition: opacity 200ms linear !important;
+      }
     }
   </style>
 
   <div class="home">
-    <div class="bento" id="bento">
-      <!-- Row A -->
-      <div class="bento__row bento__row--top" id="rowA" data-row>
-        {[...rowA, ...rowA, ...rowA].map((b, i) => (
-          <a
-            class={`bento-block${i >= rowA.length ? ' bento-block--dup' : ''}`}
-            href={b.kind === 'tf' ? `/typefaces` : `/${b.collection}/${b.slug}`}
-            data-block
-          >
-            <span class="bento-block__kind">{b.kind === 'tf' ? 'typeface' : b.collection}</span>
-            <span class="bento-block__content">
-              {b.kind === 'tf'
-                ? <span class="bento-block__name" style={`font-family:"${b.tf.title.replace(/"/g, '\\"')}",sans-serif`}>{b.tf.title}</span>
-                : <span class="bento-block__title">{b.data.title}</span>
-              }
-            </span>
-            <span class="bento-block__hover">
-              {b.kind === 'tf' ? (
-                <>
-                  {b.tf.designer && <span class="bento-block__tag">{b.tf.designer}</span>}
-                  {b.tf.year    && <span class="bento-block__tag">{b.tf.year}</span>}
-                </>
-              ) : (
-                <>
-                  <span class="bento-block__tag">{b.data.category}</span>
-                  {b.data.author && <span class="bento-block__tag">{b.data.author}</span>}
-                </>
-              )}
-            </span>
-          </a>
-        ))}
-      </div>
-
-      <!-- Row B -->
-      <div class="bento__row bento__row--bot" id="rowB" data-row>
-        {[...rowB, ...rowB, ...rowB].map((b, i) => (
-          <a
-            class={`bento-block${i >= rowB.length ? ' bento-block--dup' : ''}`}
-            href={b.kind === 'tf' ? `/typefaces` : `/${b.collection}/${b.slug}`}
-            data-block
-          >
-            <span class="bento-block__kind">{b.kind === 'tf' ? 'typeface' : b.collection}</span>
-            <span class="bento-block__content">
-              {b.kind === 'tf'
-                ? <span class="bento-block__name" style={`font-family:"${b.tf.title.replace(/"/g, '\\"')}",sans-serif`}>{b.tf.title}</span>
-                : <span class="bento-block__title">{b.data.title}</span>
-              }
-            </span>
-            <span class="bento-block__hover">
-              {b.kind === 'tf' ? (
-                <>
-                  {b.tf.designer && <span class="bento-block__tag">{b.tf.designer}</span>}
-                  {b.tf.year    && <span class="bento-block__tag">{b.tf.year}</span>}
-                </>
-              ) : (
-                <>
-                  <span class="bento-block__tag">{b.data.category}</span>
-                  {b.data.author && <span class="bento-block__tag">{b.data.author}</span>}
-                </>
-              )}
-            </span>
-          </a>
-        ))}
-      </div>
-    </div>
-
+    <div class="poster" id="poster"></div>
     <footer class="home-foot">
       <span>Umprum Type · Prague · {year}</span>
-      <span class="hint">drag · scroll · click</span>
     </footer>
   </div>
 
-  <script is:inline>
-    if (window.matchMedia('(max-width: 640px)').matches) {
-      const palettes = [
-        ['#3a1c71','#d76d77'],['#1f4037','#99f2c8'],['#373b44','#4286f4'],
-        ['#ff512f','#dd2476'],['#0f2027','#2c5364'],['#654ea3','#eaafc8'],
-        ['#4e54c8','#8f94fb'],['#232526','#414345'],['#000428','#004e92'],
-        ['#eb3349','#f45c43'],['#1a2980','#26d0ce'],['#ff9966','#ff5e62'],
+  <script is:inline define:vars={{ fontsData }}>
+    (function () {
+      var SLOTS = [
+        { l: 3,  t: 5,  s: 13,  r: -1.2, o: 0.93 },
+        { l: 40, t: 2,  s: 4,   r:  0.7, o: 0.58 },
+        { l: 62, t: 7,  s: 8,   r:  1.5, o: 0.82 },
+        { l: 5,  t: 30, s: 5,   r: -0.5, o: 0.68 },
+        { l: 30, t: 26, s: 15,  r: -2.0, o: 0.95 },
+        { l: 72, t: 38, s: 3.5, r:  1.0, o: 0.54 },
+        { l: 6,  t: 57, s: 8,   r:  0.4, o: 0.78 },
+        { l: 44, t: 55, s: 5,   r: -0.8, o: 0.64 },
+        { l: 65, t: 60, s: 10,  r:  1.8, o: 0.88 },
+        { l: 2,  t: 80, s: 3.5, r:  0,   o: 0.52 },
+        { l: 33, t: 77, s: 7,   r: -1.0, o: 0.74 },
+        { l: 65, t: 82, s: 3.5, r:  0.6, o: 0.58 },
       ];
-      const rand = n => Math.floor(Math.random() * n);
-      document.querySelectorAll('[data-block]').forEach(b => {
-        const [a, c] = palettes[rand(palettes.length)];
-        b.style.setProperty('--b-gradient', `linear-gradient(${rand(360)}deg,${a},${c})`);
+
+      var SLOTS_MOBILE = [
+        { l: 2, t: 5,  s: 9,  r: -1.0, o: 0.90 },
+        { l: 3, t: 20, s: 6,  r:  0.7, o: 0.72 },
+        { l: 2, t: 35, s: 10, r: -0.5, o: 0.88 },
+        { l: 4, t: 52, s: 6,  r:  0.8, o: 0.70 },
+        { l: 2, t: 65, s: 8,  r: -0.8, o: 0.82 },
+        { l: 3, t: 80, s: 5,  r:  0.4, o: 0.62 },
+      ];
+
+      var isMobile = window.matchMedia('(max-width: 640px)').matches;
+      var slots = isMobile ? SLOTS_MOBILE : SLOTS;
+
+      var shuffled = fontsData.slice().sort(function () { return Math.random() - 0.5; });
+      var picked = shuffled.slice(0, slots.length);
+
+      var poster = document.getElementById('poster');
+      if (!poster) return;
+
+      var words = picked.map(function (font, i) {
+        var slot = slots[i];
+        var el = document.createElement('span');
+        el.className = 'poster-word';
+        el.textContent = font.title;
+        el.style.left = slot.l + '%';
+        el.style.top  = slot.t + '%';
+        el.style.fontSize   = slot.s + 'vw';
+        el.style.fontFamily = '"' + font.title + '", sans-serif';
+        el.style.fontWeight = font.weight;
+        el.style.fontStyle  = font.style;
+        el.style.transform  = 'translateY(24px) rotate(' + slot.r + 'deg)';
+        poster.appendChild(el);
+        return { el: el, slot: slot };
       });
-    } else {
-      (function () {
-        const palettes = [
-          ['#3a1c71','#d76d77'],['#1f4037','#99f2c8'],['#373b44','#4286f4'],
-          ['#ff512f','#dd2476'],['#0f2027','#2c5364'],['#654ea3','#eaafc8'],
-          ['#4e54c8','#8f94fb'],['#232526','#414345'],['#000428','#004e92'],
-          ['#eb3349','#f45c43'],['#1a2980','#26d0ce'],['#757f9a','#d7dde8'],
-          ['#ff9966','#ff5e62'],['#355c7d','#6c5b7b'],['#2b5876','#4e4376'],
-        ];
-        const rand = n => Math.floor(Math.random() * n);
-        const gradient = () => {
-          const [a, b] = palettes[rand(palettes.length)];
-          return `linear-gradient(${rand(360)}deg,${a},${b})`;
-        };
 
-        function setupRow(rowId, baseSpeed) {
-          const row = document.getElementById(rowId);
-          if (!row) return;
-          const blocks = Array.from(row.querySelectorAll('[data-block]'));
+      function reveal() {
+        words.forEach(function (w, i) {
+          setTimeout(function () {
+            w.el.style.opacity   = w.slot.o;
+            w.el.style.transform = 'translateY(0) rotate(' + w.slot.r + 'deg)';
+          }, i * 90);
+        });
+      }
 
-          blocks.forEach(b => {
-            b.style.setProperty('--b-gradient', gradient());
-            b.style.flexBasis = (200 + rand(280)) + 'px';
-          });
-
-          let offset   = 0;
-          let vel      = baseSpeed;
-          let dragging = false;
-          let dragX0   = 0;
-          let dragOff0 = 0;
-          let history  = [];
-
-          let segW = 0;
-          function measureSeg() { segW = row.scrollWidth / 3; }
-          measureSeg();
-          setTimeout(measureSeg, 500);
-          setTimeout(measureSeg, 1500);
-
-          function tick() {
-            if (!dragging) {
-              vel += (baseSpeed - vel) * 0.005;
-            }
-            offset += vel;
-            if (segW > 0) {
-              while (offset <= -segW) offset += segW;
-              while (offset > 0)     offset -= segW;
-            }
-            row.style.transform = `translate3d(${offset}px,0,0)`;
-            requestAnimationFrame(tick);
-          }
-          requestAnimationFrame(tick);
-
-          row.addEventListener('wheel', e => {
-            const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-            vel -= d * 0.04;
-            vel  = Math.max(-11, Math.min(11, vel));
-            e.preventDefault();
-          }, { passive: false });
-
-          row.addEventListener('pointerdown', e => {
-            dragging = true;
-            dragX0   = e.clientX;
-            dragOff0 = offset;
-            history  = [{ x: e.clientX, t: performance.now() }];
-            row.setPointerCapture(e.pointerId);
-          });
-
-          row.addEventListener('pointermove', e => {
-            if (!dragging) return;
-            offset = dragOff0 + (e.clientX - dragX0);
-            if (segW > 0) {
-              const wrap = Math.round((offset - dragOff0) / segW) * segW;
-              if (wrap) { dragOff0 += wrap; offset += wrap; }
-            }
-            history.push({ x: e.clientX, t: performance.now() });
-            if (history.length > 6) history.shift();
-          });
-
-          function release(e) {
-            if (!dragging) return;
-            dragging = false;
-            try { row.releasePointerCapture(e.pointerId); } catch {}
-            if (history.length >= 2) {
-              const now  = performance.now();
-              const old  = history.find(h => now - h.t <= 80) || history[0];
-              const last = history[history.length - 1];
-              const dt   = last.t - old.t;
-              if (dt > 4) {
-                vel = (last.x - old.x) / dt * 16;
-                vel = Math.max(-14, Math.min(14, vel));
-              }
-            }
-          }
-          row.addEventListener('pointerup',     release);
-          row.addEventListener('pointercancel', release);
-        }
-
-        setupRow('rowA', -0.38);
-        setupRow('rowB',  0.28);
-      })();
-    }
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(reveal);
+      } else {
+        setTimeout(reveal, 500);
+      }
+    })();
   </script>
 </Base>

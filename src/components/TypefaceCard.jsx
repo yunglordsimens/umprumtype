@@ -8,40 +8,83 @@ function nearest(val, steps) {
 
 const autoCols = (s) => s <= 32 ? 3 : s <= 56 ? 2 : 1;
 
-export default function TypefaceCard({ tf, isOpen, onOpen }) {
+function lineHeightFor(size) {
+  return size > 96 ? 0.95 : size > 48 ? 1.1 : size > 24 ? 1.3 : 1.5;
+}
+
+function VariantWindow({ variant, fam, size, cols, baseText, isLarge, fixedHeight, showLabel }) {
+  const ref = useRef(null);
+  const lh = lineHeightFor(size);
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.textContent = (baseText + ' ').repeat(50).trim();
+    }
+  }, []);
+
+  return (
+    <div className="specimen__variant-window">
+      {showLabel && (
+        <div className="specimen__variant-label">{variant.variantName || 'Regular'}</div>
+      )}
+      <div
+        ref={ref}
+        className="specimen__text"
+        contentEditable
+        suppressContentEditableWarning
+        spellCheck="false"
+        style={{
+          fontFamily: `"${fam}", var(--font-ui)`,
+          fontSize: `${size}px`,
+          fontWeight: variant.weight || 400,
+          fontStyle: variant.style || 'normal',
+          lineHeight: lh,
+          padding: 0,
+          ...(isLarge ? {
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            height: `${Math.round(size * lh)}px`,
+            columnCount: 1,
+          } : {
+            overflow: 'hidden',
+            height: `${fixedHeight}px`,
+            columnCount: cols,
+            columnGap: '1em',
+            wordBreak: 'break-word',
+            hyphens: 'auto',
+          }),
+        }}
+      />
+    </div>
+  );
+}
+
+export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
   const clampedIdx = Math.min(
     Math.max(0, tf.mainStyleNo),
     Math.max(0, tf.otfVariants.length - 1)
   );
-  const defaultText = tf.styleTexts[clampedIdx] || tf.styleTexts[0] || tf.title;
   const initialSizePx = Math.round((parseFloat(tf.mainSize) || 6) * 16);
 
-  const [size,       setSize]       = useState(nearest(Math.max(72, initialSizePx), SIZE_STEPS));
-  const [variantIdx, setVariantIdx] = useState(clampedIdx);
-  // null = auto mode; 1/2/3 = user override
+  const [size, setSize] = useState(nearest(Math.max(72, initialSizePx), SIZE_STEPS));
   const [manualCols, setManualCols] = useState(null);
-  const [text,       setText]       = useState(defaultText);
-  const textRef  = useRef(null);
+  const [resetKey, setResetKey] = useState(0);
   const panelRef = useRef(null);
 
-  const cols    = manualCols ?? autoCols(size);
-  const current = tf.otfVariants[variantIdx] ?? null;
-  const fam     = tf.title.replace(/"/g, '\\"');
+  const cols = manualCols ?? autoCols(size);
+  const isLarge = size >= 144;
+  const fam = tf.title.replace(/"/g, '\\"');
+  const current = tf.otfVariants[clampedIdx] ?? null;
 
-  // change size — always resets to auto column mode
+  // Fixed height derived from initial size — stays constant regardless of slider
+  const lhInitial = lineHeightFor(Math.max(72, initialSizePx));
+  const fixedHeight = Math.max(160, Math.round(Math.max(72, initialSizePx) * lhInitial * 3));
+
   function changeSize(val) {
     setSize(val);
     setManualCols(null);
   }
 
-  // sync contentEditable when text state changes externally
-  useEffect(() => {
-    if (textRef.current && textRef.current.textContent !== text) {
-      textRef.current.textContent = text;
-    }
-  }, [text]);
-
-  // animate panel height open/close
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
@@ -56,20 +99,12 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
     }
   }, [isOpen]);
 
-  // re-measure panel when content changes
   useEffect(() => {
     const panel = panelRef.current;
     if (panel && isOpen) {
       panel.style.maxHeight = panel.scrollHeight + 'px';
     }
-  }, [size, variantIdx, cols, isOpen]);
-
-  function switchVariant(i) {
-    setVariantIdx(i);
-    if (tf.styleTexts[i]) setText(tf.styleTexts[i]);
-  }
-
-  const lh = size > 96 ? 0.95 : size > 48 ? 1.1 : size > 24 ? 1.3 : 1.5;
+  }, [size, cols, isOpen, resetKey]);
 
   return (
     <li className="tfa-item">
@@ -94,110 +129,103 @@ export default function TypefaceCard({ tf, isOpen, onOpen }) {
             fontStyle: current?.style || 'normal',
           }}
         >
-          {tf.styleTexts[0] || defaultText}
+          {tf.styleTexts[0] || tf.mainText || tf.title}
         </span>
       </button>
 
       <div ref={panelRef} className="tfa-panel" aria-hidden={!isOpen}>
         <div className="tfa-panel__inner">
+          <div className="tfa-panel__cols">
 
-          {/* controls */}
-          <div className="specimen__controls">
+            {/* LEFT: tester */}
+            <div className="tfa-panel__tester">
+              <div className="specimen__controls">
 
-            {/* size slider */}
-            <div className="specimen__group">
-              <label>size</label>
-              <input
-                type="range" min="8" max="240" step="1" value={size}
-                onChange={e => changeSize(+e.target.value)}
-              />
-              <span className="specimen__value">{size}px</span>
-              <div className="specimen__presets">
-                {SIZE_STEPS.map(p => (
+                <div className="specimen__group">
+                  <input
+                    type="range" min="8" max="240" step="1" value={size}
+                    onChange={e => changeSize(+e.target.value)}
+                  />
+                  <span className="specimen__value">{size}px</span>
+                  <div className="specimen__presets">
+                    {SIZE_STEPS.map(p => (
+                      <button
+                        key={p}
+                        className={p === size ? 'is-active' : ''}
+                        onClick={() => changeSize(p)}
+                      >{p}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="specimen__group">
+                  {[1, 2, 3].map(c => (
+                    <button
+                      key={c}
+                      className={cols === c ? 'is-active' : ''}
+                      onClick={() => setManualCols(c)}
+                    >{c}</button>
+                  ))}
+                </div>
+
+                <div className="specimen__group">
                   <button
-                    key={p}
-                    className={p === nearest(size, SIZE_STEPS) && SIZE_STEPS.includes(size) ? 'is-active' : ''}
-                    onClick={() => changeSize(p)}
-                  >{p}</button>
-                ))}
+                    className="specimen__reset"
+                    title="Reset text"
+                    onClick={() => setResetKey(k => k + 1)}
+                  >↺</button>
+                </div>
+
               </div>
+
+              {tf.otfVariants.map((variant, i) => {
+                const baseText = tf.styleTexts[i] || tf.styleTexts[0] || tf.mainText || tf.title;
+                return (
+                  <VariantWindow
+                    key={`${i}-${resetKey}`}
+                    variant={variant}
+                    fam={fam}
+                    size={size}
+                    cols={cols}
+                    baseText={baseText}
+                    isLarge={isLarge}
+                    fixedHeight={fixedHeight}
+                    showLabel={tf.otfVariants.length > 1}
+                  />
+                );
+              })}
             </div>
 
-            {/* column buttons — active shows effective cols; manual overrides auto */}
-            <div className="specimen__group">
-              <label>col</label>
-              {[1, 2, 3].map(c => (
-                <button
-                  key={c}
-                  className={cols === c ? 'is-active' : ''}
-                  onClick={() => setManualCols(c === cols && manualCols === null ? null : c)}
-                  title={manualCols === null ? 'auto' : 'manual'}
-                >{c}</button>
-              ))}
-            </div>
+            {/* RIGHT: info */}
+            <div className="tfa-panel__info">
+              {tf.tags && tf.tags.length > 0 && (
+                <div className="tfa-info__tags">
+                  {tf.tags.map(tag => (
+                    <button
+                      key={tag}
+                      className="tfa-info__tag"
+                      onClick={() => onTagClick?.(tag)}
+                    >{tag}</button>
+                  ))}
+                </div>
+              )}
 
-            {/* style variants */}
-            {tf.otfVariants.length > 1 && (
-              <div className="specimen__group">
-                <label>style</label>
-                {tf.otfVariants.map((v, i) => (
-                  <button
-                    key={i}
-                    className={variantIdx === i ? 'is-active' : ''}
-                    onClick={() => switchVariant(i)}
-                  >{v.variantName || 'Regular'}</button>
-                ))}
-              </div>
-            )}
+              {tf.aboutFont && (
+                <div className="tfa-about">
+                  <h3>about</h3>
+                  <p>{tf.aboutFont}</p>
+                </div>
+              )}
 
-            {/* reset text */}
-            <div className="specimen__group">
-              <button
-                className="specimen__reset"
-                title="Reset text"
-                onClick={() => setText(defaultText)}
-              >↺</button>
+              {tf.aboutDesigner && (
+                <div
+                  className="tfa-about tfa-about--designer"
+                  dangerouslySetInnerHTML={{ __html: tf.aboutDesigner }}
+                />
+              )}
             </div>
 
           </div>
-
-          {/* editable specimen text */}
-          <div
-            ref={textRef}
-            className="specimen__text"
-            contentEditable
-            suppressContentEditableWarning
-            spellCheck="false"
-            onInput={e => setText(e.currentTarget.textContent ?? '')}
-            style={{
-              fontFamily:   `"${fam}", var(--font-ui)`,
-              fontSize:     `${size}px`,
-              fontWeight:   current?.weight || 400,
-              fontStyle:    current?.style || 'normal',
-              lineHeight:   lh,
-              columnCount:  cols,
-              columnGap:    '2em',
-            }}
-          >
-            {defaultText}
-          </div>
-
-          {/* about typeface */}
-          {tf.aboutFont && (
-            <div className="tfa-about">
-              <h3>About</h3>
-              <p>{tf.aboutFont}</p>
-            </div>
-          )}
-
-          {/* about designer */}
-          {tf.aboutDesigner && (
-            <div
-              className="tfa-about tfa-about--designer"
-              dangerouslySetInnerHTML={{ __html: tf.aboutDesigner }}
-            />
-          )}
-
         </div>
       </div>
     </li>

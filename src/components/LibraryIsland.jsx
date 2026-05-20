@@ -1,30 +1,11 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 
 const SHEET_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9pcn-Vt6gV9lCYZEK1Ly6ZKdEIYqN-VoIu9EkPqDqkFCAwT5R_eqaKz6priy-ixFZQWD3CtX263O_/pub?output=csv';
 
-const ExpandIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" />
-    <line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
-  </svg>
-);
-const CollapseIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="4 14 10 14 10 20" /><polyline points="20 10 14 10 14 4" />
-    <line x1="10" y1="14" x2="3" y2="21" /><line x1="21" y1="3" x2="14" y2="10" />
-  </svg>
-);
-
 const CloseIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
-
-const ChevronLeftIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="15 18 9 12 15 6" />
   </svg>
 );
 
@@ -116,15 +97,48 @@ function toThumb(url) {
   return url.startsWith('http') ? url : null;
 }
 
-function BookCard({ book, onClick }) {
+function BookDetail({ book }) {
+  const cover = getCover(book);
+  return (
+    <div className="lib-accordion__content">
+      <div className="lib-book lib-book--lg">
+        <div className="lib-book__cover" style={{ background: cover.bg }}>
+          {book.image ? (
+            <img src={book.image} alt={book.title} className="lib-book__img" loading="lazy" />
+          ) : (
+            <div className="lib-book__text" style={{ color: cover.text }}>
+              <span className="lib-book__text-title">{book.title}</span>
+              <span className="lib-book__text-author">{book.author || ''}</span>
+            </div>
+          )}
+          <div className="lib-book__spine" />
+          <div className="lib-book__shine" />
+        </div>
+      </div>
+      <div className="lib-accordion__meta">
+        <h2 className="lib-accordion__title">{book.title}</h2>
+        {book.author && <p className="lib-accordion__author">{book.author}</p>}
+        {book.year   && <p className="lib-accordion__year">{book.year}</p>}
+        {book.tags.length > 0 && (
+          <div className="lib-accordion__tags">
+            {book.tags.map(t => <span key={t} className="lib-accordion__tag">{t}</span>)}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Grid card — shows cover + basic info, click to toggle
+function BookCard({ book, isOpen, onToggle }) {
   const cover = getCover(book);
   return (
     <div
-      className="lib-card"
-      onClick={onClick}
+      className={`lib-card${isOpen ? ' is-open' : ''}`}
+      onClick={onToggle}
       role="button"
       tabIndex={0}
-      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onClick?.()}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onToggle()}
     >
       <div className="lib-book">
         <div className="lib-book__cover" style={{ background: cover.bg }}>
@@ -149,16 +163,48 @@ function BookCard({ book, onClick }) {
   );
 }
 
+// List row — expandable accordion
+function LibRow({ book, isOpen, onToggle }) {
+  const panelRef = useRef(null);
+
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    panel.style.maxHeight = isOpen ? panel.scrollHeight + 'px' : '0';
+  }, [isOpen]);
+
+  return (
+    <li className={`lib-row${isOpen ? ' is-open' : ''}`}>
+      <button className="lib-row__trigger" onClick={onToggle}>
+        <span className="lib-row__title">{book.title}</span>
+        <span className="lib-row__author">{book.author || '—'}</span>
+        <span className="lib-row__year">{book.year || '—'}</span>
+        <span className="lib-row__tags">
+          {book.tags.slice(0, 3).join(', ')}
+          {book.tags.length > 3 && ` +${book.tags.length - 3}`}
+        </span>
+      </button>
+      <div
+        ref={panelRef}
+        className="lib-row__panel"
+        style={{ maxHeight: 0, overflow: 'hidden', transition: 'max-height 400ms cubic-bezier(0.16,1,0.3,1)' }}
+      >
+        <BookDetail book={book} />
+      </div>
+    </li>
+  );
+}
+
 export default function LibraryIsland() {
-  const [library, setLibrary]           = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [activeTags, setActiveTags]     = useState([]);
-  const [search, setSearch]             = useState('');
-  const [selectedBook, setSelectedBook] = useState(null);
-  const [showFilters, setShowFilters]   = useState(false);
-  const [showAdd, setShowAdd]           = useState(false);
-  const [expanded, setExpanded]         = useState(false);
-  const [newBook, setNewBook]           = useState({ title: '', author: '', year: '', tags: '' });
+  const [library, setLibrary]         = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [activeTags, setActiveTags]   = useState([]);
+  const [search, setSearch]           = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [showAdd, setShowAdd]         = useState(false);
+  const [newBook, setNewBook]         = useState({ title: '', author: '', year: '', tags: '' });
+  const [viewMode, setViewMode]       = useState('grid');
+  const [openId, setOpenId]           = useState(null);
 
   useEffect(() => {
     fetch(SHEET_URL)
@@ -202,9 +248,11 @@ export default function LibraryIsland() {
   }, [activeTags, search, library]);
 
   function toggleTag(tag) {
-    setActiveTags(prev =>
-      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
-    );
+    setActiveTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
+  }
+
+  function toggleBook(id) {
+    setOpenId(prev => prev === id ? null : id);
   }
 
   function addBook() {
@@ -218,11 +266,9 @@ export default function LibraryIsland() {
     setShowAdd(false);
   }
 
-  if (loading) return (
-    <div className="lib-loading">Loading…</div>
-  );
+  const openBook = filtered.find(b => b.id === openId) || null;
 
-  const selectedCover = selectedBook ? getCover(selectedBook) : null;
+  if (loading) return <div className="lib-loading">Loading…</div>;
 
   return (
     <div className="lib-layout">
@@ -242,23 +288,15 @@ export default function LibraryIsland() {
               {ALL_TAGS.map(tag => {
                 const active = activeTags.includes(tag);
                 return (
-                  <label
-                    key={tag}
-                    className={`lib-filter__tag${active ? ' is-active' : ''}`}
-                    onClick={() => toggleTag(tag)}
-                  >
-                    <div className="lib-filter__check">
-                      {active && <CheckIcon />}
-                    </div>
+                  <label key={tag} className={`lib-filter__tag${active ? ' is-active' : ''}`} onClick={() => toggleTag(tag)}>
+                    <div className="lib-filter__check">{active && <CheckIcon />}</div>
                     <span className="lib-filter__tag-label">{tag}</span>
                   </label>
                 );
               })}
             </div>
             {activeTags.length > 0 && (
-              <button className="lib-filter__clear" onClick={() => setActiveTags([])}>
-                Clear filters
-              </button>
+              <button className="lib-filter__clear" onClick={() => setActiveTags([])}>Clear filters</button>
             )}
           </div>
         </div>
@@ -267,16 +305,9 @@ export default function LibraryIsland() {
       {/* ── Main area ── */}
       <div className="lib-main">
 
-        {/* Toolbar */}
         <header className="lib-toolbar">
-          <button
-            className="lib-filter-btn"
-            onClick={() => setShowFilters(f => !f)}
-            aria-pressed={showFilters}
-          >
-            <span className="lib-filter-btn__label">
-              {showFilters ? 'Hide filters' : 'Filters'}
-            </span>
+          <button className="lib-filter-btn" onClick={() => setShowFilters(f => !f)} aria-pressed={showFilters}>
+            <span className="lib-filter-btn__label">{showFilters ? 'Hide filters' : 'Filters'}</span>
           </button>
 
           <div className="lib-search-wrap">
@@ -292,77 +323,72 @@ export default function LibraryIsland() {
             </div>
           </div>
 
+          {/* View toggle */}
+          <div className="lib-view-toggle">
+            <button
+              className={viewMode === 'grid' ? 'is-active' : ''}
+              onClick={() => setViewMode('grid')}
+              aria-pressed={viewMode === 'grid'}
+            >Grid</button>
+            <button
+              className={viewMode === 'list' ? 'is-active' : ''}
+              onClick={() => setViewMode('list')}
+              aria-pressed={viewMode === 'list'}
+            >List</button>
+          </div>
+
           <div className="lib-right">
             <span className="lib-wordmark">UMPRUM Type Library</span>
             <button className="lib-add-btn" onClick={() => setShowAdd(true)}>
-              <PlusIcon />
-              <span>Add</span>
+              <PlusIcon /><span>Add</span>
             </button>
           </div>
         </header>
 
-        {/* Scrollable grid */}
         <div className="lib-scroll">
           {filtered.length === 0 ? (
             <div className="lib-empty">Nothing found.</div>
+          ) : viewMode === 'grid' ? (
+            <>
+              <div className="lib-grid">
+                {filtered.map(book => (
+                  <BookCard
+                    key={book.id}
+                    book={book}
+                    isOpen={openId === book.id}
+                    onToggle={() => toggleBook(book.id)}
+                  />
+                ))}
+              </div>
+              {openBook && (
+                <div className="lib-grid-accordion">
+                  <BookDetail book={openBook} />
+                </div>
+              )}
+            </>
           ) : (
-            <div className="lib-grid">
-              {filtered.map(book => (
-                <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} />
-              ))}
+            <div className="lib-list-wrap">
+              <div className="lib-list-header">
+                <span>Title</span>
+                <span>Author</span>
+                <span>Year</span>
+                <span>Tags</span>
+              </div>
+              <ul className="lib-list">
+                {filtered.map(book => (
+                  <LibRow
+                    key={book.id}
+                    book={book}
+                    isOpen={openId === book.id}
+                    onToggle={() => toggleBook(book.id)}
+                  />
+                ))}
+              </ul>
             </div>
           )}
           <div className="lib-count">{filtered.length} of {library.length} books</div>
         </div>
       </div>
-
-      {/* ── Right detail panel ── */}
-      <aside className={`lib-detail${selectedBook ? ' is-open' : ''}${expanded ? ' is-expanded' : ''}`}>
-        <div className="lib-detail__inner">
-          <button className="lib-detail__close" onClick={() => { setSelectedBook(null); setExpanded(false); }} aria-label="Close">
-            <ChevronLeftIcon />
-          </button>
-          {selectedBook && (
-            <button className="lib-detail__expand" onClick={() => setExpanded(e => !e)} aria-label={expanded ? 'Collapse' : 'Expand'}>
-              {expanded ? <CollapseIcon /> : <ExpandIcon />}
-            </button>
-          )}
-          <div className="lib-detail__scroll">
-            <span className="lib-detail__label">Book details</span>
-            {selectedBook && (
-              <div className="lib-detail__content">
-                <div className="lib-detail__cover" style={{ background: selectedCover.bg }}>
-                  {selectedBook.image ? (
-                    <img src={selectedBook.image} alt={selectedBook.title} className="lib-book__img" />
-                  ) : (
-                    <>
-                      <div className="lib-book__spine" />
-                      <div className="lib-book__shine" />
-                      <div className="lib-detail__cover-text" style={{ color: selectedCover.text }}>
-                        <span className="lib-detail__cover-title">{selectedBook.title}</span>
-                        <span className="lib-detail__cover-author">{selectedBook.author || ''}</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-                <div className="lib-detail__meta">
-                  <h2 className="lib-detail__title">{selectedBook.title}</h2>
-                  {selectedBook.author && <p className="lib-detail__author">{selectedBook.author}</p>}
-                  {selectedBook.year   && <p className="lib-detail__year">{selectedBook.year}</p>}
-                  {selectedBook.tags.length > 0 && (
-                    <ul className="lib-detail__tags">
-                      {selectedBook.tags.map(t => (
-                        <li key={t} className="lib-detail__tag">{t}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="lib-detail__footer">UMPRUM Type Library &times; 2026</div>
-        </div>
-      </aside>
 
       {/* ── Add book modal ── */}
       {showAdd && (
@@ -373,38 +399,10 @@ export default function LibraryIsland() {
               <button onClick={() => setShowAdd(false)} aria-label="Close"><CloseIcon /></button>
             </div>
             <div className="library-modal__fields">
-              <label>
-                Title *
-                <input
-                  value={newBook.title}
-                  onChange={e => setNewBook(p => ({ ...p, title: e.target.value }))}
-                  placeholder="Book title"
-                />
-              </label>
-              <label>
-                Author
-                <input
-                  value={newBook.author}
-                  onChange={e => setNewBook(p => ({ ...p, author: e.target.value }))}
-                  placeholder="Author name"
-                />
-              </label>
-              <label>
-                Year
-                <input
-                  value={newBook.year}
-                  onChange={e => setNewBook(p => ({ ...p, year: e.target.value }))}
-                  placeholder="e.g. 2024"
-                />
-              </label>
-              <label>
-                Tags
-                <input
-                  value={newBook.tags}
-                  onChange={e => setNewBook(p => ({ ...p, tags: e.target.value }))}
-                  placeholder="type, history, teorie"
-                />
-              </label>
+              <label>Title *<input value={newBook.title} onChange={e => setNewBook(p => ({ ...p, title: e.target.value }))} placeholder="Book title" /></label>
+              <label>Author<input value={newBook.author} onChange={e => setNewBook(p => ({ ...p, author: e.target.value }))} placeholder="Author name" /></label>
+              <label>Year<input value={newBook.year} onChange={e => setNewBook(p => ({ ...p, year: e.target.value }))} placeholder="e.g. 2024" /></label>
+              <label>Tags<input value={newBook.tags} onChange={e => setNewBook(p => ({ ...p, tags: e.target.value }))} placeholder="type, history, teorie" /></label>
             </div>
             <div className="library-modal__actions">
               <button onClick={() => setShowAdd(false)}>Cancel</button>
