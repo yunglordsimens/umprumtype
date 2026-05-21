@@ -1,36 +1,45 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-export default function HeroSketch({ isDark }) {
+export default function HeroSketch() {
   const containerRef = useRef(null);
+  const [isDark, setIsDark] = useState(true);
 
+  // Sync with prefers-color-scheme
   useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDark(mq.matches);
+    const handler = (e) => setIsDark(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  // p5 sketch — recreates on theme change
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
     let p5Instance;
 
     import('p5').then(({ default: p5 }) => {
       const sketch = (p) => {
         let texte = [];
         let fond;
-        let defaultText = "SSArtSemestr";
+        const defaultText = 'SSArtSemestr';
+
+        const bg = () => isDark ? 0 : 255;
+        const fg = () => isDark ? 255 : 0;
 
         p.setup = () => {
           p.createCanvas(p.windowWidth, p.windowHeight);
           p.frameRate(30);
           fond = p.createGraphics(p.width, p.height);
-          updateColors();
           p.textAlign(p.CENTER, p.CENTER);
-          drawDefaultText();
+          document.fonts.ready.then(() => drawDefaultText());
         };
-
-        function updateColors() {
-          p.background(isDark ? 0 : 255);
-          p.fill(isDark ? 255 : 0);
-          p.stroke(isDark ? 255 : 0);
-          p.strokeWeight(1);
-        }
 
         function drawDefaultText() {
           fond.beginDraw();
-          fond.background(isDark ? 0 : 255);
+          fond.background(bg());
+          fond.fill(fg());
           fond.textFont('Svar', 128);
           fond.textAlign(p.CENTER, p.CENTER);
           fond.text(defaultText, p.width / 2, p.height / 2);
@@ -41,15 +50,19 @@ export default function HeroSketch({ isDark }) {
         function redessine() {
           const t = texte.length > 0 ? texte.join('') : defaultText;
           fond.beginDraw();
-          fond.background(isDark ? 0 : 255);
+          fond.background(bg());
+          fond.fill(fg());
+          fond.textFont('Svar', 128);
+          fond.textAlign(p.CENTER, p.CENTER);
           fond.text(t, p.width / 2, p.height / 2);
           fond.filter(p.BLUR, 5);
           fond.text(t, p.width / 2, p.height / 2);
           fond.endDraw();
 
-          p.background(isDark ? 0 : 255);
+          p.background(bg());
           p.noFill();
-          p.stroke(isDark ? 255 : 0);
+          p.stroke(fg());
+          p.strokeWeight(1);
           for (let a = 0; a < fond.height; a += 4) {
             p.beginShape();
             for (let b = 0; b < fond.width; b += 3) {
@@ -77,17 +90,11 @@ export default function HeroSketch({ isDark }) {
         p.windowResized = () => {
           p.resizeCanvas(p.windowWidth, p.windowHeight);
           fond = p.createGraphics(p.width, p.height);
-          drawDefaultText();
-        };
-
-        p.updateTheme = (dark) => {
-          isDark = dark;
-          updateColors();
-          drawDefaultText();
+          document.fonts.ready.then(() => drawDefaultText());
         };
       };
 
-      p5Instance = new p5(sketch, containerRef.current);
+      p5Instance = new p5(sketch, container);
     });
 
     return () => p5Instance?.remove();
@@ -96,7 +103,6 @@ export default function HeroSketch({ isDark }) {
   return (
     <div
       ref={containerRef}
-      id="hero-sketch"
       style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}
     />
   );

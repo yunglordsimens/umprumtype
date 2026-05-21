@@ -9,6 +9,16 @@
   src: url('/fonts/Svar/2_Svar%20Light.otf') format('opentype');
   font-weight: 300; font-style: normal; font-display: swap;
 }
+@font-face {
+  font-family: 'Svar';
+  src: url('/fonts/Svar/1_Svar%20Thin.otf') format('opentype');
+  font-weight: 200; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Svar';
+  src: url('/fonts/Svar/0_Svar%20Ultralight.otf') format('opentype');
+  font-weight: 100; font-style: normal; font-display: swap;
+}
 
 /* ---------- Tokens ---------- */
 :root {

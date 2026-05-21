@@ -9,6 +9,17 @@ import HeroSketch from '../components/HeroSketch.jsx';
   </div>
 </Base>
 
+<script is:inline>
+  // Detect prefers-color-scheme and expose for any non-React consumers
+  (function () {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    document.documentElement.dataset.colorScheme = mq.matches ? 'dark' : 'light';
+    mq.addEventListener('change', function (e) {
+      document.documentElement.dataset.colorScheme = e.matches ? 'dark' : 'light';
+    });
+  })();
+</script>
+
 <style is:global>
   body.home-page {
     overflow: hidden;
