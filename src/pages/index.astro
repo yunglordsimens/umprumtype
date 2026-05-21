@@ -2,10 +2,30 @@
 import Base from '../layouts/Base.astro';
 import HeroSketch from '../components/HeroSketch.jsx';
 ---
-<Base
-  title="Umprum Type"
-  description="Archive of typefaces, projects, and writing from the type class at UMPRUM, Prague."
-  bodyClass="home-page"
->
-  <HeroSketch client:only="react" isDark={true} />
+
+<Base title="UMPRUM Type" description="Type design studio at UMPRUM, Prague." bodyClass="home-page">
+  <div id="hero-container" style="position: fixed; inset: 0; z-index: 1;">
+    <HeroSketch client:load />
+  </div>
 </Base>
+
+<style is:global>
+  body.home-page {
+    overflow: hidden;
+  }
+  body.home-page .site-nav {
+    z-index: 10;
+    position: relative;
+    background: transparent;
+    backdrop-filter: none;
+    border-bottom: none;
+  }
+  body.home-page .site-nav a {
+    color: var(--text);
+  }
+  body.home-page #main {
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+  }
+</style>
