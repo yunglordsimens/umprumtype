@@ -34,7 +34,7 @@ export default function HeroSketch() {
           p.frameRate(30);
           fond = p.createGraphics(p.width, p.height);
           p.textAlign(p.CENTER, p.CENTER);
-          document.fonts.ready.then(() => drawDefaultText());
+          document.fonts.load('128px "Svar"').then(() => drawDefaultText()).catch(() => drawDefaultText());
         };
 
         function drawToBuffer(t) {
@@ -124,7 +124,7 @@ export default function HeroSketch() {
         p.windowResized = () => {
           p.resizeCanvas(p.windowWidth, p.windowHeight);
           fond = p.createGraphics(p.width, p.height);
-          document.fonts.ready.then(() => drawDefaultText());
+          document.fonts.load('128px "Svar"').then(() => drawDefaultText()).catch(() => drawDefaultText());
         };
       };
 

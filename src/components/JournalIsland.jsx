@@ -1,18 +1,13 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 
 const CloseIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
   </svg>
 );
 const SearchIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>
-);
-const CheckIcon = () => (
-  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5 13l4 4L19 7" />
   </svg>
 );
 
@@ -74,9 +69,10 @@ function PostRow({ post, isOpen, onToggle }) {
 export default function JournalIsland({ posts }) {
   const [activeTags, setActiveTags] = useState([]);
   const [search, setSearch]         = useState('');
-  const [showFilters, setShowFilters] = useState(false);
+  const [showTags, setShowTags]     = useState(false);
   const [openSlug, setOpenSlug]     = useState(null);
   const [sort, setSort]             = useState('name');
+  const panelRef = useRef(null);
 
   const allTags = useMemo(
     () => [...new Set(posts.flatMap(p => p.tags))].sort(),
@@ -101,6 +97,18 @@ export default function JournalIsland({ posts }) {
     return out;
   }, [activeTags, search, sort, posts]);
 
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    if (showTags) {
+      panel.style.maxHeight = panel.scrollHeight + 'px';
+      panel.style.opacity   = '1';
+    } else {
+      panel.style.maxHeight = '0';
+      panel.style.opacity   = '0';
+    }
+  }, [showTags]);
+
   function togglePost(slug) {
     setOpenSlug(prev => prev === slug ? null : slug);
   }
@@ -118,39 +126,12 @@ export default function JournalIsland({ posts }) {
 
   return (
     <div className="lib-layout">
-
-      <aside className={`lib-filter${showFilters ? ' is-open' : ''}`}>
-        <div className="lib-filter__inner">
-          <div className="lib-filter__head">
-            <h2 className="lib-filter__title">Tags</h2>
-            <button className="lib-filter__close" onClick={() => setShowFilters(false)} aria-label="Close tags">
-              <CloseIcon />
-            </button>
-          </div>
-          <div>
-            <h3 className="lib-filter__section-title">Categories</h3>
-            <div className="lib-filter__tags">
-              {allTags.map(tag => {
-                const active = activeTags.includes(tag);
-                return (
-                  <label key={tag} className={`lib-filter__tag${active ? ' is-active' : ''}`} onClick={() => toggleTag(tag)}>
-                    <div className="lib-filter__check">{active && <CheckIcon />}</div>
-                    <span className="lib-filter__tag-label">{tag}</span>
-                  </label>
-                );
-              })}
-            </div>
-            {activeTags.length > 0 && (
-              <button className="lib-filter__clear" onClick={() => setActiveTags([])}>Clear filters</button>
-            )}
-          </div>
-        </div>
-      </aside>
-
       <div className="lib-main">
+
         <header className="lib-toolbar">
-          <button className="lib-filter-btn" onClick={() => setShowFilters(f => !f)} aria-pressed={showFilters}>
-            <span className="lib-filter-btn__label">{showFilters ? 'Hide tags' : 'Tags'}</span>
+          <button className="lib-filter-btn" onClick={() => setShowTags(f => !f)} aria-pressed={showTags}>
+            <span className="lib-filter-btn__label">Tags</span>
+            {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
           </button>
           <div className="lib-search-wrap">
             <div className="lib-search">
@@ -173,6 +154,35 @@ export default function JournalIsland({ posts }) {
           </div>
         </header>
 
+        <div
+          ref={panelRef}
+          className="tf-tags-panel"
+          style={{ maxHeight: 0, opacity: 0, overflow: 'hidden',
+            transition: 'max-height 400ms cubic-bezier(0.16,1,0.3,1), opacity 280ms' }}
+        >
+          <div className="tf-tags-panel__inner">
+            <div className="tf-tags-panel__chips">
+              {allTags.map(tag => (
+                <button
+                  key={tag}
+                  className={`tf-tag-chip${activeTags.includes(tag) ? ' is-active' : ''}`}
+                  onClick={() => toggleTag(tag)}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+            <div className="tf-tags-panel__actions">
+              {activeTags.length > 0 && (
+                <button className="tf-tags-clear" onClick={() => setActiveTags([])}>Clear</button>
+              )}
+              <button className="tf-tags-close" onClick={() => setShowTags(false)} aria-label="Close tags">
+                <CloseIcon />
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div className="lib-scroll post-island__scroll">
           {filtered.length === 0 ? (
             <div className="lib-empty">No entries match.</div>
@@ -194,8 +204,8 @@ export default function JournalIsland({ posts }) {
             </>
           )}
         </div>
-      </div>
 
+      </div>
     </div>
   );
 }

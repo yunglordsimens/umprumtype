@@ -1707,6 +1707,12 @@ body.home-page {
   background: #111118;
   color: #f2f2ef;
 }
+body.home-page #main {
+  padding: 0;
+  margin: 0;
+  max-width: 100%;
+}
+body.home-page .site-footer { display: none; }
 
 .hero-controls {
   position: absolute;

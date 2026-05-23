@@ -8,35 +8,3 @@ import HeroSketch from '../components/HeroSketch.jsx';
     <HeroSketch client:load />
   </div>
 </Base>
-
-<script is:inline>
-  // Detect prefers-color-scheme and expose for any non-React consumers
-  (function () {
-    var mq = window.matchMedia('(prefers-color-scheme: dark)');
-    document.documentElement.dataset.colorScheme = mq.matches ? 'dark' : 'light';
-    mq.addEventListener('change', function (e) {
-      document.documentElement.dataset.colorScheme = e.matches ? 'dark' : 'light';
-    });
-  })();
-</script>
-
-<style is:global>
-  body.home-page {
-    overflow: hidden;
-  }
-  body.home-page .site-nav {
-    z-index: 10;
-    position: relative;
-    background: transparent;
-    backdrop-filter: none;
-    border-bottom: none;
-  }
-  body.home-page .site-nav a {
-    color: var(--text);
-  }
-  body.home-page #main {
-    padding: 0;
-    margin: 0;
-    max-width: 100%;
-  }
-</style>
