@@ -45,17 +45,11 @@ export default function TypefaceIsland({ typefaces }) {
     return [...classTags, ...authorTags, ...yearTags];
   }, [typefaces]);
 
-  // Panel slide animation
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
-    if (showTags) {
-      panel.style.maxHeight = panel.scrollHeight + 'px';
-      panel.style.opacity   = '1';
-    } else {
-      panel.style.maxHeight = '0';
-      panel.style.opacity   = '0';
-    }
+    panel.style.maxHeight = showTags ? '1000px' : '0';
+    panel.style.opacity   = showTags ? '1' : '0';
   }, [showTags]);
 
   const filtered = useMemo(() => {
@@ -99,16 +93,14 @@ export default function TypefaceIsland({ typefaces }) {
       <div className="lib-main">
 
         <header className="lib-toolbar">
-          <button
-            className="lib-filter-btn"
-            onClick={() => setShowTags(f => !f)}
-            aria-pressed={showTags}
-          >
-            <span className="lib-filter-btn__label">Tags</span>
-            {activeTags.length > 0 && (
-              <span className="tf-tag-count">{activeTags.length}</span>
-            )}
-          </button>
+          <div className="tf-sort">
+            <button
+              aria-pressed={showTags}
+              onClick={() => setShowTags(f => !f)}
+            >
+              Tags{activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
+            </button>
+          </div>
 
           <div className="lib-search-wrap">
             <div className="lib-search">
@@ -141,7 +133,7 @@ export default function TypefaceIsland({ typefaces }) {
           ref={panelRef}
           className="tf-tags-panel"
           style={{ maxHeight: 0, opacity: 0, overflow: 'hidden',
-            transition: 'max-height 400ms cubic-bezier(0.16,1,0.3,1), opacity 280ms' }}
+            transition: 'max-height 400ms var(--ease), opacity 280ms var(--ease)' }}
         >
           <div className="tf-tags-panel__inner">
             <div className="tf-tags-panel__chips">
