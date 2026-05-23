@@ -779,6 +779,7 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
 .tfa-trigger__meta-year     { grid-column: 6 / 7; white-space: nowrap; text-align: right; }
 .tfa-trigger__preview {
   display: block;
+  font-size: clamp(3rem, 15vw, 15rem);
   line-height: 1;
   color: var(--text);
   word-break: normal;
