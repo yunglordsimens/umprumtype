@@ -23,7 +23,7 @@ function getPostHtml(slug) {
   return el ? el.innerHTML : '';
 }
 
-function PostRow({ post, isOpen, onToggle }) {
+function PostRow({ post, isOpen, onToggle, onTagClick }) {
   const [html] = useState(() =>
     typeof document !== 'undefined' ? (getPostHtml(post.slug) || '') : ''
   );
@@ -51,6 +51,13 @@ function PostRow({ post, isOpen, onToggle }) {
               </div>
             )}
             <div className="post__body" dangerouslySetInnerHTML={{ __html: html }} />
+            {post.tags && post.tags.length > 0 && (
+              <div className="tfa-info__tags">
+                {post.tags.map(tag => (
+                  <button key={tag} className="tfa-info__tag" onClick={() => onTagClick?.(tag)}>{tag}</button>
+                ))}
+              </div>
+            )}
             {post.purchasable && post.contact && (
               <aside className="post-detail__contact">
                 <h3>Contact author</h3>
@@ -122,6 +129,11 @@ export default function JournalIsland({ posts }) {
 
   function toggleTag(tag) {
     setActiveTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
+  }
+
+  function onTagClick(tag) {
+    setOpenSlug(null);
+    setActiveTags([tag]);
   }
 
   useEffect(() => {
@@ -205,6 +217,7 @@ export default function JournalIsland({ posts }) {
                     post={p}
                     isOpen={openSlug === p.slug}
                     onToggle={() => togglePost(p.slug)}
+                    onTagClick={onTagClick}
                   />
                 ))}
               </ul>

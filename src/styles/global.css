@@ -962,16 +962,15 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
 .post-row__close-btn {
   width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
-  border-radius: 50%;
-  border: 1px solid var(--border);
   background: transparent;
+  border: none;
   cursor: pointer;
   font-size: 1.25rem;
   line-height: 1;
   color: var(--text-muted);
-  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+  transition: color var(--dur-fast) var(--ease);
 }
-.post-row__close-btn:hover { color: var(--text); border-color: var(--border-strong); }
+.post-row__close-btn:hover { color: var(--text); }
 .post-row__date {
   color: var(--text-subtle);
   font-variant-numeric: tabular-nums;
@@ -1013,17 +1012,15 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  margin: var(--space-5) calc(-1 * var(--space-6));
-  padding: 0 var(--space-6) var(--space-2);
+  margin: 0;
+  padding: 0;
   -webkit-overflow-scrolling: touch;
 }
 .post-detail__gallery img {
-  height: 220px;
+  height: 60vh;
   width: auto;
   max-width: none;
   flex-shrink: 0;
-  scroll-snap-align: start;
   object-fit: cover;
 }
 .post-detail__body { margin-top: var(--space-6); }
