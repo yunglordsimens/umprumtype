@@ -31,10 +31,12 @@ export default function HeroSketch() {
 
         p.setup = () => {
           p.createCanvas(p.windowWidth, p.windowHeight);
+          p.background(bg());
           p.frameRate(30);
           fond = p.createGraphics(p.width, p.height);
           p.textAlign(p.CENTER, p.CENTER);
-          document.fonts.load('128px "Svar"').then(() => drawDefaultText()).catch(() => drawDefaultText());
+          drawDefaultText();
+          document.fonts.load('128px "Svar"').then(() => drawDefaultText()).catch(() => {});
         };
 
         function drawToBuffer(t) {

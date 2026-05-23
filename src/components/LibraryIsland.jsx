@@ -97,7 +97,7 @@ function toThumb(url) {
   return url.startsWith('http') ? url : null;
 }
 
-function BookDetail({ book }) {
+function BookDetail({ book, onTagClick }) {
   const cover = getCover(book);
   return (
     <div className="lib-accordion__content">
@@ -121,7 +121,9 @@ function BookDetail({ book }) {
         {book.year   && <p className="lib-accordion__year">{book.year}</p>}
         {book.tags.length > 0 && (
           <div className="lib-accordion__tags">
-            {book.tags.map(t => <span key={t} className="lib-accordion__tag">{t}</span>)}
+            {book.tags.map(t => (
+              <button key={t} className="lib-accordion__tag" onClick={() => onTagClick?.(t)}>{t}</button>
+            ))}
           </div>
         )}
       </div>
@@ -164,7 +166,7 @@ function BookCard({ book, isOpen, onToggle }) {
 }
 
 // List row — expandable accordion
-function LibRow({ book, isOpen, onToggle }) {
+function LibRow({ book, isOpen, onToggle, onTagClick }) {
   const panelRef = useRef(null);
 
   useEffect(() => {
@@ -189,7 +191,7 @@ function LibRow({ book, isOpen, onToggle }) {
         className="lib-row__panel"
         style={{ maxHeight: 0, overflow: 'hidden', transition: 'max-height 400ms cubic-bezier(0.16,1,0.3,1)' }}
       >
-        <BookDetail book={book} />
+        <BookDetail book={book} onTagClick={onTagClick} />
       </div>
     </li>
   );
@@ -260,6 +262,11 @@ export default function LibraryIsland() {
 
   function toggleBook(id) {
     setOpenId(prev => prev === id ? null : id);
+  }
+
+  function onTagClick(tag) {
+    setOpenId(null);
+    setActiveTags([tag]);
   }
 
   function addBook() {
@@ -366,7 +373,7 @@ export default function LibraryIsland() {
                   />
                   {openId === book.id && (
                     <div ref={accordionRef} className="lib-grid-accordion">
-                      <BookDetail book={book} />
+                      <BookDetail book={book} onTagClick={onTagClick} />
                     </div>
                   )}
                 </Fragment>
@@ -387,6 +394,7 @@ export default function LibraryIsland() {
                     book={book}
                     isOpen={openId === book.id}
                     onToggle={() => toggleBook(book.id)}
+                    onTagClick={onTagClick}
                   />
                 ))}
               </ul>
