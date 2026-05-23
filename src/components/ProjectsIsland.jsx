@@ -16,6 +16,12 @@ const CheckIcon = () => (
   </svg>
 );
 
+const SORTS = [
+  { key: 'name',   label: 'Name' },
+  { key: 'author', label: 'Author' },
+  { key: 'year',   label: 'Year' },
+];
+
 function getPostHtml(slug) {
   const el = document.querySelector(`[data-post-slug="${slug}"]`);
   return el ? el.innerHTML : '';
@@ -66,10 +72,11 @@ function PostRow({ post, isOpen, onToggle }) {
 }
 
 export default function ProjectsIsland({ posts }) {
-  const [activeTags, setActiveTags]   = useState([]);
-  const [search, setSearch]           = useState('');
+  const [activeTags, setActiveTags] = useState([]);
+  const [search, setSearch]         = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [openSlug, setOpenSlug]       = useState(null);
+  const [openSlug, setOpenSlug]     = useState(null);
+  const [sort, setSort]             = useState('name');
 
   const allTags = useMemo(
     () => [...new Set(posts.flatMap(p => p.tags))].sort(),
@@ -83,8 +90,16 @@ export default function ProjectsIsland({ posts }) {
       const q = search.toLowerCase();
       list = list.filter(p => p.title.toLowerCase().includes(q) || (p.author && p.author.toLowerCase().includes(q)));
     }
-    return list;
-  }, [activeTags, search, posts]);
+    const out = [...list];
+    if (sort === 'author') {
+      out.sort((a, b) => (a.author || '').localeCompare(b.author || '', 'cs'));
+    } else if (sort === 'year') {
+      out.sort((a, b) => new Date(b.dateIso) - new Date(a.dateIso));
+    } else {
+      out.sort((a, b) => a.title.localeCompare(b.title, 'cs'));
+    }
+    return out;
+  }, [activeTags, search, sort, posts]);
 
   function togglePost(slug) {
     setOpenSlug(prev => prev === slug ? null : slug);
@@ -149,8 +164,12 @@ export default function ProjectsIsland({ posts }) {
               />
             </div>
           </div>
-          <div className="lib-right">
-            <span className="lib-wordmark">UMPRUM Type Projects</span>
+          <div className="tf-sort">
+            {SORTS.map(s => (
+              <button key={s.key} aria-pressed={sort === s.key} onClick={() => setSort(s.key)}>
+                {s.label}
+              </button>
+            ))}
           </div>
         </header>
 
