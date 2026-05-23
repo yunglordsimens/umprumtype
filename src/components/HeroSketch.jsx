@@ -4,7 +4,6 @@ export default function HeroSketch() {
   const containerRef = useRef(null);
   const [isDark, setIsDark] = useState(true);
 
-  // Sync with prefers-color-scheme
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     setIsDark(mq.matches);
@@ -13,7 +12,6 @@ export default function HeroSketch() {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  // p5 sketch — recreates on theme change
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -40,7 +38,8 @@ export default function HeroSketch() {
           fond.beginDraw();
           fond.background(bg());
           fond.fill(fg());
-          fond.textFont('Svar', 128);
+          fond.textFont('Svar');
+          fond.textSize(128);
           fond.textAlign(p.CENTER, p.CENTER);
           fond.text(defaultText, p.width / 2, p.height / 2);
           fond.endDraw();
@@ -49,25 +48,35 @@ export default function HeroSketch() {
 
         function redessine() {
           const t = texte.length > 0 ? texte.join('') : defaultText;
+
           fond.beginDraw();
           fond.background(bg());
           fond.fill(fg());
-          fond.textFont('Svar', 128);
+          fond.textFont('Svar');
+          fond.textSize(128);
           fond.textAlign(p.CENTER, p.CENTER);
           fond.text(t, p.width / 2, p.height / 2);
           fond.filter(p.BLUR, 5);
           fond.text(t, p.width / 2, p.height / 2);
           fond.endDraw();
 
+          // Read pixels once — fond.get() per-pixel is too slow
+          fond.loadPixels();
+
           p.background(bg());
           p.noFill();
           p.stroke(fg());
           p.strokeWeight(1);
+
           for (let a = 0; a < fond.height; a += 4) {
             p.beginShape();
             for (let b = 0; b < fond.width; b += 3) {
-              const c = p.brightness(fond.get(b, a));
-              p.vertex((b + a * 0.4) * 1.8 - 200, (a - c * 0.1 - b * 0.1) * 1.8 - 50);
+              const idx = (a * fond.width + b) * 4;
+              const c = fond.pixels[idx]; // red channel = brightness in b/w buffer
+              p.vertex(
+                (b + a * 0.4) * 1.8 - 200,
+                (a - c * 0.1 - b * 0.1) * 1.8 - 50
+              );
             }
             p.endShape();
           }
