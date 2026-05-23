@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, Fragment } from 'react';
 
 const SHEET_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9pcn-Vt6gV9lCYZEK1Ly6ZKdEIYqN-VoIu9EkPqDqkFCAwT5R_eqaKz6priy-ixFZQWD3CtX263O_/pub?output=csv';
@@ -205,6 +205,13 @@ export default function LibraryIsland() {
   const [newBook, setNewBook]         = useState({ title: '', author: '', year: '', tags: '' });
   const [viewMode, setViewMode]       = useState('grid');
   const [openId, setOpenId]           = useState(null);
+  const accordionRef = useRef(null);
+
+  useEffect(() => {
+    if (openId !== null && accordionRef.current) {
+      accordionRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [openId]);
 
   useEffect(() => {
     fetch(SHEET_URL)
@@ -349,23 +356,22 @@ export default function LibraryIsland() {
           {filtered.length === 0 ? (
             <div className="lib-empty">Nothing found.</div>
           ) : viewMode === 'grid' ? (
-            <>
-              <div className="lib-grid">
-                {filtered.map(book => (
+            <div className="lib-grid">
+              {filtered.map(book => (
+                <Fragment key={book.id}>
                   <BookCard
-                    key={book.id}
                     book={book}
                     isOpen={openId === book.id}
                     onToggle={() => toggleBook(book.id)}
                   />
-                ))}
-              </div>
-              {openBook && (
-                <div className="lib-grid-accordion">
-                  <BookDetail book={openBook} />
-                </div>
-              )}
-            </>
+                  {openId === book.id && (
+                    <div ref={accordionRef} className="lib-grid-accordion">
+                      <BookDetail book={book} />
+                    </div>
+                  )}
+                </Fragment>
+              ))}
+            </div>
           ) : (
             <div className="lib-list-wrap">
               <div className="lib-list-header">

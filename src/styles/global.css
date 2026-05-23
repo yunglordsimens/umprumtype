@@ -2101,6 +2101,7 @@ body.lib-page .site-footer { display: none; }
 
 /* ── Grid accordion (below grid) ── */
 .lib-grid-accordion {
+  grid-column: 1 / -1;
   margin-top: var(--space-6);
   border-top: 1px solid var(--border);
   padding-top: var(--space-6);
