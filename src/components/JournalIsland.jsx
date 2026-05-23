@@ -12,9 +12,10 @@ const SearchIcon = () => (
 );
 
 const SORTS = [
-  { key: 'name',   label: 'Name' },
-  { key: 'author', label: 'Author' },
-  { key: 'year',   label: 'Year' },
+  { key: 'name',    label: 'Name' },
+  { key: 'author',  label: 'Author' },
+  { key: 'year',    label: 'Year' },
+  { key: 'shuffle', label: 'Shuffle' },
 ];
 
 function getPostHtml(slug) {
@@ -72,6 +73,7 @@ export default function JournalIsland({ posts }) {
   const [showTags, setShowTags]     = useState(false);
   const [openSlug, setOpenSlug]     = useState(null);
   const [sort, setSort]             = useState('name');
+  const [shuffleSeed, setShuffleSeed] = useState(0);
   const panelRef = useRef(null);
 
   const allTags = useMemo(
@@ -91,11 +93,16 @@ export default function JournalIsland({ posts }) {
       out.sort((a, b) => (a.author || '').localeCompare(b.author || '', 'cs'));
     } else if (sort === 'year') {
       out.sort((a, b) => new Date(b.dateIso) - new Date(a.dateIso));
+    } else if (sort === 'shuffle') {
+      for (let i = out.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [out[i], out[j]] = [out[j], out[i]];
+      }
     } else {
       out.sort((a, b) => a.title.localeCompare(b.title, 'cs'));
     }
     return out;
-  }, [activeTags, search, sort, posts]);
+  }, [activeTags, search, sort, shuffleSeed, posts]);
 
   useEffect(() => {
     const panel = panelRef.current;
@@ -147,7 +154,7 @@ export default function JournalIsland({ posts }) {
           </div>
           <div className="tf-sort">
             {SORTS.map(s => (
-              <button key={s.key} aria-pressed={sort === s.key} onClick={() => setSort(s.key)}>
+              <button key={s.key} aria-pressed={sort === s.key} onClick={() => { setSort(s.key); if (s.key === 'shuffle') setShuffleSeed(n => n + 1); }}>
                 {s.label}
               </button>
             ))}

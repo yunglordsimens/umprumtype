@@ -17,6 +17,7 @@ const SORTS = [
   { key: 'name',     label: 'Name' },
   { key: 'year',     label: 'Year' },
   { key: 'designer', label: 'Author' },
+  { key: 'shuffle',  label: 'Shuffle' },
 ];
 
 function effectiveTags(tf) {
@@ -33,6 +34,7 @@ export default function TypefaceIsland({ typefaces }) {
   const [showTags, setShowTags]     = useState(false);
   const [openSlug, setOpenSlug]     = useState(null);
   const [sort, setSort]             = useState('name');
+  const [shuffleSeed, setShuffleSeed] = useState(0);
   const panelRef = useRef(null);
 
   // Flat ordered tag list: classification → authors → years
@@ -73,11 +75,16 @@ export default function TypefaceIsland({ typefaces }) {
       out.sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
     } else if (sort === 'designer') {
       out.sort((a, b) => (a.designer ?? '').localeCompare(b.designer ?? '', 'cs'));
+    } else if (sort === 'shuffle') {
+      for (let i = out.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [out[i], out[j]] = [out[j], out[i]];
+      }
     } else {
       out.sort((a, b) => a.title.localeCompare(b.title, 'cs'));
     }
     return out;
-  }, [activeTags, search, sort, typefaces]);
+  }, [activeTags, search, sort, shuffleSeed, typefaces]);
 
   function toggleTag(tag) {
     setActiveTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
@@ -121,7 +128,7 @@ export default function TypefaceIsland({ typefaces }) {
               <button
                 key={s.key}
                 aria-pressed={sort === s.key}
-                onClick={() => setSort(s.key)}
+                onClick={() => { setSort(s.key); if (s.key === 'shuffle') setShuffleSeed(n => n + 1); }}
               >
                 {s.label}
               </button>
