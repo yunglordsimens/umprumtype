@@ -136,9 +136,7 @@ export default function StoreIsland({ items }) {
       <div className="lib-layout">
         <div className="lib-main">
           <header className="lib-toolbar">
-            <div className="lib-right" style={{ marginLeft: 'auto' }}>
-              <span className="lib-wordmark">UMPRUM Type Store</span>
-            </div>
+            <div className="lib-right" style={{ marginLeft: 'auto' }}></div>
           </header>
           <div className="lib-scroll store-island__scroll">
             <div className="lib-empty">No items available right now — check back soon.</div>
@@ -211,7 +209,7 @@ export default function StoreIsland({ items }) {
             </div>
           </div>
           <div className="lib-right">
-            <span className="lib-wordmark">UMPRUM Type Store</span>
+            <span className="lib-toolbar-count">{filtered.length}{filtered.length < items.length ? ` of ${items.length}` : ''} items</span>
           </div>
         </header>
 

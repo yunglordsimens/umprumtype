@@ -748,7 +748,6 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
   width: 100%;
   display: block;
   padding: 0;
-  overflow: hidden;
   background: none;
   border: none;
   cursor: pointer;
@@ -766,28 +765,27 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
   display: block;
 }
 .tfa-trigger__meta-inline {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-2);
   width: 100%;
   font-size: var(--step--1);
   color: var(--text-muted);
   font-family: var(--font-ui);
   margin-bottom: 0.25em;
 }
-.tfa-trigger__meta-inline span {
-  margin-right: 2em;
-  display: inline-block;
-  white-space: nowrap;
-}
+.tfa-trigger__meta-name     { grid-column: 1 / 4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tfa-trigger__meta-designer { grid-column: 4 / 6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tfa-trigger__meta-year     { grid-column: 6 / 7; white-space: nowrap; text-align: right; }
 .tfa-trigger__preview {
   display: block;
-  font-size: clamp(3rem, 15vw, 15rem);
-  line-height: 0.85;
+  line-height: 1;
   color: var(--text);
   word-break: normal;
   white-space: nowrap;
   overflow: visible;
   padding: 0;
+  padding-block: 0.1em;
 }
 .tfa-trigger__meta {
   display: flex;
@@ -1999,11 +1997,10 @@ body.lib-page .site-footer { display: none; }
   background: var(--text);
   color: var(--bg);
 }
-.lib-wordmark {
-  font-size: 0.6875rem; color: var(--text-subtle);
-  letter-spacing: 0.04em; display: none;
+.lib-toolbar-count {
+  font-size: var(--step--1);
+  color: var(--text-subtle);
 }
-@media (min-width: 900px) { .lib-wordmark { display: inline; } }
 .lib-add-btn {
   display: flex; align-items: center; gap: 4px;
   font-size: 0.875rem; font-weight: 500;

@@ -345,7 +345,7 @@ export default function LibraryIsland() {
           </div>
 
           <div className="lib-right">
-            <span className="lib-wordmark">UMPRUM Type Library</span>
+            <span className="lib-toolbar-count">{filtered.length}{filtered.length < library.length ? ` of ${library.length}` : ''} books</span>
             <button className="lib-add-btn" onClick={() => setShowAdd(true)}>
               <PlusIcon /><span>Add</span>
             </button>
