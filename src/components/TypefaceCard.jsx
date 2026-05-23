@@ -12,7 +12,7 @@ function lineHeightFor(size) {
   return size > 96 ? 0.95 : size > 48 ? 1.1 : size > 24 ? 1.3 : 1.5;
 }
 
-function VariantWindow({ variant, fam, size, cols, baseText, isLarge, fixedHeight, showLabel }) {
+function VariantWindow({ variant, fam, size, cols, baseText, isLarge, fixedHeight }) {
   const ref = useRef(null);
   const lh = lineHeightFor(size);
 
@@ -24,9 +24,6 @@ function VariantWindow({ variant, fam, size, cols, baseText, isLarge, fixedHeigh
 
   return (
     <div className="specimen__variant-window">
-      {showLabel && (
-        <div className="specimen__variant-label">{variant.variantName || 'Regular'}</div>
-      )}
       <div
         ref={ref}
         className="specimen__text"
@@ -66,23 +63,35 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
   );
   const initialSizePx = Math.round((parseFloat(tf.mainSize) || 6) * 16);
 
-  const [size, setSize] = useState(nearest(Math.max(72, initialSizePx), SIZE_STEPS));
-  const [manualCols, setManualCols] = useState(null);
-  const [resetKey, setResetKey] = useState(0);
-  const panelRef = useRef(null);
+  const [size, setSize]                         = useState(nearest(Math.max(72, initialSizePx), SIZE_STEPS));
+  const [manualCols, setManualCols]             = useState(null);
+  const [selectedVariantIdx, setSelectedVariantIdx] = useState(clampedIdx);
+  const panelRef  = useRef(null);
+  const testerRef = useRef(null);
 
   const cols = manualCols ?? autoCols(size);
   const isLarge = size >= 144;
   const fam = tf.title.replace(/"/g, '\\"');
   const current = tf.otfVariants[clampedIdx] ?? null;
 
-  // Fixed height derived from initial size — stays constant regardless of slider
   const lhInitial = lineHeightFor(Math.max(72, initialSizePx));
   const fixedHeight = Math.max(160, Math.round(Math.max(72, initialSizePx) * lhInitial * 3));
 
   function changeSize(val) {
     setSize(val);
     setManualCols(null);
+  }
+
+  function resetText() {
+    const testerEl = testerRef.current;
+    if (!testerEl) return;
+    const baseText = tf.styleTexts[selectedVariantIdx] || tf.styleTexts[0] || tf.mainText || tf.title;
+    testerEl.querySelectorAll('.specimen__text').forEach(el => {
+      el.textContent = (baseText + ' ').repeat(50).trim();
+    });
+    if (selectedVariantIdx !== clampedIdx) {
+      setSelectedVariantIdx(clampedIdx);
+    }
   }
 
   useEffect(() => {
@@ -104,7 +113,13 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
     if (panel && isOpen) {
       panel.style.maxHeight = panel.scrollHeight + 'px';
     }
-  }, [size, cols, isOpen, resetKey]);
+  }, [size, cols, isOpen, selectedVariantIdx]);
+
+  const multiVariant = tf.otfVariants.length > 1;
+  const useSelect    = tf.otfVariants.length > 5;
+
+  const selectedVariant = tf.otfVariants[selectedVariantIdx];
+  const baseText = tf.styleTexts[selectedVariantIdx] || tf.styleTexts[0] || tf.mainText || tf.title;
 
   return (
     <li className="tfa-item">
@@ -138,15 +153,16 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
           <div className="tfa-panel__cols">
 
             {/* LEFT: tester */}
-            <div className="tfa-panel__tester">
+            <div className="tfa-panel__tester" ref={testerRef}>
               <div className="specimen__controls">
 
+                {/* Size slider */}
                 <div className="specimen__group">
                   <input
                     type="range" min="8" max="240" step="1" value={size}
                     onChange={e => changeSize(+e.target.value)}
                   />
-                  <span className="specimen__value">{size}px</span>
+                  <span className="specimen__value">{size} px</span>
                   <div className="specimen__presets">
                     {SIZE_STEPS.map(p => (
                       <button
@@ -158,6 +174,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
                   </div>
                 </div>
 
+                {/* Column buttons */}
                 <div className="specimen__group">
                   {[1, 2, 3].map(c => (
                     <button
@@ -168,32 +185,56 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
                   ))}
                 </div>
 
+                {/* Variant selector */}
+                {multiVariant && (
+                  <div className="specimen__group">
+                    {useSelect ? (
+                      <select
+                        className="specimen__variant-select"
+                        value={selectedVariantIdx}
+                        onChange={e => setSelectedVariantIdx(+e.target.value)}
+                      >
+                        {tf.otfVariants.map((v, i) => (
+                          <option key={i} value={i}>
+                            {v.variantName || `Style ${i + 1}`}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      tf.otfVariants.map((v, i) => (
+                        <button
+                          key={i}
+                          className={selectedVariantIdx === i ? 'is-active' : ''}
+                          onClick={() => setSelectedVariantIdx(i)}
+                        >
+                          {v.variantName || `Style ${i + 1}`}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+
+                {/* Reset */}
                 <div className="specimen__group">
                   <button
                     className="specimen__reset"
                     title="Reset text"
-                    onClick={() => setResetKey(k => k + 1)}
+                    onClick={resetText}
                   >↺</button>
                 </div>
 
               </div>
 
-              {tf.otfVariants.map((variant, i) => {
-                const baseText = tf.styleTexts[i] || tf.styleTexts[0] || tf.mainText || tf.title;
-                return (
-                  <VariantWindow
-                    key={`${i}-${resetKey}`}
-                    variant={variant}
-                    fam={fam}
-                    size={size}
-                    cols={cols}
-                    baseText={baseText}
-                    isLarge={isLarge}
-                    fixedHeight={fixedHeight}
-                    showLabel={tf.otfVariants.length > 1}
-                  />
-                );
-              })}
+              <VariantWindow
+                key={selectedVariantIdx}
+                variant={selectedVariant}
+                fam={fam}
+                size={size}
+                cols={cols}
+                baseText={baseText}
+                isLarge={isLarge}
+                fixedHeight={fixedHeight}
+              />
             </div>
 
             {/* RIGHT: info */}

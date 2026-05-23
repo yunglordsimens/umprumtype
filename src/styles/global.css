@@ -503,6 +503,19 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
 .specimen__text:focus { outline: 1px dashed var(--border-strong); outline-offset: 4px; }
 
 .specimen__variant-window { margin-top: var(--space-5); }
+.specimen__variant-select {
+  font-size: var(--step--1);
+  font-family: inherit;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  padding: 2px 10px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.specimen__variant-select:hover { border-color: var(--border-strong); color: var(--text); }
 .specimen__variant-label {
   font-size: var(--step--2);
   color: var(--text-subtle);
