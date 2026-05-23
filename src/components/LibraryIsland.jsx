@@ -277,8 +277,8 @@ export default function LibraryIsland() {
       <aside className={`lib-filter${showFilters ? ' is-open' : ''}`}>
         <div className="lib-filter__inner">
           <div className="lib-filter__head">
-            <h2 className="lib-filter__title">Filters</h2>
-            <button className="lib-filter__close" onClick={() => setShowFilters(false)} aria-label="Close filters">
+            <h2 className="lib-filter__title">Tags</h2>
+            <button className="lib-filter__close" onClick={() => setShowFilters(false)} aria-label="Close tags">
               <CloseIcon />
             </button>
           </div>
@@ -307,7 +307,7 @@ export default function LibraryIsland() {
 
         <header className="lib-toolbar">
           <button className="lib-filter-btn" onClick={() => setShowFilters(f => !f)} aria-pressed={showFilters}>
-            <span className="lib-filter-btn__label">{showFilters ? 'Hide filters' : 'Filters'}</span>
+            <span className="lib-filter-btn__label">{showFilters ? 'Hide tags' : 'Tags'}</span>
           </button>
 
           <div className="lib-search-wrap">

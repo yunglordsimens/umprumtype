@@ -155,8 +155,8 @@ export default function StoreIsland({ items }) {
       <aside className={`lib-filter${showFilters ? ' is-open' : ''}`}>
         <div className="lib-filter__inner">
           <div className="lib-filter__head">
-            <h2 className="lib-filter__title">Filters</h2>
-            <button className="lib-filter__close" onClick={() => setShowFilters(false)} aria-label="Close filters">
+            <h2 className="lib-filter__title">Tags</h2>
+            <button className="lib-filter__close" onClick={() => setShowFilters(false)} aria-label="Close tags">
               <CloseIcon />
             </button>
           </div>
@@ -195,7 +195,7 @@ export default function StoreIsland({ items }) {
             aria-pressed={showFilters}
           >
             <span className="lib-filter-btn__label">
-              {showFilters ? 'Hide filters' : 'Filters'}
+              {showFilters ? 'Hide tags' : 'Tags'}
             </span>
           </button>
           <div className="lib-search-wrap">

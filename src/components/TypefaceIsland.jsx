@@ -21,9 +21,9 @@ const CheckIcon = () => (
 );
 
 const SORTS = [
-  { key: 'name',     label: 'A–Z' },
+  { key: 'name',     label: 'Name' },
   { key: 'year',     label: 'Year' },
-  { key: 'designer', label: 'Designer' },
+  { key: 'designer', label: 'Author' },
 ];
 
 // Flat list of filter-able values for a typeface:
@@ -103,8 +103,8 @@ export default function TypefaceIsland({ typefaces }) {
       <aside className={`lib-filter${showFilters ? ' is-open' : ''}`}>
         <div className="lib-filter__inner">
           <div className="lib-filter__head">
-            <h2 className="lib-filter__title">Filters</h2>
-            <button className="lib-filter__close" onClick={() => setShowFilters(false)} aria-label="Close filters">
+            <h2 className="lib-filter__title">Tags</h2>
+            <button className="lib-filter__close" onClick={() => setShowFilters(false)} aria-label="Close tags">
               <CloseIcon />
             </button>
           </div>
@@ -150,7 +150,7 @@ export default function TypefaceIsland({ typefaces }) {
           </div>
 
           <div>
-            <h3 className="lib-filter__section-title">Designer</h3>
+            <h3 className="lib-filter__section-title">Author</h3>
             <div className="lib-filter__tags">
               {allDesigners.map(designer => {
                 const active = activeTags.includes(designer);
@@ -186,7 +186,7 @@ export default function TypefaceIsland({ typefaces }) {
             aria-pressed={showFilters}
           >
             <span className="lib-filter-btn__label">
-              {showFilters ? 'Hide filters' : 'Filters'}
+              {showFilters ? 'Hide tags' : 'Tags'}
             </span>
           </button>
 
@@ -215,9 +215,6 @@ export default function TypefaceIsland({ typefaces }) {
             ))}
           </div>
 
-          <div className="lib-right">
-            <span className="lib-wordmark">UMPRUM Typefaces</span>
-          </div>
         </header>
 
         <div className="lib-scroll tf-island__scroll">

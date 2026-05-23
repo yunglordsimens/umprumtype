@@ -1070,8 +1070,7 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
 .filter-panel__title {
   font-size: 12px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.02em;
   color: var(--text-muted);
 }
 .filter-panel__close {
@@ -1795,7 +1794,7 @@ body.lib-page .site-footer { display: none; }
 }
 .lib-filter__close:hover { color: var(--text); }
 .lib-filter__section-title {
-  font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+  font-size: 0.75rem; font-weight: 600;
   letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 16px;
 }
 .lib-filter__tags { display: flex; flex-direction: column; gap: 8px; }
@@ -1878,7 +1877,7 @@ body.lib-page .site-footer { display: none; }
 .lib-toolbar .tf-sort { flex-wrap: nowrap; flex-shrink: 0; }
 .lib-wordmark {
   font-size: 0.6875rem; color: var(--text-subtle);
-  letter-spacing: 0.12em; text-transform: uppercase; display: none;
+  letter-spacing: 0.04em; display: none;
 }
 @media (min-width: 900px) { .lib-wordmark { display: inline; } }
 .lib-add-btn {
