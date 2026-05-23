@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import SearchIsland from '../components/SearchIsland.jsx';
 
 interface Props {
   title?: string;
@@ -42,6 +43,9 @@ const isActive = (prefix: string) =>
       <div class="container site-nav__inner">
         <a href="/" class="site-nav__logo">UMPRUM Type</a>
         <button class="site-nav__burger" type="button" aria-label="Menu" aria-controls="siteNavLinks" aria-expanded="false"></button>
+        <div class="site-nav__search">
+          <SearchIsland client:load />
+        </div>
         <ul class="site-nav__links" id="siteNavLinks">
           <li><a href="/typefaces" aria-current={isActive('/typefaces') ? 'page' : undefined}>Typefaces</a></li>
           <li><a href="/projects"  aria-current={isActive('/projects')  ? 'page' : undefined}>Projects</a></li>
