@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 export default function HeroSketch() {
   const containerRef = useRef(null);
   const [isDark, setIsDark] = useState(true);
+  const [effect, setEffect] = useState('waves');
 
+  // Sync with prefers-color-scheme
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     setIsDark(mq.matches);
@@ -12,6 +14,7 @@ export default function HeroSketch() {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
+  // Recreate sketch when theme or effect changes
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -34,21 +37,7 @@ export default function HeroSketch() {
           document.fonts.ready.then(() => drawDefaultText());
         };
 
-        function drawDefaultText() {
-          fond.beginDraw();
-          fond.background(bg());
-          fond.fill(fg());
-          fond.textFont('Svar');
-          fond.textSize(128);
-          fond.textAlign(p.CENTER, p.CENTER);
-          fond.text(defaultText, p.width / 2, p.height / 2);
-          fond.endDraw();
-          redessine();
-        }
-
-        function redessine() {
-          const t = texte.length > 0 ? texte.join('') : defaultText;
-
+        function drawToBuffer(t) {
           fond.beginDraw();
           fond.background(bg());
           fond.fill(fg());
@@ -59,26 +48,62 @@ export default function HeroSketch() {
           fond.filter(p.BLUR, 5);
           fond.text(t, p.width / 2, p.height / 2);
           fond.endDraw();
-
-          // Read pixels once — fond.get() per-pixel is too slow
           fond.loadPixels();
+        }
 
+        function drawWaves() {
           p.background(bg());
           p.noFill();
           p.stroke(fg());
           p.strokeWeight(1);
-
           for (let a = 0; a < fond.height; a += 4) {
             p.beginShape();
             for (let b = 0; b < fond.width; b += 3) {
               const idx = (a * fond.width + b) * 4;
-              const c = fond.pixels[idx]; // red channel = brightness in b/w buffer
+              const c = fond.pixels[idx];
               p.vertex(
                 (b + a * 0.4) * 1.8 - 200,
                 (a - c * 0.1 - b * 0.1) * 1.8 - 50
               );
             }
             p.endShape();
+          }
+        }
+
+        function drawParticles() {
+          p.background(bg());
+          p.noStroke();
+          p.fill(fg());
+          for (let a = 0; a < fond.height; a += 5) {
+            for (let b = 0; b < fond.width; b += 5) {
+              const idx = (a * fond.width + b) * 4;
+              const c = fond.pixels[idx];
+              if (c > 30) {
+                const x = (b + a * 0.4) * 1.8 - 200;
+                const y = (a - c * 0.1 - b * 0.1) * 1.8 - 50;
+                const r = p.map(c, 30, 255, 0.8, 4);
+                p.ellipse(x, y, r, r);
+              }
+            }
+          }
+        }
+
+        function redessine() {
+          const t = texte.length > 0 ? texte.join('') : defaultText;
+          drawToBuffer(t);
+          if (effect === 'particles') {
+            drawParticles();
+          } else {
+            drawWaves();
+          }
+        }
+
+        function drawDefaultText() {
+          drawToBuffer(defaultText);
+          if (effect === 'particles') {
+            drawParticles();
+          } else {
+            drawWaves();
           }
         }
 
@@ -107,12 +132,25 @@ export default function HeroSketch() {
     });
 
     return () => p5Instance?.remove();
-  }, [isDark]);
+  }, [isDark, effect]);
 
   return (
-    <div
-      ref={containerRef}
-      style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}
-    />
+    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+      <div
+        ref={containerRef}
+        style={{ width: '100%', height: '100%', overflow: 'hidden' }}
+      />
+      <div className="hero-controls">
+        {['waves', 'particles'].map(e => (
+          <button
+            key={e}
+            className={`tf-tag-chip${effect === e ? ' is-active' : ''}`}
+            onClick={() => setEffect(e)}
+          >
+            {e}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

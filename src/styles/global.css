@@ -1707,6 +1707,30 @@ body.home-page {
   background: #111118;
   color: #f2f2ef;
 }
+
+.hero-controls {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+.hero-controls .tf-tag-chip {
+  border-color: rgba(242, 242, 239, 0.25);
+  color: rgba(242, 242, 239, 0.5);
+  backdrop-filter: blur(8px);
+}
+.hero-controls .tf-tag-chip:hover {
+  border-color: rgba(242, 242, 239, 0.6);
+  color: rgba(242, 242, 239, 0.9);
+}
+.hero-controls .tf-tag-chip.is-active {
+  background: rgba(242, 242, 239, 0.15);
+  border-color: rgba(242, 242, 239, 0.6);
+  color: #f2f2ef;
+}
 body.home-page .site-nav {
   background: rgba(17, 17, 24, 0.75);
   border-bottom-color: rgba(255, 255, 255, 0.08);
