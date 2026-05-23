@@ -1875,6 +1875,87 @@ body.lib-page .site-footer { display: none; }
 .lib-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 /* Sort pills inside lib-toolbar must not wrap or grow */
 .lib-toolbar .tf-sort { flex-wrap: nowrap; flex-shrink: 0; }
+
+/* ── Tags drop-down panel (TypefaceIsland) ── */
+.tf-tags-panel {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.tf-tags-panel__inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px var(--space-5);
+}
+.tf-tags-panel__chips {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tf-tag-chip {
+  padding: 4px 13px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-strong);
+  background: none;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 150ms, border-color 150ms, color 150ms;
+}
+.tf-tag-chip:hover { border-color: var(--text-muted); color: var(--text); }
+.tf-tag-chip.is-active {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+.tf-tags-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+.tf-tags-clear {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+  transition: color 150ms;
+}
+.tf-tags-clear:hover { color: var(--text); }
+.tf-tags-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  color: var(--text-subtle);
+  transition: color 150ms;
+}
+.tf-tags-close:hover { color: var(--text); }
+.tf-tag-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--text);
+  color: var(--bg);
+}
 .lib-wordmark {
   font-size: 0.6875rem; color: var(--text-subtle);
   letter-spacing: 0.04em; display: none;
