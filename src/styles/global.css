@@ -851,9 +851,9 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
   font-family: var(--font-ui);
   margin-bottom: 0.25em;
 }
-.tfa-trigger__meta-name     { grid-column: 1 / 4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tfa-trigger__meta-name     { grid-column: 2 / 4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tfa-trigger__meta-designer { grid-column: 4 / 6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tfa-trigger__meta-year     { grid-column: 6 / 7; white-space: nowrap; text-align: right; }
+.tfa-trigger__meta-year     { grid-column: 6 / 7; white-space: nowrap; text-align: left; }
 .tfa-trigger__preview {
   display: block;
   font-size: clamp(3rem, 15vw, 15rem);
