@@ -2,19 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function HeroSketch() {
   const containerRef = useRef(null);
-  const [isDark, setIsDark] = useState(true);
   const [effect, setEffect] = useState('waves');
 
-  // Sync with prefers-color-scheme
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDark(mq.matches);
-    const handler = (e) => setIsDark(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
-
-  // Recreate sketch when theme or effect changes
+  // Recreate sketch when effect changes
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -26,8 +16,8 @@ export default function HeroSketch() {
         let fond;
         const defaultText = 'SSArtSemestr';
 
-        const bg = () => isDark ? 0 : 255;
-        const fg = () => isDark ? 255 : 0;
+        const bg = () => 0;
+        const fg = () => 255;
 
         p.setup = () => {
           p.createCanvas(p.windowWidth, p.windowHeight);
@@ -136,7 +126,7 @@ export default function HeroSketch() {
     });
 
     return () => p5Instance?.remove();
-  }, [isDark, effect]);
+  }, [effect]);
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>

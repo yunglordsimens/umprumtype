@@ -39,7 +39,6 @@ function PostRow({ post, isOpen, onToggle, onTagClick }) {
         <div className="post-row__panel-inner">
           <article className="post-detail post-detail--inline">
             <div className="post-detail__meta">
-              <time dateTime={post.dateIso}>{post.date}</time>
               {post.category && <span>{post.category}</span>}
               {post.author   && <span>{post.author}</span>}
             </div>
