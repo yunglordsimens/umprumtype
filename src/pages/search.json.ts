@@ -15,7 +15,7 @@ export const GET: APIRoute = async () => {
     type: 'journal',
     title: e.data.title,
     sub: (e.data as any).author || '',
-    url: `/journal/${e.id.replace(/\.md$/, '')}`,
+    url: `/journal#${e.id.replace(/\.md$/, '')}`,
   }));
 
   const projectEntries = await getCollection('projects');
@@ -23,7 +23,7 @@ export const GET: APIRoute = async () => {
     type: 'project',
     title: e.data.title,
     sub: (e.data as any).author || '',
-    url: `/projects/${e.id.replace(/\.md$/, '')}`,
+    url: `/projects#${e.id.replace(/\.md$/, '')}`,
   }));
 
   return new Response(JSON.stringify([...typefaces, ...journal, ...projects]), {

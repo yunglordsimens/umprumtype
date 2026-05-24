@@ -29,7 +29,7 @@ function PostRow({ post, isOpen, onToggle, onTagClick }) {
   );
 
   return (
-    <li className={`post-row${isOpen ? ' is-open' : ''}`}>
+    <li id={post.slug} className={`post-row${isOpen ? ' is-open' : ''}`}>
       <button className="post-row__btn" onClick={onToggle}>
         <time className="post-row__date" dateTime={post.dateIso}>{post.date}</time>
         <span className="post-row__title">{post.title}</span>
@@ -81,6 +81,15 @@ export default function ProjectsIsland({ posts }) {
   const [sort, setSort]             = useState('name');
   const [shuffleSeed, setShuffleSeed] = useState(0);
   const panelRef = useRef(null);
+
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+    setOpenSlug(hash);
+    requestAnimationFrame(() => {
+      document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, []);
 
   const allTags = useMemo(
     () => [...new Set(posts.flatMap(p => p.tags))].sort(),

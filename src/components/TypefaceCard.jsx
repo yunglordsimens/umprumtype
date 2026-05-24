@@ -11,7 +11,7 @@ function VariantSpecimen({ variant, fam, initialSize, baseText, showLabel }) {
   // Set text only once on mount — never overwrite user edits
   useEffect(() => {
     if (ref.current) {
-      ref.current.textContent = (baseText + ' ').repeat(20).trim();
+      ref.current.textContent = (baseText + ' ').repeat(6).trim();
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -46,7 +46,8 @@ function VariantSpecimen({ variant, fam, initialSize, baseText, showLabel }) {
           columnCount: cols,
           columnGap: '1em',
           whiteSpace: cols > 1 ? 'normal' : 'nowrap',
-          overflowX: cols > 1 ? 'visible' : 'hidden',
+          overflow: 'hidden',
+          maxHeight: cols > 1 ? '4em' : undefined,
           display: 'block',
           outline: 'none',
         }}
