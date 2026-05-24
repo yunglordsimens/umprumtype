@@ -2517,12 +2517,6 @@ body.lib-page .site-footer { display: none; }
    Micro-animations
    ================================================================ */
 
-/* Press feedback — all buttons slightly compress on click */
-button:active:not(:disabled),
-[role="button"]:active {
-  transform: scale(0.96);
-  transition-duration: 80ms;
-}
 
 /* Nav links — sliding underline */
 @media (min-width: 721px) {
@@ -2548,23 +2542,20 @@ button:active:not(:disabled),
   transition: background 150ms var(--ease), color 150ms var(--ease),
               border-color 150ms var(--ease), transform 150ms var(--ease);
 }
-.tf-tag-chip:hover  { transform: translateY(-1px); }
-.tf-tag-chip:active { transform: scale(0.94); transition-duration: 60ms; }
+.tf-tag-chip:hover { transform: translateY(-1px); }
 
 .tfa-info__tag {
   transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
               transform 150ms var(--ease);
 }
-.tfa-info__tag:hover  { transform: translateY(-1px); }
-.tfa-info__tag:active { transform: scale(0.94); transition-duration: 60ms; }
+.tfa-info__tag:hover { transform: translateY(-1px); }
 
 /* Sort pills */
 .tf-sort button {
   transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
               background var(--dur-fast) var(--ease), transform 150ms var(--ease);
 }
-.tf-sort button:hover  { transform: translateY(-1px); }
-.tf-sort button:active { transform: scale(0.94); transition-duration: 60ms; }
+.tf-sort button:hover { transform: translateY(-1px); }
 
 /* Typeface accordion trigger — add transform layer */
 .tfa-trigger {
@@ -2584,7 +2575,6 @@ button:active:not(:disabled),
   transition: background var(--dur-fast) var(--ease), padding-left 200ms var(--ease);
 }
 .post-row__btn:hover { padding-left: var(--space-3); }
-.post-row__btn:active { transform: none; }
 .post-row.is-open .post-row__btn { padding-left: var(--space-3); }
 
 /* Store/Library grid cards — lift with shadow */
@@ -2595,7 +2585,6 @@ button:active:not(:disabled),
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(0,0,0,0.12);
 }
-.grid-card:active { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
 
 /* Library book cards — existing scale + tilt the book cover slightly */
 .lib-card:hover .lib-book {
@@ -2609,26 +2598,21 @@ button:active:not(:disabled),
   transition: color 150ms var(--ease), transform 200ms var(--ease);
 }
 .lib-detail__close:hover { transform: translateX(-3px); }
-.lib-detail__close:active { transform: translateX(-3px) scale(0.9); transition-duration: 60ms; }
-
 .lib-detail__expand {
   transition: color 150ms var(--ease), transform 200ms var(--ease);
 }
 .lib-detail__expand:hover { transform: scale(1.15); }
-.lib-detail__expand:active { transform: scale(0.9); transition-duration: 60ms; }
 
 /* lib-filter-btn */
 .lib-filter-btn {
   transition: opacity 150ms var(--ease), transform 150ms var(--ease);
 }
-.lib-filter-btn:active { transform: scale(0.93); transition-duration: 60ms; }
 
 /* Add book button */
 .lib-add-btn {
   transition: opacity 150ms var(--ease), transform 150ms var(--ease);
 }
 .lib-add-btn:hover { opacity: 1; transform: translateY(-1px); }
-.lib-add-btn:active { transform: scale(0.95); opacity: 0.8; transition-duration: 60ms; }
 
 /* Library list rows */
 .lib-row__trigger {
