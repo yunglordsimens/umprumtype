@@ -1,50 +1,14 @@
 ---
-import Base from '../../layouts/Base.astro';
-import FlexContent from '../../components/FlexContent.astro';
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
   const all = await getCollection('projects');
   return all.map(entry => ({
     params: { slug: entry.id.replace(/\.md$/, '') },
-    props: { entry },
+    props: { slug: entry.id.replace(/\.md$/, '') },
   }));
 }
 
-const { entry } = Astro.props;
-const d = entry.data;
-const { Content } = await render(entry);
+const { slug } = Astro.props;
+return Astro.redirect(`/projects#${slug}`, 301);
 ---
-<Base title={`${d.title} — Umprum Type`} description={d.excerpt || d.title}>
-  <article class="post">
-    <div class="container">
-      <header class="post__head measure" data-reveal>
-        <div class="post__meta">
-          <time datetime={d.date.toISOString()}>{d.date.toISOString().slice(0, 10)}</time>
-          <span>{d.category}</span>
-          {d.author && <span>{d.author}</span>}
-        </div>
-        <h1 class="post__title">{d.title}</h1>
-        {d.excerpt && <p class="muted" style="font-size:var(--step-1);">{d.excerpt}</p>}
-      </header>
-
-      {d.blocks && d.blocks.length > 0 ? (
-        <FlexContent blocks={d.blocks} />
-      ) : (
-        <div class="post__body measure" data-reveal>
-          <Content />
-        </div>
-      )}
-
-      {d.purchasable && (
-        <aside class="post__purchase measure" data-reveal>
-          <p>→ Contact the author{d.author ? ` (${d.author})` : ''} for purchase.</p>
-        </aside>
-      )}
-
-      <nav class="post__back measure">
-        <a href="/projects">← All projects</a>
-      </nav>
-    </div>
-  </article>
-</Base>
