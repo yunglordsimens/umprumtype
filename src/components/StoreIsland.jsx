@@ -210,7 +210,6 @@ export default function StoreIsland({ items }) {
             </button>
           )}
           <div className="lib-detail__scroll">
-            <span className="lib-detail__label">Item details</span>
             {activeItem && (
               <div className="store-detail">
                 <div className="store-detail__header">
