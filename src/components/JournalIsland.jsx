@@ -44,13 +44,6 @@ function PostRow({ post, isOpen, onToggle, onTagClick }) {
               {post.author   && <span>{post.author}</span>}
             </div>
             <h2 className="post-detail__title">{post.title}</h2>
-            {post.excerpt && <p className="post-detail__excerpt">{post.excerpt}</p>}
-            {post.gallery.length > 0 && (
-              <div className="post-detail__gallery">
-                {post.gallery.map((img, i) => <img key={i} src={img} alt="" loading="lazy" />)}
-              </div>
-            )}
-            <div className="post__body" dangerouslySetInnerHTML={{ __html: html }} />
             {post.tags && post.tags.length > 0 && (
               <div className="tfa-info__tags">
                 {post.tags.map(tag => (
@@ -58,6 +51,13 @@ function PostRow({ post, isOpen, onToggle, onTagClick }) {
                 ))}
               </div>
             )}
+            {post.gallery.length > 0 && (
+              <div className="post-detail__gallery">
+                {post.gallery.map((img, i) => <img key={i} src={img} alt="" loading="lazy" />)}
+              </div>
+            )}
+            {post.excerpt && <p className="post-detail__excerpt">{post.excerpt}</p>}
+            <div className="post__body" dangerouslySetInnerHTML={{ __html: html }} />
             {post.purchasable && post.contact && (
               <aside className="post-detail__contact">
                 <h3>Contact author</h3>

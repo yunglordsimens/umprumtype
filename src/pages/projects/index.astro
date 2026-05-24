@@ -13,19 +13,23 @@ const rendered = await Promise.all(
   entries.map(async e => ({ slug: slugOf(e), blocks: (e.data as any).blocks ?? [], Content: (await render(e)).Content }))
 );
 
-const posts = entries.map(e => ({
-  slug:        slugOf(e),
-  title:       e.data.title,
-  date:        e.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }),
-  dateIso:     e.data.date.toISOString(),
-  author:      e.data.author    ?? null,
-  category:    e.data.category,
-  tags:        e.data.tags      ?? [],
-  excerpt:     e.data.excerpt   ?? null,
-  gallery:     e.data.gallery   ?? [],
-  purchasable: e.data.purchasable ?? false,
-  contact:     e.data.contact   ?? null,
-}));
+const posts = entries.map(e => {
+  const blocks = (e.data as any).blocks ?? [];
+  const blockImages = blocks.filter((b: any) => b.type === 'images').flatMap((b: any) => b.items ?? []);
+  return {
+    slug:        slugOf(e),
+    title:       e.data.title,
+    date:        e.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }),
+    dateIso:     e.data.date.toISOString(),
+    author:      e.data.author    ?? null,
+    category:    e.data.category,
+    tags:        e.data.tags      ?? [],
+    excerpt:     e.data.excerpt   ?? null,
+    gallery:     [...(e.data.gallery ?? []), ...blockImages],
+    purchasable: e.data.purchasable ?? false,
+    contact:     e.data.contact   ?? null,
+  };
+});
 ---
 <Base
   title="Projects — Umprum Type"
@@ -35,7 +39,7 @@ const posts = entries.map(e => ({
   <div class="post-content-store" aria-hidden="true">
     {rendered.map(({ slug, blocks, Content }) => (
       <div data-post-slug={slug}>
-        {blocks.length > 0 ? <FlexContent blocks={blocks} /> : <Content />}
+        {blocks.length > 0 ? <FlexContent blocks={blocks.filter((b: any) => b.type === 'text')} /> : <Content />}
       </div>
     ))}
   </div>
