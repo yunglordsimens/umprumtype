@@ -1986,7 +1986,7 @@ body.lib-page .site-footer { display: none; }
 
 /* ── Toolbar ── */
 .lib-toolbar {
-  height: 80px; display: flex; align-items: center;
+  height: 48px; display: flex; align-items: center;
   padding: 0 var(--space-5); gap: 16px; flex-shrink: 0;
   border-bottom: 1px solid var(--border);
 }
@@ -2453,7 +2453,7 @@ body.lib-page .site-footer { display: none; }
 
 /* Mobile: panels become fixed overlays */
 @media (max-width: 767px) {
-  .lib-toolbar { padding: 0 var(--space-5); height: 64px; }
+  .lib-toolbar { padding: 0 var(--space-5); height: 48px; }
   .lib-scroll { padding: 24px 20px 40px; }
   .tf-island__scroll,
   .post-island__scroll,
