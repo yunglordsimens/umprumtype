@@ -2568,9 +2568,8 @@ button:active:not(:disabled),
 
 /* Typeface accordion trigger — add transform layer */
 .tfa-trigger {
-  transition: background var(--dur-fast) var(--ease), transform 200ms var(--ease);
+  transition: background var(--dur-fast) var(--ease);
 }
-.tfa-trigger:active { transform: scaleY(0.98); transform-origin: top center; transition-duration: 60ms; }
 
 /* Big preview text fades in smoothly when card opens */
 .tfa-trigger__preview {
