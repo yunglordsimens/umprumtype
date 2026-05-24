@@ -283,11 +283,10 @@ export default function LibraryIsland() {
       <div className="lib-main">
 
         <header className="lib-toolbar">
-          <div className="tf-sort">
-            <button aria-pressed={showTags} onClick={() => setShowTags(f => !f)}>
-              Tags{activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
-            </button>
-          </div>
+          <button className="lib-filter-btn" onClick={() => setShowTags(f => !f)} aria-pressed={showTags}>
+            <span className="lib-filter-btn__label">Tags</span>
+            {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
+          </button>
 
           <div className="lib-view-toggle">
             <button className={viewMode === 'grid' ? 'is-active' : ''} onClick={() => setViewMode('grid')} aria-pressed={viewMode === 'grid'}>Grid</button>
@@ -295,7 +294,7 @@ export default function LibraryIsland() {
           </div>
 
           <div className="lib-right">
-            <span className="lib-toolbar-count">{filtered.length}{filtered.length < library.length ? ` of ${library.length}` : ''} books</span>
+            <span className="lib-toolbar-count">{filtered.length < library.length ? `${filtered.length} of ${library.length}` : filtered.length}</span>
             <button className="lib-add-btn" onClick={() => setShowAdd(true)}>
               <PlusIcon /><span>Add</span>
             </button>

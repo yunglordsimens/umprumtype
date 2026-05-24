@@ -7,7 +7,7 @@ export const GET: APIRoute = async () => {
     type: 'typeface',
     title: tf.title,
     sub: tf.designer !== 'Unknown' ? tf.designer : '',
-    url: `/typefaces/${tf.slug}`,
+    url: `/typefaces#${tf.slug}`,
   }));
 
   const journalEntries = await getCollection('journal');

@@ -89,7 +89,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
   }, [isOpen]);
 
   return (
-    <li className="tfa-item">
+    <li className="tfa-item" id={tf.slug}>
       <button
         className={`tfa-trigger${isOpen ? ' is-open' : ''}`}
         onClick={onOpen}

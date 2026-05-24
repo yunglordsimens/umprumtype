@@ -30,6 +30,15 @@ export default function TypefaceIsland({ typefaces }) {
   const [shuffleSeed, setShuffleSeed] = useState(0);
   const panelRef = useRef(null);
 
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+    setOpenSlug(hash);
+    requestAnimationFrame(() => {
+      document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, []);
+
   // Flat ordered tag list: classification → authors → years
   const allTagsOrdered = useMemo(() => {
     const classTags  = [...new Set(typefaces.flatMap(tf => tf.tags ?? []))].sort();
@@ -79,14 +88,10 @@ export default function TypefaceIsland({ typefaces }) {
       <div className="lib-main">
 
         <header className="lib-toolbar">
-          <div className="tf-sort">
-            <button
-              aria-pressed={showTags}
-              onClick={() => setShowTags(f => !f)}
-            >
-              Tags{activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
-            </button>
-          </div>
+          <button className="lib-filter-btn" onClick={() => setShowTags(f => !f)} aria-pressed={showTags}>
+            <span className="lib-filter-btn__label">Tags</span>
+            {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
+          </button>
 
           <div className="tf-sort">
             {SORTS.map(s => (
@@ -101,7 +106,7 @@ export default function TypefaceIsland({ typefaces }) {
           </div>
 
           <span className="lib-toolbar-count">
-            {filtered.length}{filtered.length < typefaces.length ? ` of ${typefaces.length}` : ''} typefaces
+            {filtered.length < typefaces.length ? `${filtered.length} of ${typefaces.length}` : filtered.length}
           </span>
         </header>
 

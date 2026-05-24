@@ -76,7 +76,6 @@ function PostRow({ post, isOpen, onToggle, onTagClick }) {
 
 export default function JournalIsland({ posts }) {
   const [activeTags, setActiveTags] = useState([]);
-  const [search, setSearch]         = useState('');
   const [showTags, setShowTags]     = useState(false);
   const [openSlug, setOpenSlug]     = useState(null);
   const [sort, setSort]             = useState('name');
@@ -91,10 +90,6 @@ export default function JournalIsland({ posts }) {
   const filtered = useMemo(() => {
     let list = posts;
     if (activeTags.length > 0) list = list.filter(p => activeTags.some(t => p.tags.includes(t)));
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(p => p.title.toLowerCase().includes(q) || (p.author && p.author.toLowerCase().includes(q)));
-    }
     const out = [...list];
     if (sort === 'author') {
       out.sort((a, b) => (a.author || '').localeCompare(b.author || '', 'cs'));
@@ -109,7 +104,7 @@ export default function JournalIsland({ posts }) {
       out.sort((a, b) => a.title.localeCompare(b.title, 'cs'));
     }
     return out;
-  }, [activeTags, search, sort, shuffleSeed, posts]);
+  }, [activeTags, sort, shuffleSeed, posts]);
 
   useEffect(() => {
     const panel = panelRef.current;
@@ -152,18 +147,6 @@ export default function JournalIsland({ posts }) {
             <span className="lib-filter-btn__label">Tags</span>
             {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
           </button>
-          <div className="lib-search-wrap">
-            <div className="lib-search">
-              <span className="lib-search__icon"><SearchIcon /></span>
-              <input
-                className="lib-search__input"
-                type="text"
-                placeholder="Search entries, authors…"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
-            </div>
-          </div>
           <div className="tf-sort">
             {SORTS.map(s => (
               <button key={s.key} aria-pressed={sort === s.key} onClick={() => { setSort(s.key); if (s.key === 'shuffle') setShuffleSeed(n => n + 1); }}>
@@ -171,6 +154,9 @@ export default function JournalIsland({ posts }) {
               </button>
             ))}
           </div>
+          <span className="lib-toolbar-count">
+            {filtered.length < posts.length ? `${filtered.length} of ${posts.length}` : filtered.length}
+          </span>
         </header>
 
         <div
@@ -207,9 +193,6 @@ export default function JournalIsland({ posts }) {
             <div className="lib-empty">No entries match.</div>
           ) : (
             <>
-              <p className="tf-island__count">
-                {filtered.length}{filtered.length < posts.length ? ` of ${posts.length}` : ''} entries
-              </p>
               <ul className="post-list post-island__list">
                 {filtered.map(p => (
                   <PostRow
