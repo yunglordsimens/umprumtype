@@ -1,7 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
 import JournalIsland from '../../components/JournalIsland.jsx';
-import FlexContent from '../../components/FlexContent.astro';
 import { getCollection, render } from 'astro:content';
 
 const entries = (await getCollection('journal'))
@@ -10,26 +9,22 @@ const entries = (await getCollection('journal'))
 const slugOf = (e: { id: string }) => e.id.replace(/\.md$/, '');
 
 const rendered = await Promise.all(
-  entries.map(async e => ({ slug: slugOf(e), blocks: (e.data as any).blocks ?? [], Content: (await render(e)).Content }))
+  entries.map(async e => ({ slug: slugOf(e), Content: (await render(e)).Content }))
 );
 
-const posts = entries.map(e => {
-  const blocks = (e.data as any).blocks ?? [];
-  const blockImages = blocks.filter((b: any) => b.type === 'images').flatMap((b: any) => b.items ?? []);
-  return {
-    slug:        slugOf(e),
-    title:       e.data.title,
-    date:        e.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }),
-    dateIso:     e.data.date.toISOString(),
-    author:      e.data.author    ?? null,
-    category:    e.data.category,
-    tags:        e.data.tags      ?? [],
-    excerpt:     e.data.excerpt   ?? null,
-    gallery:     [...(e.data.gallery ?? []), ...blockImages],
-    purchasable: e.data.purchasable ?? false,
-    contact:     e.data.contact   ?? null,
-  };
-});
+const posts = entries.map(e => ({
+  slug:        slugOf(e),
+  title:       e.data.title,
+  date:        e.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }),
+  dateIso:     e.data.date.toISOString(),
+  author:      e.data.author    ?? null,
+  category:    e.data.category,
+  tags:        e.data.tags      ?? [],
+  excerpt:     e.data.excerpt   ?? null,
+  gallery:     e.data.gallery   ?? [],
+  purchasable: e.data.purchasable ?? false,
+  contact:     e.data.contact   ?? null,
+}));
 ---
 <Base
   title="Journal — Umprum Type"
@@ -37,10 +32,8 @@ const posts = entries.map(e => {
   bodyClass="lib-page"
 >
   <div class="post-content-store" aria-hidden="true">
-    {rendered.map(({ slug, blocks, Content }) => (
-      <div data-post-slug={slug}>
-        {blocks.length > 0 ? <FlexContent blocks={blocks.filter((b: any) => b.type === 'text')} /> : <Content />}
-      </div>
+    {rendered.map(({ slug, Content }) => (
+      <div data-post-slug={slug}><Content /></div>
     ))}
   </div>
 

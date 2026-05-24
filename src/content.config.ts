@@ -45,15 +45,12 @@ const projects = defineCollection({
     category: z.string(),
     tags: z.array(z.string()).default([]),
     storeImage: z.string().optional(),
+    gallery: z.array(z.string()).default([]),
     excerpt: z.string().optional(),
     purchasable: z.boolean().default(false),
     contact: z.string().optional(),
     featured: z.boolean().default(false),
-    blocks: z.array(z.object({
-      type: z.enum(['text', 'images']),
-      content: z.string().optional(),
-      items: z.array(z.string()).optional(),
-    })).optional(),
+    blocks: z.array(z.any()).optional(),
   }),
 });
 
@@ -66,15 +63,12 @@ const journal = defineCollection({
     category: z.string(),
     tags: z.array(z.string()).default([]),
     storeImage: z.string().optional(),
+    gallery: z.array(z.string()).default([]),
     excerpt: z.string().optional(),
     purchasable: z.boolean().default(false),
     contact: z.string().optional(),
     featured: z.boolean().default(false),
-    blocks: z.array(z.object({
-      type: z.enum(['text', 'images']),
-      content: z.string().optional(),
-      items: z.array(z.string()).optional(),
-    })).optional(),
+    blocks: z.array(z.any()).optional(),
   }),
 });
 

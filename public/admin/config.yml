@@ -122,38 +122,19 @@ collections:
         widget: "select"
         options: ["exhibition", "workshop", "publication", "collaboration", "lecture"]
       - { label: "Tags", name: "tags", widget: "list", default: [] }
-      - { label: "Store Image", name: "storeImage", widget: "image", required: false, hint: "Зображення для картки в Store. Якщо не завантажено — перше зображення з блоків." }
-      - label: "Content Blocks"
-        name: "blocks"
+      - { label: "Store Image", name: "storeImage", widget: "image", required: false, hint: "Cover image for the Store card." }
+      - label: "Photos"
+        name: "gallery"
         widget: "list"
-        hint: "Контент сторінки: текстові блоки та галереї в будь-якому порядку."
-        types:
-          - label: "Text"
-            name: "text"
-            widget: "object"
-            fields:
-              - { label: "Content", name: "content", widget: "markdown", default: "Введіть текст..." }
-          - label: "Images"
-            name: "images"
-            widget: "object"
-            fields:
-              - label: "Images"
-                name: "items"
-                widget: "list"
-                field: { label: "Image", name: "image", widget: "image", multiple: true }
-        default:
-          - type: text
-            content: "Введіть вступний текст."
-          - type: images
-            items: []
+        required: false
+        default: []
+        hint: "Upload any number of photos — they appear as a carousel in the accordion."
+        field: { label: "Photo", name: "photo", widget: "image" }
+      - { label: "Text", name: "body", widget: "markdown", required: false }
       - { label: "Excerpt",    name: "excerpt",    widget: "text",    required: false }
       - { label: "Featured",   name: "featured",   widget: "boolean", default: false }
       - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
-      - label: "Contact info"
-        name: "contact"
-        widget: "text"
-        required: false
-        hint: "Як зв'язатися з автором для покупки або співпраці (email, посилання тощо)"
+      - { label: "Contact info", name: "contact", widget: "text", required: false }
 
   # -------------------------------------------------------------------------
   # JOURNAL
@@ -174,35 +155,16 @@ collections:
         widget: "select"
         options: ["essay", "interview", "process", "review", "news"]
       - { label: "Tags", name: "tags", widget: "list", default: [] }
-      - { label: "Store Image", name: "storeImage", widget: "image", required: false, hint: "Зображення для картки в Store. Якщо не завантажено — перше зображення з блоків." }
-      - label: "Content Blocks"
-        name: "blocks"
+      - { label: "Store Image", name: "storeImage", widget: "image", required: false, hint: "Cover image for the Store card." }
+      - label: "Photos"
+        name: "gallery"
         widget: "list"
-        hint: "Контент сторінки: текстові блоки та галереї в будь-якому порядку."
-        types:
-          - label: "Text"
-            name: "text"
-            widget: "object"
-            fields:
-              - { label: "Content", name: "content", widget: "markdown", default: "Введіть текст..." }
-          - label: "Images"
-            name: "images"
-            widget: "object"
-            fields:
-              - label: "Images"
-                name: "items"
-                widget: "list"
-                field: { label: "Image", name: "image", widget: "image", multiple: true }
-        default:
-          - type: text
-            content: "Введіть вступний текст."
-          - type: images
-            items: []
+        required: false
+        default: []
+        hint: "Upload any number of photos — they appear as a carousel in the accordion."
+        field: { label: "Photo", name: "photo", widget: "image" }
+      - { label: "Text", name: "body", widget: "markdown", required: false }
       - { label: "Excerpt",    name: "excerpt",    widget: "text",    required: false }
       - { label: "Featured",   name: "featured",   widget: "boolean", default: false }
       - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
-      - label: "Contact info"
-        name: "contact"
-        widget: "text"
-        required: false
-        hint: "Як зв'язатися з автором для покупки або співпраці (email, посилання тощо)"
+      - { label: "Contact info", name: "contact", widget: "text", required: false }

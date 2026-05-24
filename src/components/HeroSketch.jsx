@@ -4,7 +4,6 @@ export default function HeroSketch() {
   const containerRef = useRef(null);
   const [effect, setEffect] = useState('waves');
 
-  // Recreate sketch when effect changes
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -12,113 +11,51 @@ export default function HeroSketch() {
 
     import('p5').then(({ default: p5 }) => {
       const sketch = (p) => {
-        let texte = [];
-        let fond;
-        const defaultText = 'SSArtSemestr';
-
-        const bg = () => 0;
-        const fg = () => 255;
+        let typed = '';
 
         p.setup = () => {
           p.createCanvas(p.windowWidth, p.windowHeight);
-          p.background(bg());
           p.frameRate(30);
-          fond = p.createGraphics(p.width, p.height);
-          p.textAlign(p.CENTER, p.CENTER);
-          drawDefaultText();
-          document.fonts.load('128px "Svar"').then(() => drawDefaultText()).catch(() => {});
         };
 
-        function drawToBuffer(t) {
-          fond.beginDraw();
-          fond.background(bg());
-          fond.drawingContext.filter = 'blur(6px)';
-          fond.fill(fg());
-          fond.noStroke();
-          fond.textFont('Svar');
-          fond.textSize(128);
-          fond.textAlign(p.CENTER, p.CENTER);
-          fond.text(t, p.width / 2, p.height / 2);
-          fond.drawingContext.filter = 'none';
-          fond.text(t, p.width / 2, p.height / 2);
-          fond.endDraw();
-          fond.loadPixels();
-        }
-
-        function drawWaves() {
-          p.background(bg());
+        p.draw = () => {
+          p.background(0);
           p.noFill();
-          p.stroke(fg());
-          p.strokeWeight(1);
-          for (let a = 0; a < fond.height; a += 4) {
-            p.beginShape();
-            for (let b = 0; b < fond.width; b += 3) {
-              const idx = (a * fond.width + b) * 4;
-              const c = fond.pixels[idx];
-              p.vertex(
-                (b + a * 0.4) * 1.8 - 200,
-                (a - c * 0.1 - b * 0.1) * 1.8 - 50
-              );
-            }
-            p.endShape();
-          }
-        }
+          p.stroke(255);
+          p.strokeWeight(0.8);
+          const t = p.frameCount * 0.007;
+          const amp = typed.length > 0 ? p.map(typed.length, 0, 30, 30, 100, true) : 40;
+          const freq = typed.length > 0 ? p.map(typed.length, 0, 30, 0.003, 0.008, true) : 0.003;
 
-        function drawParticles() {
-          p.background(bg());
-          p.noStroke();
-          p.fill(fg());
-          for (let a = 0; a < fond.height; a += 5) {
-            for (let b = 0; b < fond.width; b += 5) {
-              const idx = (a * fond.width + b) * 4;
-              const c = fond.pixels[idx];
-              if (c > 30) {
-                const x = (b + a * 0.4) * 1.8 - 200;
-                const y = (a - c * 0.1 - b * 0.1) * 1.8 - 50;
-                const r = p.map(c, 30, 255, 0.8, 4);
-                p.ellipse(x, y, r, r);
+          if (effect === 'particles') {
+            p.noStroke();
+            p.fill(255);
+            for (let y = 0; y < p.height; y += 8) {
+              for (let x = 0; x <= p.width; x += 8) {
+                const n = p.noise(x * freq, y * freq * 1.5, t);
+                const size = p.map(n, 0, 1, 0.3, 3.5);
+                if (n > 0.45) p.ellipse(x + p.map(n, 0.45, 1, 0, 6), y + p.map(n, 0.45, 1, 0, 6), size, size);
               }
             }
-          }
-        }
-
-        function redessine() {
-          const t = texte.length > 0 ? texte.join('') : defaultText;
-          drawToBuffer(t);
-          if (effect === 'particles') {
-            drawParticles();
           } else {
-            drawWaves();
+            for (let y = 0; y < p.height + amp; y += 7) {
+              p.beginShape();
+              for (let x = 0; x <= p.width; x += 4) {
+                const n = p.noise(x * freq, y * freq * 2, t);
+                p.vertex(x, y + p.map(n, 0, 1, -amp, amp));
+              }
+              p.endShape();
+            }
           }
-        }
-
-        function drawDefaultText() {
-          drawToBuffer(defaultText);
-          if (effect === 'particles') {
-            drawParticles();
-          } else {
-            drawWaves();
-          }
-        }
-
-        p.draw = () => {};
+        };
 
         p.keyReleased = () => {
-          if (p.keyCode === p.BACKSPACE || p.keyCode === 8) {
-            if (texte.length > 0) {
-              texte.pop();
-              redessine();
-            }
-          } else if (p.key.length === 1 && p.key.match(/[a-zA-Z0-9 ]/)) {
-            texte.push(p.key);
-            redessine();
-          }
+          if (p.keyCode === p.BACKSPACE) typed = typed.slice(0, -1);
+          else if (p.key.length === 1) typed += p.key;
         };
 
         p.windowResized = () => {
           p.resizeCanvas(p.windowWidth, p.windowHeight);
-          fond = p.createGraphics(p.width, p.height);
-          document.fonts.load('128px "Svar"').then(() => drawDefaultText()).catch(() => drawDefaultText());
         };
       };
 
@@ -130,19 +67,10 @@ export default function HeroSketch() {
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-      <div
-        ref={containerRef}
-        style={{ width: '100%', height: '100%', overflow: 'hidden' }}
-      />
+      <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden' }} />
       <div className="hero-controls">
         {['waves', 'particles'].map(e => (
-          <button
-            key={e}
-            className={`tf-tag-chip${effect === e ? ' is-active' : ''}`}
-            onClick={() => setEffect(e)}
-          >
-            {e}
-          </button>
+          <button key={e} className={`tf-tag-chip${effect === e ? ' is-active' : ''}`} onClick={() => setEffect(e)}>{e}</button>
         ))}
       </div>
     </div>

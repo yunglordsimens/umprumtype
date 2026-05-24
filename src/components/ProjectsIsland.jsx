@@ -42,7 +42,6 @@ function PostRow({ post, isOpen, onToggle, onTagClick }) {
               {post.category && <span>{post.category}</span>}
               {post.author   && <span>{post.author}</span>}
             </div>
-            <h2 className="post-detail__title">{post.title}</h2>
             {post.tags && post.tags.length > 0 && (
               <div className="tfa-info__tags">
                 {post.tags.map(tag => (
