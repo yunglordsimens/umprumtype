@@ -12,19 +12,23 @@ const rendered = await Promise.all(
   entries.map(async e => ({ slug: slugOf(e), Content: (await render(e)).Content }))
 );
 
-const posts = entries.map(e => ({
-  slug:        slugOf(e),
-  title:       e.data.title,
-  date:        e.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }),
-  dateIso:     e.data.date.toISOString(),
-  author:      e.data.author    ?? null,
-  category:    e.data.category,
-  tags:        e.data.tags      ?? [],
-  excerpt:     e.data.excerpt   ?? null,
-  gallery:     e.data.gallery   ?? [],
-  purchasable: e.data.purchasable ?? false,
-  contact:     e.data.contact   ?? null,
-}));
+const posts = entries.map(e => {
+  const blocks = (e.data.blocks ?? []) as any[];
+  const blockImages = blocks.filter(b => b.type === 'images').flatMap(b => b.items ?? []);
+  return {
+    slug:        slugOf(e),
+    title:       e.data.title,
+    date:        e.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }),
+    dateIso:     e.data.date.toISOString(),
+    author:      e.data.author    ?? null,
+    category:    e.data.category,
+    tags:        e.data.tags      ?? [],
+    excerpt:     e.data.excerpt   ?? null,
+    gallery:     [...(e.data.gallery ?? []), ...blockImages],
+    purchasable: e.data.purchasable ?? false,
+    contact:     e.data.contact   ?? null,
+  };
+});
 ---
 <Base
   title="Projects — Umprum Type"

@@ -2584,6 +2584,7 @@ button:active:not(:disabled),
   transition: background var(--dur-fast) var(--ease), padding-left 200ms var(--ease);
 }
 .post-row__btn:hover { padding-left: var(--space-3); }
+.post-row__btn:active { transform: none; }
 .post-row.is-open .post-row__btn { padding-left: var(--space-3); }
 
 /* Store/Library grid cards — lift with shadow */
