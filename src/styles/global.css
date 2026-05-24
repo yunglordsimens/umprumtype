@@ -1123,7 +1123,9 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
   margin: 0;
   padding: 0;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.post-detail__gallery::-webkit-scrollbar { display: none; }
 .post-detail__gallery img {
   height: 60vh;
   width: auto;
