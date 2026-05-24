@@ -132,7 +132,6 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   -webkit-backdrop-filter: saturate(160%) blur(12px);
   border-bottom: 1px solid var(--border);
   transition: transform var(--dur) var(--ease);
-  will-change: transform;
 }
 .site-nav[data-hidden="true"] { transform: translateY(-100%); }
 .site-nav__inner {
@@ -192,6 +191,7 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
   .site-nav__links {
     position: fixed;
     inset: var(--nav-h) 0 0 0;
+    z-index: 400;
     background: color-mix(in srgb, var(--surface, #fafaf8) 98%, transparent);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
