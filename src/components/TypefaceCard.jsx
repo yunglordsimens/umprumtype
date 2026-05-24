@@ -47,7 +47,7 @@ function VariantSpecimen({ variant, fam, initialSize, baseText, showLabel }) {
           columnGap: '1em',
           whiteSpace: cols > 1 ? 'normal' : 'nowrap',
           overflow: 'hidden',
-          maxHeight: cols > 1 ? '4em' : undefined,
+          maxHeight: cols > 1 ? '10lh' : undefined,
           display: 'block',
           outline: 'none',
         }}
