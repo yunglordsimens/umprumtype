@@ -23,13 +23,13 @@ function getPostHtml(slug) {
   return el ? el.innerHTML : '';
 }
 
-function PostRow({ post, isOpen, onToggle, onTagClick }) {
+function PostRow({ post, isOpen, onToggle, onTagClick, onEnter }) {
   const [html] = useState(() =>
     typeof document !== 'undefined' ? (getPostHtml(post.slug) || '') : ''
   );
 
   return (
-    <li id={post.slug} className={`post-row${isOpen ? ' is-open' : ''}`}>
+    <li id={post.slug} className={`post-row${isOpen ? ' is-open' : ''}`} onMouseEnter={onEnter}>
       <button className="post-row__btn" onClick={onToggle}>
         <time className="post-row__date" dateTime={post.dateIso}>{post.date}</time>
         <span className="post-row__title">{post.title}</span>
@@ -78,7 +78,14 @@ export default function JournalIsland({ posts }) {
   const [openSlug, setOpenSlug]     = useState(null);
   const [sort, setSort]             = useState('name');
   const [shuffleSeed, setShuffleSeed] = useState(0);
-  const panelRef = useRef(null);
+  const [previewSrc, setPreviewSrc] = useState(null);
+  const panelRef  = useRef(null);
+  const previewRef = useRef(null);
+
+  function handleMouseMove(e) {
+    if (!previewRef.current) return;
+    previewRef.current.style.transform = `translate(${e.clientX + 24}px, ${e.clientY - 80}px)`;
+  }
 
   useEffect(() => {
     const hash = window.location.hash.slice(1);
@@ -146,7 +153,14 @@ export default function JournalIsland({ posts }) {
   }, [openSlug]);
 
   return (
-    <div className="lib-layout">
+    <div className="lib-layout" onMouseMove={handleMouseMove}>
+
+      {/* cursor-following image preview */}
+      <div ref={previewRef} className="post-cursor-preview" aria-hidden="true"
+           style={{ opacity: previewSrc ? 1 : 0 }}>
+        <img src={previewSrc || ''} alt="" />
+      </div>
+
       <div className="lib-main">
 
         <header className="lib-toolbar">
@@ -200,7 +214,8 @@ export default function JournalIsland({ posts }) {
             <div className="lib-empty">No entries match.</div>
           ) : (
             <>
-              <ul className="post-list post-island__list">
+              <ul className="post-list post-island__list"
+                  onMouseLeave={() => setPreviewSrc(null)}>
                 {filtered.map(p => (
                   <PostRow
                     key={p.slug}
@@ -208,6 +223,7 @@ export default function JournalIsland({ posts }) {
                     isOpen={openSlug === p.slug}
                     onToggle={() => togglePost(p.slug)}
                     onTagClick={onTagClick}
+                    onEnter={() => setPreviewSrc(p.gallery[0] || null)}
                   />
                 ))}
               </ul>

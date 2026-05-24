@@ -2648,6 +2648,33 @@ body.lib-page .site-footer { display: none; }
 }
 [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
 
+/* ── Cursor-following image preview (projects / journal rows) ── */
+.post-cursor-preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  aspect-ratio: 4 / 3;
+  border-radius: 4px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 600;
+  will-change: transform;
+  background: var(--surface-alt);
+  transition: opacity 180ms var(--ease);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.post-cursor-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (hover: none) {
+  .post-cursor-preview { display: none; }
+}
+
 @media print {
   .site-nav, .site-footer, .bottom-bar, .specimen__controls { display: none !important; }
   body { background: white; color: black; }
