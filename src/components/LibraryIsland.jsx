@@ -200,6 +200,8 @@ export default function LibraryIsland() {
   const [newBook, setNewBook]         = useState({ title: '', author: '', year: '', tags: '' });
   const [viewMode, setViewMode]       = useState('grid');
   const [openId, setOpenId]           = useState(null);
+  const [sort, setSort]               = useState('title');
+  const [sortDir, setSortDir]         = useState(1);
   const accordionRef = useRef(null);
   const panelRef     = useRef(null);
 
@@ -247,8 +249,28 @@ export default function LibraryIsland() {
     if (activeTags.length > 0) {
       books = books.filter(b => b.tags.some(t => activeTags.includes(t)));
     }
-    return books;
-  }, [activeTags, library]);
+    return [...books].sort((a, b) => {
+      let av, bv;
+      if (sort === 'year') {
+        av = parseInt(a.year) || 0;
+        bv = parseInt(b.year) || 0;
+        return (av - bv) * sortDir;
+      }
+      if (sort === 'tags') {
+        av = (a.tags[0] || '').toLowerCase();
+        bv = (b.tags[0] || '').toLowerCase();
+      } else {
+        av = (a[sort] || '').toLowerCase();
+        bv = (b[sort] || '').toLowerCase();
+      }
+      return av.localeCompare(bv, 'cs') * sortDir;
+    });
+  }, [activeTags, library, sort, sortDir]);
+
+  function cycleSort(col) {
+    if (sort === col) setSortDir(d => d * -1);
+    else { setSort(col); setSortDir(1); }
+  }
 
   function toggleTag(tag) {
     setActiveTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
@@ -338,10 +360,11 @@ export default function LibraryIsland() {
           ) : (
             <div className="lib-list-wrap">
               <div className="lib-list-header">
-                <span>Title</span>
-                <span>Author</span>
-                <span>Year</span>
-                <span>Tags</span>
+                {[['title','Title'],['author','Author'],['year','Year'],['tags','Tags']].map(([col, label]) => (
+                  <button key={col} className={`lib-list-header__col${sort === col ? ' is-active' : ''}`} onClick={() => cycleSort(col)}>
+                    {label}{sort === col ? (sortDir === 1 ? ' ↑' : ' ↓') : ''}
+                  </button>
+                ))}
               </div>
               <ul className="lib-list">
                 {filtered.map(book => (

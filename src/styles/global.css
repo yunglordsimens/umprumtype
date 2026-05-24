@@ -2260,6 +2260,13 @@ body.lib-page .site-footer { display: none; }
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
+.lib-list-header__col {
+  background: none; border: none; padding: 0; cursor: pointer;
+  font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit;
+  text-align: left; transition: color var(--dur-fast) var(--ease);
+}
+.lib-list-header__col:hover { color: var(--text); }
+.lib-list-header__col.is-active { color: var(--text); }
 .lib-list { list-style: none; margin: 0; padding: 0; }
 .lib-row { border-bottom: 1px solid var(--border); }
 .lib-row__trigger {
