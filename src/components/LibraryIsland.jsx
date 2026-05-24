@@ -9,12 +9,6 @@ const CloseIcon = () => (
   </svg>
 );
 
-const PlusIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-);
-
 const CheckIcon = () => (
   <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
     <path d="M5 13l4 4L19 7" />
@@ -196,8 +190,6 @@ export default function LibraryIsland() {
   const [loading, setLoading]         = useState(true);
   const [activeTags, setActiveTags]   = useState([]);
   const [showTags, setShowTags]       = useState(false);
-  const [showAdd, setShowAdd]         = useState(false);
-  const [newBook, setNewBook]         = useState({ title: '', author: '', year: '', tags: '' });
   const [viewMode, setViewMode]       = useState('grid');
   const [openId, setOpenId]           = useState(null);
   const [sort, setSort]               = useState('title');
@@ -285,17 +277,6 @@ export default function LibraryIsland() {
     setActiveTags([tag]);
   }
 
-  function addBook() {
-    if (!newBook.title.trim()) return;
-    const tags = newBook.tags.split(',').map(t => t.trim()).filter(Boolean);
-    setLibrary(prev => [
-      ...prev,
-      { id: prev.length + 1, title: newBook.title, author: newBook.author || null, year: newBook.year || null, tags },
-    ]);
-    setNewBook({ title: '', author: '', year: '', tags: '' });
-    setShowAdd(false);
-  }
-
   const openBook = filtered.find(b => b.id === openId) || null;
 
   if (loading) return <div className="lib-loading">Loading…</div>;
@@ -317,9 +298,6 @@ export default function LibraryIsland() {
 
           <div className="lib-right">
             <span className="lib-toolbar-count">{filtered.length < library.length ? `${filtered.length} of ${library.length}` : filtered.length}</span>
-            <button className="lib-add-btn" onClick={() => setShowAdd(true)}>
-              <PlusIcon /><span>Add</span>
-            </button>
           </div>
         </header>
 
@@ -382,28 +360,6 @@ export default function LibraryIsland() {
         </div>
       </div>
 
-      {/* ── Add book modal ── */}
-      {showAdd && (
-        <div className="library-modal-backdrop" onClick={() => setShowAdd(false)}>
-          <div className="library-modal" onClick={e => e.stopPropagation()}>
-            <div className="library-modal__header">
-              <h2>Add book</h2>
-              <button onClick={() => setShowAdd(false)} aria-label="Close"><CloseIcon /></button>
-            </div>
-            <div className="library-modal__fields">
-              <label>Title *<input value={newBook.title} onChange={e => setNewBook(p => ({ ...p, title: e.target.value }))} placeholder="Book title" /></label>
-              <label>Author<input value={newBook.author} onChange={e => setNewBook(p => ({ ...p, author: e.target.value }))} placeholder="Author name" /></label>
-              <label>Year<input value={newBook.year} onChange={e => setNewBook(p => ({ ...p, year: e.target.value }))} placeholder="e.g. 2024" /></label>
-              <label>Tags<input value={newBook.tags} onChange={e => setNewBook(p => ({ ...p, tags: e.target.value }))} placeholder="type, history, teorie" /></label>
-            </div>
-            <div className="library-modal__actions">
-              <button onClick={() => setShowAdd(false)}>Cancel</button>
-              <button className="library-modal__submit" onClick={addBook}>Add book</button>
-            </div>
-            <p className="library-modal__note muted">Session-only — additions reset on reload.</p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

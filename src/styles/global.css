@@ -2562,12 +2562,12 @@ body.lib-page .site-footer { display: none; }
   transition: background var(--dur-fast) var(--ease);
 }
 
-/* Big preview text fades in smoothly when card opens */
+/* Big preview text fades to muted when card opens */
 .tfa-trigger__preview {
-  transition: opacity 300ms var(--ease), transform 300ms var(--ease);
+  transition: color 300ms var(--ease);
 }
 .tfa-trigger.is-open .tfa-trigger__preview {
-  opacity: 0.7;
+  color: var(--text-muted);
 }
 
 /* Post rows — colour + subtle indent */
