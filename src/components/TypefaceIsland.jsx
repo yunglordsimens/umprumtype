@@ -126,6 +126,10 @@ export default function TypefaceIsland({ typefaces }) {
               </button>
             ))}
           </div>
+
+          <span className="lib-toolbar-count">
+            {filtered.length}{filtered.length < typefaces.length ? ` of ${typefaces.length}` : ''} typefaces
+          </span>
         </header>
 
         {/* Tags panel — slides down under toolbar */}
@@ -169,9 +173,6 @@ export default function TypefaceIsland({ typefaces }) {
             <div className="lib-empty">No typefaces match.</div>
           ) : (
             <>
-              <p className="tf-island__count">
-                {filtered.length}{filtered.length < typefaces.length ? ` of ${typefaces.length}` : ''} typefaces
-              </p>
               <ul className="tfa-list">
                 {filtered.map(tf => (
                   <TypefaceCard
