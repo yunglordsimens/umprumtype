@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import ProjectsIsland from '../../components/ProjectsIsland.jsx';
+import FlexContent from '../../components/FlexContent.astro';
 import { getCollection, render } from 'astro:content';
 
 const entries = (await getCollection('projects'))
@@ -9,7 +10,7 @@ const entries = (await getCollection('projects'))
 const slugOf = (e: { id: string }) => e.id.replace(/\.md$/, '');
 
 const rendered = await Promise.all(
-  entries.map(async e => ({ slug: slugOf(e), Content: (await render(e)).Content }))
+  entries.map(async e => ({ slug: slugOf(e), blocks: (e.data as any).blocks ?? [], Content: (await render(e)).Content }))
 );
 
 const posts = entries.map(e => ({
@@ -32,9 +33,9 @@ const posts = entries.map(e => ({
   bodyClass="lib-page"
 >
   <div class="post-content-store" aria-hidden="true">
-    {rendered.map(({ slug, Content }) => (
+    {rendered.map(({ slug, blocks, Content }) => (
       <div data-post-slug={slug}>
-        <Content />
+        {blocks.length > 0 ? <FlexContent blocks={blocks} /> : <Content />}
       </div>
     ))}
   </div>
