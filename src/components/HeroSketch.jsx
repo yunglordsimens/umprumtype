@@ -42,12 +42,14 @@ export default function HeroSketch() {
         function drawToBuffer(t) {
           fond.beginDraw();
           fond.background(bg());
+          fond.drawingContext.filter = 'blur(6px)';
           fond.fill(fg());
+          fond.noStroke();
           fond.textFont('Svar');
           fond.textSize(128);
           fond.textAlign(p.CENTER, p.CENTER);
           fond.text(t, p.width / 2, p.height / 2);
-          fond.filter(p.BLUR, 5);
+          fond.drawingContext.filter = 'none';
           fond.text(t, p.width / 2, p.height / 2);
           fond.endDraw();
           fond.loadPixels();
