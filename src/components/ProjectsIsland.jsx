@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 const CloseIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -79,8 +80,11 @@ export default function ProjectsIsland({ posts }) {
   const [sort, setSort]             = useState('name');
   const [shuffleSeed, setShuffleSeed] = useState(0);
   const [previewSrc, setPreviewSrc] = useState(null);
+  const [mounted, setMounted]       = useState(false);
   const panelRef   = useRef(null);
   const previewRef = useRef(null);
+
+  useEffect(() => setMounted(true), []);
 
   function handleMouseMove(e) {
     if (!previewRef.current) return;
@@ -153,14 +157,15 @@ export default function ProjectsIsland({ posts }) {
   }, [openSlug]);
 
   return (
-    <div className="lib-layout" onMouseMove={handleMouseMove}>
-
-      {/* cursor-following image preview */}
+    <>
+    {mounted && createPortal(
       <div ref={previewRef} className="post-cursor-preview" aria-hidden="true"
            style={{ opacity: previewSrc ? 1 : 0 }}>
         <img src={previewSrc || ''} alt="" />
-      </div>
-
+      </div>,
+      document.body
+    )}
+    <div className="lib-layout" onMouseMove={handleMouseMove}>
       <div className="lib-main">
 
         <header className="lib-toolbar">
@@ -233,5 +238,6 @@ export default function ProjectsIsland({ posts }) {
 
       </div>
     </div>
+    </>
   );
 }

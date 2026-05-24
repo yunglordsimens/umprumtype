@@ -2432,6 +2432,7 @@ body.lib-page .site-footer { display: none; }
 .tf-island__scroll,
 .post-island__scroll,
 .store-island__scroll { padding-inline: 0; }
+.tf-island__scroll { padding-top: 0; }
 
 /* ── Typeface island tweaks inside lib-scroll ── */
 .tf-island__count {
