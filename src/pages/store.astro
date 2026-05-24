@@ -24,19 +24,21 @@ const rendered = await Promise.all(
 // Serialisable metadata for the React island
 const items = purchasable.map(e => {
   const d = e.data;
-  const image = (d as any).storeImage ?? null;
+  const blocks = (d.blocks ?? []) as any[];
+  const blockImages = blocks.filter((b: any) => b.type === 'images').flatMap((b: any) => b.items ?? []);
   return {
-    slug:     slugOf(e),
-    title:    d.title,
-    author:   d.author   ?? null,
-    year:     d.date.getFullYear(),
-    date:     d.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }),
-    dateIso:  d.date.toISOString(),
-    category: d.category,
-    tags:     d.tags     ?? [],
-    excerpt:  d.excerpt  ?? null,
-    contact:  d.contact  ?? null,
-    storeImage: image,
+    slug:       slugOf(e),
+    title:      d.title,
+    author:     d.author     ?? null,
+    year:       d.date.getFullYear(),
+    date:       d.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }),
+    dateIso:    d.date.toISOString(),
+    category:   d.category,
+    tags:       d.tags       ?? [],
+    excerpt:    d.excerpt    ?? null,
+    contact:    d.contact    ?? null,
+    storeImage: (d as any).storeImage ?? null,
+    gallery:    [...(d.gallery ?? []), ...blockImages],
   };
 });
 ---

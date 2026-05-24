@@ -70,7 +70,7 @@ function getPostHtml(slug) {
 }
 
 function itemImage(item) {
-  return item.storeImage || item.gallery?.[0] || null;
+  return item.storeImage || (item.gallery ?? [])[0] || null;
 }
 
 
@@ -239,6 +239,16 @@ export default function StoreIsland({ items }) {
                     )}
                   </div>
                 </div>
+                {activeItem.gallery?.length > 0 && (
+                  <div className="post-detail__gallery store-detail__gallery">
+                    {activeItem.gallery.map((img, i) => (
+                      <img key={i} src={img} alt="" loading="lazy" />
+                    ))}
+                  </div>
+                )}
+                {activeItem.excerpt && (
+                  <p className="post-detail__excerpt">{activeItem.excerpt}</p>
+                )}
                 {panelHtml && (
                   <div
                     className="post__body post-detail__body store-detail__body"
@@ -247,7 +257,7 @@ export default function StoreIsland({ items }) {
                 )}
                 {activeItem.contact && (
                   <aside className="post-detail__contact store-detail__contact">
-                    <h3>Contact author</h3>
+                    <h3>Contact</h3>
                     <p>{activeItem.contact}</p>
                   </aside>
                 )}
