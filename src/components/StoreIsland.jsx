@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import GridCard from './GridCard.jsx';
 
 const ExpandIcon = () => (
@@ -21,11 +21,6 @@ const CloseIcon = () => (
 const ChevronLeftIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="15 18 9 12 15 6" />
-  </svg>
-);
-const SearchIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
   </svg>
 );
 const CheckIcon = () => (
@@ -81,9 +76,16 @@ function itemImage(item) {
 
 export default function StoreIsland({ items }) {
   const [activeTags, setActiveTags]   = useState([]);
-  const [search, setSearch]           = useState('');
-  const [showFilters, setShowFilters] = useState(false);
+  const [showTags, setShowTags]       = useState(false);
   const [openSlug, setOpenSlug]       = useState(null);
+  const panelRef = useRef(null);
+
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    panel.style.maxHeight = showTags ? '600px' : '0';
+    panel.style.opacity   = showTags ? '1' : '0';
+  }, [showTags]);
   const [panelHtml, setPanelHtml]     = useState('');
   const [expanded, setExpanded]       = useState(false);
 
@@ -97,15 +99,8 @@ export default function StoreIsland({ items }) {
     if (activeTags.length > 0) {
       list = list.filter(i => activeTags.some(t => (i.tags ?? []).includes(t)));
     }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(i =>
-        i.title.toLowerCase().includes(q) ||
-        (i.author && i.author.toLowerCase().includes(q))
-      );
-    }
     return list;
-  }, [activeTags, search, items]);
+  }, [activeTags, items]);
 
   function openItem(item) {
     setOpenSlug(item.slug);
@@ -150,77 +145,37 @@ export default function StoreIsland({ items }) {
     <div className="lib-layout">
 
       {/* ── Left filter panel ── */}
-      <aside className={`lib-filter${showFilters ? ' is-open' : ''}`}>
-        <div className="lib-filter__inner">
-          <div className="lib-filter__head">
-            <h2 className="lib-filter__title">Tags</h2>
-            <button className="lib-filter__close" onClick={() => setShowFilters(false)} aria-label="Close tags">
-              <CloseIcon />
-            </button>
-          </div>
-          <div>
-            <h3 className="lib-filter__section-title">Tags &amp; Categories</h3>
-            <div className="lib-filter__tags">
-              {allTags.map(tag => {
-                const active = activeTags.includes(tag);
-                return (
-                  <label
-                    key={tag}
-                    className={`lib-filter__tag${active ? ' is-active' : ''}`}
-                    onClick={() => toggleTag(tag)}
-                  >
-                    <div className="lib-filter__check">{active && <CheckIcon />}</div>
-                    <span className="lib-filter__tag-label">{tag}</span>
-                  </label>
-                );
-              })}
-            </div>
-            {activeTags.length > 0 && (
-              <button className="lib-filter__clear" onClick={() => setActiveTags([])}>
-                Clear filters
-              </button>
-            )}
-          </div>
-        </div>
-      </aside>
-
-      {/* ── Main area ── */}
       <div className="lib-main">
         <header className="lib-toolbar">
-          <button
-            className="lib-filter-btn"
-            onClick={() => setShowFilters(f => !f)}
-            aria-pressed={showFilters}
-          >
-            <span className="lib-filter-btn__label">
-              {showFilters ? 'Hide tags' : 'Tags'}
-            </span>
-          </button>
-          <div className="lib-search-wrap">
-            <div className="lib-search">
-              <span className="lib-search__icon"><SearchIcon /></span>
-              <input
-                className="lib-search__input"
-                type="text"
-                placeholder="Search items, authors…"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
-            </div>
+          <div className="tf-sort">
+            <button aria-pressed={showTags} onClick={() => setShowTags(f => !f)}>
+              Tags{activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
+            </button>
           </div>
           <div className="lib-right">
             <span className="lib-toolbar-count">{filtered.length}{filtered.length < items.length ? ` of ${items.length}` : ''} items</span>
           </div>
         </header>
 
+        {/* Tags panel — slides down under toolbar */}
+        <div ref={panelRef} className="tf-tags-panel" style={{ maxHeight: 0, opacity: 0, overflow: 'hidden', transition: 'max-height 400ms var(--ease), opacity 280ms var(--ease)' }}>
+          <div className="tf-tags-panel__inner">
+            <div className="tf-tags-panel__chips">
+              {allTags.map(tag => (
+                <button key={tag} className={`tf-tag-chip${activeTags.includes(tag) ? ' is-active' : ''}`} onClick={() => toggleTag(tag)}>{tag}</button>
+              ))}
+            </div>
+            {activeTags.length > 0 && (
+              <button className="tf-tag-clear" onClick={() => setActiveTags([])}>Clear</button>
+            )}
+          </div>
+        </div>
+
         <div className="lib-scroll store-island__scroll">
           {filtered.length === 0 ? (
             <div className="lib-empty">No items match.</div>
           ) : (
             <>
-              <p className="tf-island__count">
-                {filtered.length}{filtered.length < items.length ? ` of ${items.length}` : ''} items
-              </p>
               <div className="library-grid">
                 {filtered.map(item => {
                   const cover = getCover(item);

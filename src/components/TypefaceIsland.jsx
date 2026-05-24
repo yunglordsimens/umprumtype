@@ -7,12 +7,6 @@ const CloseIcon = () => (
   </svg>
 );
 
-const SearchIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>
-);
-
 const SORTS = [
   { key: 'name',     label: 'Name' },
   { key: 'year',     label: 'Year' },
@@ -30,7 +24,6 @@ function effectiveTags(tf) {
 
 export default function TypefaceIsland({ typefaces }) {
   const [activeTags, setActiveTags] = useState([]);
-  const [search, setSearch]         = useState('');
   const [showTags, setShowTags]     = useState(false);
   const [openSlug, setOpenSlug]     = useState(null);
   const [sort, setSort]             = useState('name');
@@ -57,13 +50,6 @@ export default function TypefaceIsland({ typefaces }) {
     if (activeTags.length > 0) {
       list = list.filter(tf => activeTags.some(tag => effectiveTags(tf).includes(tag)));
     }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(tf =>
-        tf.title.toLowerCase().includes(q) ||
-        (tf.designer && tf.designer.toLowerCase().includes(q))
-      );
-    }
     const out = [...list];
     if (sort === 'year') {
       out.sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
@@ -78,7 +64,7 @@ export default function TypefaceIsland({ typefaces }) {
       out.sort((a, b) => a.title.localeCompare(b.title, 'cs'));
     }
     return out;
-  }, [activeTags, search, sort, shuffleSeed, typefaces]);
+  }, [activeTags, sort, shuffleSeed, typefaces]);
 
   function toggleTag(tag) {
     setActiveTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
@@ -100,19 +86,6 @@ export default function TypefaceIsland({ typefaces }) {
             >
               Tags{activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
             </button>
-          </div>
-
-          <div className="lib-search-wrap">
-            <div className="lib-search">
-              <span className="lib-search__icon"><SearchIcon /></span>
-              <input
-                className="lib-search__input"
-                type="text"
-                placeholder="Search typefaces, designers…"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
-            </div>
           </div>
 
           <div className="tf-sort">

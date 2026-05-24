@@ -15,12 +15,6 @@ const PlusIcon = () => (
   </svg>
 );
 
-const SearchIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>
-);
-
 const CheckIcon = () => (
   <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
     <path d="M5 13l4 4L19 7" />
@@ -201,13 +195,20 @@ export default function LibraryIsland() {
   const [library, setLibrary]         = useState([]);
   const [loading, setLoading]         = useState(true);
   const [activeTags, setActiveTags]   = useState([]);
-  const [search, setSearch]           = useState('');
-  const [showFilters, setShowFilters] = useState(false);
+  const [showTags, setShowTags]       = useState(false);
   const [showAdd, setShowAdd]         = useState(false);
   const [newBook, setNewBook]         = useState({ title: '', author: '', year: '', tags: '' });
   const [viewMode, setViewMode]       = useState('grid');
   const [openId, setOpenId]           = useState(null);
   const accordionRef = useRef(null);
+  const panelRef     = useRef(null);
+
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    panel.style.maxHeight = showTags ? '600px' : '0';
+    panel.style.opacity   = showTags ? '1' : '0';
+  }, [showTags]);
 
   useEffect(() => {
     if (openId !== null && accordionRef.current) {
@@ -246,15 +247,8 @@ export default function LibraryIsland() {
     if (activeTags.length > 0) {
       books = books.filter(b => b.tags.some(t => activeTags.includes(t)));
     }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      books = books.filter(b =>
-        b.title.toLowerCase().includes(q) ||
-        (b.author && b.author.toLowerCase().includes(q))
-      );
-    }
     return books;
-  }, [activeTags, search, library]);
+  }, [activeTags, library]);
 
   function toggleTag(tag) {
     setActiveTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
@@ -286,69 +280,18 @@ export default function LibraryIsland() {
 
   return (
     <div className="lib-layout">
-
-      {/* ── Left filter panel ── */}
-      <aside className={`lib-filter${showFilters ? ' is-open' : ''}`}>
-        <div className="lib-filter__inner">
-          <div className="lib-filter__head">
-            <h2 className="lib-filter__title">Tags</h2>
-            <button className="lib-filter__close" onClick={() => setShowFilters(false)} aria-label="Close tags">
-              <CloseIcon />
-            </button>
-          </div>
-          <div>
-            <h3 className="lib-filter__section-title">Tags &amp; Categories</h3>
-            <div className="lib-filter__tags">
-              {ALL_TAGS.map(tag => {
-                const active = activeTags.includes(tag);
-                return (
-                  <label key={tag} className={`lib-filter__tag${active ? ' is-active' : ''}`} onClick={() => toggleTag(tag)}>
-                    <div className="lib-filter__check">{active && <CheckIcon />}</div>
-                    <span className="lib-filter__tag-label">{tag}</span>
-                  </label>
-                );
-              })}
-            </div>
-            {activeTags.length > 0 && (
-              <button className="lib-filter__clear" onClick={() => setActiveTags([])}>Clear filters</button>
-            )}
-          </div>
-        </div>
-      </aside>
-
-      {/* ── Main area ── */}
       <div className="lib-main">
 
         <header className="lib-toolbar">
-          <button className="lib-filter-btn" onClick={() => setShowFilters(f => !f)} aria-pressed={showFilters}>
-            <span className="lib-filter-btn__label">{showFilters ? 'Hide tags' : 'Tags'}</span>
-          </button>
-
-          <div className="lib-search-wrap">
-            <div className="lib-search">
-              <span className="lib-search__icon"><SearchIcon /></span>
-              <input
-                className="lib-search__input"
-                type="text"
-                placeholder="Search titles, authors…"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
-            </div>
+          <div className="tf-sort">
+            <button aria-pressed={showTags} onClick={() => setShowTags(f => !f)}>
+              Tags{activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
+            </button>
           </div>
 
-          {/* View toggle */}
           <div className="lib-view-toggle">
-            <button
-              className={viewMode === 'grid' ? 'is-active' : ''}
-              onClick={() => setViewMode('grid')}
-              aria-pressed={viewMode === 'grid'}
-            >Grid</button>
-            <button
-              className={viewMode === 'list' ? 'is-active' : ''}
-              onClick={() => setViewMode('list')}
-              aria-pressed={viewMode === 'list'}
-            >List</button>
+            <button className={viewMode === 'grid' ? 'is-active' : ''} onClick={() => setViewMode('grid')} aria-pressed={viewMode === 'grid'}>Grid</button>
+            <button className={viewMode === 'list' ? 'is-active' : ''} onClick={() => setViewMode('list')} aria-pressed={viewMode === 'list'}>List</button>
           </div>
 
           <div className="lib-right">
@@ -358,6 +301,20 @@ export default function LibraryIsland() {
             </button>
           </div>
         </header>
+
+        {/* Tags panel — slides down under toolbar */}
+        <div ref={panelRef} className="tf-tags-panel" style={{ maxHeight: 0, opacity: 0, overflow: 'hidden', transition: 'max-height 400ms var(--ease), opacity 280ms var(--ease)' }}>
+          <div className="tf-tags-panel__inner">
+            <div className="tf-tags-panel__chips">
+              {ALL_TAGS.map(tag => (
+                <button key={tag} className={`tf-tag-chip${activeTags.includes(tag) ? ' is-active' : ''}`} onClick={() => toggleTag(tag)}>{tag}</button>
+              ))}
+            </div>
+            {activeTags.length > 0 && (
+              <button className="tf-tag-clear" onClick={() => setActiveTags([])}>Clear</button>
+            )}
+          </div>
+        </div>
 
         <div className="lib-scroll">
           {filtered.length === 0 ? (
@@ -400,7 +357,6 @@ export default function LibraryIsland() {
               </ul>
             </div>
           )}
-          <div className="lib-count">{filtered.length} of {library.length} books</div>
         </div>
       </div>
 
