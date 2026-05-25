@@ -2510,7 +2510,7 @@ body.lib-page .site-footer { display: none; }
 /* Mobile: panels become fixed overlays */
 @media (max-width: 767px) {
   .lib-toolbar { padding: 0 var(--space-5); height: 48px; }
-  .lib-scroll { padding: 24px 20px 40px; }
+  .lib-scroll { padding: 0 20px 40px; }
   .tf-island__scroll,
   .post-island__scroll,
   .store-island__scroll { padding-inline: 0; }
