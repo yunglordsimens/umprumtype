@@ -2172,7 +2172,7 @@ body.lib-page .site-footer { display: none; }
 .lib-add-btn:hover { opacity: 0.8; }
 
 /* ── Scroll area ── */
-.lib-scroll { flex: 1; overflow-y: auto; padding: 40px 48px 48px; }
+.lib-scroll { flex: 1; overflow-y: auto; padding: 0 48px 48px; }
 
 /* ── Book grid ── */
 .lib-grid {
@@ -2432,7 +2432,6 @@ body.lib-page .site-footer { display: none; }
 .tf-island__scroll,
 .post-island__scroll,
 .store-island__scroll { padding-inline: 0; }
-.tf-island__scroll { padding-top: 0; }
 
 /* ── Typeface island tweaks inside lib-scroll ── */
 .tf-island__count {
