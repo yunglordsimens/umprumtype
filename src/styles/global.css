@@ -1823,7 +1823,7 @@ body.home-page .site-footer { display: none; }
 
 .hero-controls {
   position: fixed;
-  bottom: 0;
+  top: var(--nav-h);
   left: 0;
   right: 0;
   height: 48px;
@@ -1833,7 +1833,7 @@ body.home-page .site-footer { display: none; }
   gap: 16px;
   z-index: 10;
   background: color-mix(in srgb, var(--bg) 85%, transparent);
-  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
