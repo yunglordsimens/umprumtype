@@ -142,7 +142,6 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
               )}
               {tf.aboutFont && (
                 <div className="tfa-about">
-                  <h3>about</h3>
                   <p>{tf.aboutFont}</p>
                 </div>
               )}
