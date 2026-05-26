@@ -36,6 +36,8 @@ const isActive = (prefix: string) =>
     {image && <meta property="og:image" content={image} />}
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" as="font" type="font/otf" href="/fonts/Svar/3_Svar%20Regular.otf" crossorigin />
+    <link rel="preload" as="font" type="font/otf" href="/fonts/Svar/2_Svar%20Light.otf" crossorigin />
   </head>
   <body class={bodyClass || undefined}>
     <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>

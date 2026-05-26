@@ -2,22 +2,22 @@
 @font-face {
   font-family: 'Svar';
   src: url('/fonts/Svar/3_Svar%20Regular.otf') format('opentype');
-  font-weight: 400; font-style: normal; font-display: swap;
+  font-weight: 400; font-style: normal; font-display: optional;
 }
 @font-face {
   font-family: 'Svar';
   src: url('/fonts/Svar/2_Svar%20Light.otf') format('opentype');
-  font-weight: 300; font-style: normal; font-display: swap;
+  font-weight: 300; font-style: normal; font-display: optional;
 }
 @font-face {
   font-family: 'Svar';
   src: url('/fonts/Svar/1_Svar%20Thin.otf') format('opentype');
-  font-weight: 200; font-style: normal; font-display: swap;
+  font-weight: 200; font-style: normal; font-display: optional;
 }
 @font-face {
   font-family: 'Svar';
   src: url('/fonts/Svar/0_Svar%20Ultralight.otf') format('opentype');
-  font-weight: 100; font-style: normal; font-display: swap;
+  font-weight: 100; font-style: normal; font-display: optional;
 }
 
 /* ---------- Tokens ---------- */
@@ -2567,24 +2567,7 @@ body.lib-page .site-footer { display: none; }
    ================================================================ */
 
 
-/* Nav links — sliding underline */
-@media (min-width: 721px) {
-  .site-nav__links a {
-    position: relative;
-  }
-  .site-nav__links a::after {
-    content: '';
-    position: absolute;
-    bottom: -2px; left: 0; right: 0;
-    height: 1px;
-    background: currentColor;
-    transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform 240ms var(--ease);
-  }
-  .site-nav__links a:hover::after,
-  .site-nav__links a[aria-current="page"]::after { transform: scaleX(1); }
-}
+/* Nav links — no underline */
 
 /* Tag chips — lift + snap back */
 .tf-tag-chip {
