@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 const CloseIcon = () => (
@@ -83,6 +83,18 @@ export default function ProjectsIsland({ posts }) {
   const [mounted, setMounted]       = useState(false);
   const panelRef   = useRef(null);
   const previewRef = useRef(null);
+  const listRef    = useRef(null);
+  const flipSnap   = useRef(new Map());
+  const prevKeys   = useRef(new Set());
+
+  function captureFlip() {
+    const ul = listRef.current;
+    if (!ul) return;
+    flipSnap.current.clear();
+    for (const el of ul.children) {
+      if (el.id) flipSnap.current.set(el.id, el.getBoundingClientRect().top);
+    }
+  }
 
   useEffect(() => setMounted(true), []);
 
@@ -124,6 +136,36 @@ export default function ProjectsIsland({ posts }) {
     return out;
   }, [activeTags, sort, shuffleSeed, posts]);
 
+  useLayoutEffect(() => {
+    const ul = listRef.current;
+    if (!ul) return;
+    const newKeys = new Set();
+    for (const el of ul.children) {
+      if (!el.id) continue;
+      newKeys.add(el.id);
+      const oldTop = flipSnap.current.get(el.id);
+      const isNew  = prevKeys.current.size > 0 && !prevKeys.current.has(el.id);
+      if (isNew) {
+        el.style.opacity = '0'; el.style.transform = 'translateY(8px)';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          el.style.transition = 'opacity 220ms ease, transform 220ms ease';
+          el.style.opacity = ''; el.style.transform = '';
+        }));
+      } else if (oldTop !== undefined) {
+        const dy = oldTop - el.getBoundingClientRect().top;
+        if (Math.abs(dy) > 0.5) {
+          el.style.transform = `translateY(${dy}px)`; el.style.transition = 'none';
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            el.style.transition = 'transform 380ms cubic-bezier(0.16,1,0.3,1)';
+            el.style.transform = '';
+          }));
+        }
+      }
+    }
+    prevKeys.current = newKeys;
+    flipSnap.current.clear();
+  }, [filtered]); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
@@ -141,10 +183,12 @@ export default function ProjectsIsland({ posts }) {
   }
 
   function toggleTag(tag) {
+    captureFlip();
     setActiveTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
   }
 
   function onTagClick(tag) {
+    captureFlip();
     setOpenSlug(null);
     setActiveTags([tag]);
   }
@@ -175,7 +219,7 @@ export default function ProjectsIsland({ posts }) {
           </button>
           <div className="tf-sort">
             {SORTS.map(s => (
-              <button key={s.key} aria-pressed={sort === s.key} onClick={() => { setSort(s.key); if (s.key === 'shuffle') setShuffleSeed(n => n + 1); }}>
+              <button key={s.key} aria-pressed={sort === s.key} onClick={() => { captureFlip(); setSort(s.key); if (s.key === 'shuffle') setShuffleSeed(n => n + 1); }}>
                 {s.label}
               </button>
             ))}
@@ -205,7 +249,7 @@ export default function ProjectsIsland({ posts }) {
             </div>
             <div className="tf-tags-panel__actions">
               {activeTags.length > 0 && (
-                <button className="tf-tags-clear" onClick={() => setActiveTags([])}>Clear</button>
+                <button className="tf-tags-clear" onClick={() => { captureFlip(); setActiveTags([]); }}>Clear</button>
               )}
               <button className="tf-tags-close" onClick={() => setShowTags(false)} aria-label="Close tags">
                 <CloseIcon />
@@ -219,7 +263,7 @@ export default function ProjectsIsland({ posts }) {
             <div className="lib-empty">No projects match.</div>
           ) : (
             <>
-              <ul className="post-list post-island__list"
+              <ul ref={listRef} className="post-list post-island__list"
                   onMouseLeave={() => setPreviewSrc(null)}>
                 {filtered.map(p => (
                   <PostRow

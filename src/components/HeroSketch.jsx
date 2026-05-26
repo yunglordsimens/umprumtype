@@ -31,12 +31,24 @@ export default function HeroSketch() {
     if (!container) return;
     let p5Instance;
 
-    // Native canvas buffer — bypasses p5 v2.x filter bugs
     let offCanvas = document.createElement('canvas');
     let offCtx = offCanvas.getContext('2d');
     let pixelData = null;
     let typed = '';
     let needsRedraw = true;
+
+    // Native listener — p.keyReleased is unreliable in p5 v2 instance mode
+    const onKey = (e) => {
+      if (e.key === 'Backspace') {
+        typed = typed.slice(0, -1);
+      } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        typed += e.key.toUpperCase();
+      } else {
+        return;
+      }
+      needsRedraw = true;
+    };
+    window.addEventListener('keydown', onKey);
 
     function resizeBuffer(w, h) {
       offCanvas.width = w;
@@ -47,29 +59,23 @@ export default function HeroSketch() {
       const w = offCanvas.width;
       const h = offCanvas.height;
       const word = typed || DEFAULT_WORD;
-      const fontSize = Math.max(72, h * 0.16);
 
       offCtx.clearRect(0, 0, w, h);
       offCtx.fillStyle = '#000';
       offCtx.fillRect(0, 0, w, h);
 
+      // Auto-fit font so text fills ~85% of canvas width
+      let fontSize = Math.max(60, h * 0.22);
+      offCtx.font = `${fontSize}px "Times New Roman", serif`;
+      const measured = offCtx.measureText(word).width;
+      if (measured > w * 0.85) fontSize *= (w * 0.85) / measured;
+
+      offCtx.filter = 'none';
+      offCtx.globalAlpha = 1;
       offCtx.fillStyle = '#fff';
       offCtx.textAlign = 'center';
       offCtx.textBaseline = 'middle';
       offCtx.font = `${fontSize}px "Times New Roman", serif`;
-
-      // Soft glow layers
-      offCtx.filter = 'blur(16px)';
-      offCtx.globalAlpha = 0.5;
-      offCtx.fillText(word, w / 2, h / 2);
-
-      offCtx.filter = 'blur(6px)';
-      offCtx.globalAlpha = 0.75;
-      offCtx.fillText(word, w / 2, h / 2);
-
-      // Sharp text
-      offCtx.filter = 'none';
-      offCtx.globalAlpha = 1;
       offCtx.fillText(word, w / 2, h / 2);
 
       pixelData = offCtx.getImageData(0, 0, w, h).data;
@@ -100,15 +106,13 @@ export default function HeroSketch() {
             const w = offCanvas.width;
             const h = offCanvas.height;
 
-            for (let a = 0; a < h; a += 4) {
+            for (let a = 0; a < h; a += 5) {
               p.beginShape();
               for (let b = 0; b < w; b += 3) {
                 const idx = (a * w + b) * 4;
-                const brightness = pixelData[idx]; // R channel — white text on black
-
-                // Adapted from Processing: diagonal lean + brightness displacement
-                const vx = b + a * 0.08;
-                const vy = a - brightness * 0.22;
+                const brightness = pixelData[idx];
+                const vx = b + a * 0.06;
+                const vy = a - brightness * 0.18;
                 p.vertex(vx, vy);
               }
               p.endShape();
@@ -129,12 +133,6 @@ export default function HeroSketch() {
           }
         };
 
-        p.keyReleased = () => {
-          if (p.keyCode === p.BACKSPACE) typed = typed.slice(0, -1);
-          else if (p.key && p.key.length === 1) typed += p.key;
-          needsRedraw = true;
-        };
-
         p.windowResized = () => {
           p.resizeCanvas(p.windowWidth, p.windowHeight);
           resizeBuffer(p.width, p.height);
@@ -146,6 +144,7 @@ export default function HeroSketch() {
     });
 
     return () => {
+      window.removeEventListener('keydown', onKey);
       p5Instance?.remove();
       offCanvas = null;
       offCtx = null;

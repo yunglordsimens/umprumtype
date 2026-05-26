@@ -1832,24 +1832,10 @@ body.home-page .site-footer { display: none; }
   padding: 0 var(--space-5);
   gap: 16px;
   z-index: 10;
-  background: rgba(0, 0, 0, 0.6);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  border-top: 1px solid var(--border);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-}
-/* Buttons inside the hero toolbar — inverted for dark canvas */
-.hero-controls .tf-sort button {
-  color: rgba(255, 255, 255, 0.5);
-  border-color: rgba(255, 255, 255, 0.18);
-}
-.hero-controls .tf-sort button:hover {
-  color: rgba(255, 255, 255, 0.9);
-  border-color: rgba(255, 255, 255, 0.5);
-}
-.hero-controls .tf-sort button[aria-pressed="true"] {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(255, 255, 255, 0.9);
-  color: #111;
 }
 
 /* Dark-mode inversion: site is dark → homepage becomes light */
@@ -1857,23 +1843,13 @@ body.home-page .site-footer { display: none; }
   body.home-page {
     background: #f5f5f0;
     color: #111111;
-  }
-  .hero-controls {
-    background: rgba(245, 245, 240, 0.7);
-    border-top-color: rgba(0, 0, 0, 0.08);
-  }
-  .hero-controls .tf-sort button {
-    color: rgba(0, 0, 0, 0.45);
-    border-color: rgba(0, 0, 0, 0.18);
-  }
-  .hero-controls .tf-sort button:hover {
-    color: rgba(0, 0, 0, 0.85);
-    border-color: rgba(0, 0, 0, 0.5);
-  }
-  .hero-controls .tf-sort button[aria-pressed="true"] {
-    background: rgba(0, 0, 0, 0.85);
-    border-color: rgba(0, 0, 0, 0.85);
-    color: #f5f5f0;
+    /* Re-pin tokens to light values so hero-controls uses CSS vars correctly */
+    --bg: #f5f5f0;
+    --text: #111111;
+    --text-muted: #666666;
+    --text-subtle: #999999;
+    --border: rgba(0, 0, 0, 0.1);
+    --border-strong: rgba(0, 0, 0, 0.2);
   }
   body.home-page .site-nav {
     background: rgba(245, 245, 240, 0.7);
@@ -2144,17 +2120,8 @@ body.lib-page .site-footer { display: none; }
 }
 .tf-tags-close:hover { color: var(--text); }
 .tf-tag-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
-  background: var(--text);
-  color: var(--bg);
+  font-size: var(--step--1);
+  color: var(--text-subtle);
 }
 .lib-toolbar-count {
   font-size: var(--step--1);
@@ -2567,6 +2534,11 @@ body.lib-page .site-footer { display: none; }
 
 
 /* Nav links — no underline */
+.site-nav__links a,
+.site-nav__links a:hover,
+.site-nav__links a:focus {
+  text-decoration: none;
+}
 
 /* Tag chips — lift + snap back */
 .tf-tag-chip {

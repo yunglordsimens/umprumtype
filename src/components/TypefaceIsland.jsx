@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
 import TypefaceCard from './TypefaceCard.jsx';
 
 const CloseIcon = () => (
@@ -28,7 +28,19 @@ export default function TypefaceIsland({ typefaces }) {
   const [openSlug, setOpenSlug]     = useState(null);
   const [sort, setSort]             = useState('name');
   const [shuffleSeed, setShuffleSeed] = useState(0);
-  const panelRef = useRef(null);
+  const panelRef  = useRef(null);
+  const listRef   = useRef(null);
+  const flipSnap  = useRef(new Map());
+  const prevKeys  = useRef(new Set());
+
+  function captureFlip() {
+    const ul = listRef.current;
+    if (!ul) return;
+    flipSnap.current.clear();
+    for (const el of ul.children) {
+      if (el.id) flipSnap.current.set(el.id, el.getBoundingClientRect().top);
+    }
+  }
 
   useEffect(() => {
     const hash = window.location.hash.slice(1);
@@ -75,7 +87,38 @@ export default function TypefaceIsland({ typefaces }) {
     return out;
   }, [activeTags, sort, shuffleSeed, typefaces]);
 
+  useLayoutEffect(() => {
+    const ul = listRef.current;
+    if (!ul) return;
+    const newKeys = new Set();
+    for (const el of ul.children) {
+      if (!el.id) continue;
+      newKeys.add(el.id);
+      const oldTop = flipSnap.current.get(el.id);
+      const isNew  = prevKeys.current.size > 0 && !prevKeys.current.has(el.id);
+      if (isNew) {
+        el.style.opacity = '0'; el.style.transform = 'translateY(8px)';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          el.style.transition = 'opacity 220ms ease, transform 220ms ease';
+          el.style.opacity = ''; el.style.transform = '';
+        }));
+      } else if (oldTop !== undefined) {
+        const dy = oldTop - el.getBoundingClientRect().top;
+        if (Math.abs(dy) > 0.5) {
+          el.style.transform = `translateY(${dy}px)`; el.style.transition = 'none';
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            el.style.transition = 'transform 380ms cubic-bezier(0.16,1,0.3,1)';
+            el.style.transform = '';
+          }));
+        }
+      }
+    }
+    prevKeys.current = newKeys;
+    flipSnap.current.clear();
+  }, [filtered]); // eslint-disable-line react-hooks/exhaustive-deps
+
   function toggleTag(tag) {
+    captureFlip();
     setActiveTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
   }
 
@@ -98,7 +141,7 @@ export default function TypefaceIsland({ typefaces }) {
               <button
                 key={s.key}
                 aria-pressed={sort === s.key}
-                onClick={() => { setSort(s.key); if (s.key === 'shuffle') setShuffleSeed(n => n + 1); }}
+                onClick={() => { captureFlip(); setSort(s.key); if (s.key === 'shuffle') setShuffleSeed(n => n + 1); }}
               >
                 {s.label}
               </button>
@@ -131,7 +174,7 @@ export default function TypefaceIsland({ typefaces }) {
             </div>
             <div className="tf-tags-panel__actions">
               {activeTags.length > 0 && (
-                <button className="tf-tags-clear" onClick={() => setActiveTags([])}>
+                <button className="tf-tags-clear" onClick={() => { captureFlip(); setActiveTags([]); }}>
                   Clear
                 </button>
               )}
@@ -151,14 +194,14 @@ export default function TypefaceIsland({ typefaces }) {
             <div className="lib-empty">No typefaces match.</div>
           ) : (
             <>
-              <ul className="tfa-list">
+              <ul ref={listRef} className="tfa-list">
                 {filtered.map(tf => (
                   <TypefaceCard
                     key={tf.slug}
                     tf={tf}
                     isOpen={openSlug === tf.slug}
                     onOpen={() => toggleSlug(tf.slug)}
-                    onTagClick={tag => { setOpenSlug(null); setActiveTags([tag]); }}
+                    onTagClick={tag => { captureFlip(); setOpenSlug(null); setActiveTags([tag]); }}
                   />
                 ))}
               </ul>
