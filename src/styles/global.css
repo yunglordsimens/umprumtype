@@ -2547,20 +2547,20 @@ body.lib-page .site-footer { display: none; }
   transition: background 150ms var(--ease), color 150ms var(--ease),
               border-color 150ms var(--ease), transform 150ms var(--ease);
 }
-.tf-tag-chip:hover { transform: translateY(-1px); }
+.tf-tag-chip:hover { }
 
 .tfa-info__tag {
   transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
               transform 150ms var(--ease);
 }
-.tfa-info__tag:hover { transform: translateY(-1px); }
+.tfa-info__tag:hover { }
 
 /* Sort pills */
 .tf-sort button {
   transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
               background var(--dur-fast) var(--ease), transform 150ms var(--ease);
 }
-.tf-sort button:hover { transform: translateY(-1px); }
+.tf-sort button:hover { }
 
 /* Typeface accordion trigger — add transform layer */
 .tfa-trigger {
@@ -2617,7 +2617,7 @@ body.lib-page .site-footer { display: none; }
 .lib-add-btn {
   transition: opacity 150ms var(--ease), transform 150ms var(--ease);
 }
-.lib-add-btn:hover { opacity: 1; transform: translateY(-1px); }
+.lib-add-btn:hover { opacity: 1; }
 
 /* Library list rows */
 .lib-row__trigger {
