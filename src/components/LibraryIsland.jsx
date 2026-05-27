@@ -300,11 +300,8 @@ export default function LibraryIsland() {
                 {label}{sort === col ? (sortDir === 1 ? ' ↑' : ' ↓') : ''}
               </button>
             ))}
-          </div>
-
-          <div className="lib-view-toggle">
-            <button className={viewMode === 'grid' ? 'is-active' : ''} onClick={() => setViewMode('grid')} aria-pressed={viewMode === 'grid'}>Grid</button>
-            <button className={viewMode === 'list' ? 'is-active' : ''} onClick={() => setViewMode('list')} aria-pressed={viewMode === 'list'}>List</button>
+            <button aria-pressed={viewMode === 'grid'} onClick={() => setViewMode('grid')}>Grid</button>
+            <button aria-pressed={viewMode === 'list'} onClick={() => setViewMode('list')}>List</button>
           </div>
         </header>
 
