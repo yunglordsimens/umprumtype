@@ -299,6 +299,7 @@ export default function LibraryIsland() {
                 {label}{sort === col ? (sortDir === 1 ? ' ↑' : ' ↓') : ''}
               </button>
             ))}
+            <span className="tf-sort__divider" />
             <button aria-pressed={viewMode === 'grid'} onClick={() => setViewMode('grid')}>Grid</button>
             <button aria-pressed={viewMode === 'list'} onClick={() => setViewMode('list')}>List</button>
           </div>
