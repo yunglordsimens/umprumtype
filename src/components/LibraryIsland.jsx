@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef, Fragment } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 
 const SHEET_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9pcn-Vt6gV9lCYZEK1Ly6ZKdEIYqN-VoIu9EkPqDqkFCAwT5R_eqaKz6priy-ixFZQWD3CtX263O_/pub?output=csv';
@@ -6,6 +6,11 @@ const SHEET_URL =
 const CloseIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+const ChevronLeftIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="15 18 9 12 15 6" />
   </svg>
 );
 
@@ -197,8 +202,7 @@ export default function LibraryIsland() {
   const [openId, setOpenId]           = useState(null);
   const [sort, setSort]               = useState('title');
   const [sortDir, setSortDir]         = useState(1);
-  const accordionRef = useRef(null);
-  const panelRef     = useRef(null);
+  const panelRef = useRef(null);
 
   useEffect(() => {
     const panel = panelRef.current;
@@ -207,11 +211,6 @@ export default function LibraryIsland() {
     panel.style.opacity   = showTags ? '1' : '0';
   }, [showTags]);
 
-  useEffect(() => {
-    if (openId !== null && accordionRef.current) {
-      accordionRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  }, [openId]);
 
   useEffect(() => {
     fetch(SHEET_URL)
@@ -325,18 +324,12 @@ export default function LibraryIsland() {
           ) : viewMode === 'grid' ? (
             <div className="lib-grid">
               {filtered.map(book => (
-                <Fragment key={book.id}>
-                  <BookCard
-                    book={book}
-                    isOpen={openId === book.id}
-                    onToggle={() => toggleBook(book.id)}
-                  />
-                  {openId === book.id && (
-                    <div ref={accordionRef} className="lib-grid-accordion">
-                      <BookDetail book={book} onTagClick={onTagClick} />
-                    </div>
-                  )}
-                </Fragment>
+                <BookCard
+                  key={book.id}
+                  book={book}
+                  isOpen={openId === book.id}
+                  onToggle={() => toggleBook(book.id)}
+                />
               ))}
             </div>
           ) : (
@@ -363,6 +356,19 @@ export default function LibraryIsland() {
           )}
         </div>
       </div>
+
+      {/* ── Right detail panel (orange, same as store) ── */}
+      <aside className={`lib-detail${openBook ? ' is-open' : ''}`}>
+        <div className="lib-detail__inner">
+          <button className="lib-detail__close" onClick={() => setOpenId(null)} aria-label="Close">
+            <ChevronLeftIcon />
+          </button>
+          <div className="lib-detail__scroll">
+            {openBook && <BookDetail book={openBook} onTagClick={onTagClick} />}
+          </div>
+          <div className="lib-detail__footer">UMPRUM Type × 2026</div>
+        </div>
+      </aside>
 
     </div>
   );
