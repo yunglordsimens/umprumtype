@@ -158,16 +158,8 @@ function BookCard({ book, isOpen, onToggle }) {
   );
 }
 
-// List row — expandable accordion
-function LibRow({ book, isOpen, onToggle, onTagClick }) {
-  const panelRef = useRef(null);
-
-  useEffect(() => {
-    const panel = panelRef.current;
-    if (!panel) return;
-    panel.style.maxHeight = isOpen ? panel.scrollHeight + 'px' : '0';
-  }, [isOpen]);
-
+// List row — opens orange side panel (no accordion)
+function LibRow({ book, isOpen, onToggle }) {
   return (
     <li className={`lib-row${isOpen ? ' is-open' : ''}`}>
       <button className="lib-row__trigger" onClick={onToggle}>
@@ -182,13 +174,6 @@ function LibRow({ book, isOpen, onToggle, onTagClick }) {
           {book.tags.length > 3 && <span className="lib-row__tag-more">+{book.tags.length - 3}</span>}
         </span>
       </button>
-      <div
-        ref={panelRef}
-        className="lib-row__panel"
-        style={{ maxHeight: 0, overflow: 'hidden', transition: 'max-height 400ms cubic-bezier(0.16,1,0.3,1)' }}
-      >
-        <BookDetail book={book} onTagClick={onTagClick} />
-      </div>
     </li>
   );
 }
@@ -349,7 +334,6 @@ export default function LibraryIsland() {
                     book={book}
                     isOpen={openId === book.id}
                     onToggle={() => toggleBook(book.id)}
-                    onTagClick={onTagClick}
                   />
                 ))}
               </ul>

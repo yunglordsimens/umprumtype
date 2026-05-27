@@ -2192,6 +2192,7 @@ body.lib-page .site-footer { display: none; }
 .lib-card__info { margin-top: 24px; text-align: center; padding: 0 8px; width: 100%; }
 .lib-card__title {
   font-size: 0.875rem; font-weight: 500; line-height: 1.3;
+  text-transform: none; letter-spacing: normal;
 }
 .lib-card__author {
   font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;
@@ -2413,6 +2414,15 @@ body.lib-page .site-footer { display: none; }
 /* No double top-margin between count and list */
 .post-island__list { margin-top: 0; }
 
+/* Book detail inside the orange lib-detail panel — pin to dark text */
+.lib-detail .lib-accordion__title { color: #000; }
+.lib-detail .lib-accordion__author { color: rgba(0,0,0,0.7); }
+.lib-detail .lib-accordion__year { color: rgba(0,0,0,0.55); }
+.lib-detail .lib-accordion__tag {
+  color: #000; border-color: rgba(0,0,0,0.3);
+}
+.lib-detail .lib-accordion__tag:hover { color: #000; border-color: rgba(0,0,0,0.6); }
+
 /* Post detail inside the orange lib-detail panel — pin to dark text
    so it's readable regardless of prefers-color-scheme               */
 .lib-detail .post-detail__meta { color: rgba(0,0,0,0.55); }
@@ -2567,12 +2577,8 @@ body.lib-page .site-footer { display: none; }
   transition: background var(--dur-fast) var(--ease);
 }
 
-/* Big preview text fades to muted when card opens */
 .tfa-trigger__preview {
   transition: color 300ms var(--ease);
-}
-.tfa-trigger.is-open .tfa-trigger__preview {
-  color: var(--text-muted);
 }
 
 /* Post rows — colour + subtle indent */
