@@ -170,8 +170,11 @@ function LibRow({ book, isOpen, onToggle, onTagClick }) {
         <span className="lib-row__author">{book.author || '—'}</span>
         <span className="lib-row__year">{book.year || '—'}</span>
         <span className="lib-row__tags">
-          {book.tags.slice(0, 3).join(', ')}
-          {book.tags.length > 3 && ` +${book.tags.length - 3}`}
+          {book.tags.slice(0, 3).map(t => {
+            const c = TAG_COVERS[t];
+            return <span key={t} className="lib-row__tag-chip" style={{ background: c?.bg || '#404040', color: c?.text || '#fff' }}>{t}</span>;
+          })}
+          {book.tags.length > 3 && <span className="lib-row__tag-more">+{book.tags.length - 3}</span>}
         </span>
       </button>
       <div
@@ -222,7 +225,7 @@ export default function LibraryIsland() {
             const c = n => cols[n]?.trim() || null;
             return {
               id: i + 1,
-              title: c(0) || '',
+              title: (c(0) || '').split(/\s*:\s*/)[0].trim(),
               author: c(1),
               year: c(2),
               tags: (c(3) || '').split(/[,;]/).map(t => t.trim()).filter(Boolean),
@@ -291,13 +294,17 @@ export default function LibraryIsland() {
             {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
           </button>
 
+          <div className="tf-sort">
+            {[['title','Title'],['author','Author']].map(([col, label]) => (
+              <button key={col} aria-pressed={sort === col} onClick={() => cycleSort(col)}>
+                {label}{sort === col ? (sortDir === 1 ? ' ↑' : ' ↓') : ''}
+              </button>
+            ))}
+          </div>
+
           <div className="lib-view-toggle">
             <button className={viewMode === 'grid' ? 'is-active' : ''} onClick={() => setViewMode('grid')} aria-pressed={viewMode === 'grid'}>Grid</button>
             <button className={viewMode === 'list' ? 'is-active' : ''} onClick={() => setViewMode('list')} aria-pressed={viewMode === 'list'}>List</button>
-          </div>
-
-          <div className="lib-right">
-            <span className="lib-toolbar-count">{filtered.length < library.length ? `${filtered.length} of ${library.length}` : filtered.length}</span>
           </div>
         </header>
 
