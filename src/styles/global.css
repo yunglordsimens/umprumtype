@@ -1,22 +1,22 @@
 /* ---------- Svar UI font ---------- */
 @font-face {
   font-family: 'Svar';
-  src: url('/fonts/Svar/3_Svar%20Regular.otf') format('opentype');
+  src: url('/fonts/Svar/3_Svar%20Regular.woff2') format('woff2');
   font-weight: 400; font-style: normal; font-display: optional;
 }
 @font-face {
   font-family: 'Svar';
-  src: url('/fonts/Svar/2_Svar%20Light.otf') format('opentype');
+  src: url('/fonts/Svar/2_Svar%20Light.woff2') format('woff2');
   font-weight: 300; font-style: normal; font-display: optional;
 }
 @font-face {
   font-family: 'Svar';
-  src: url('/fonts/Svar/1_Svar%20Thin.otf') format('opentype');
+  src: url('/fonts/Svar/1_Svar%20Thin.woff2') format('woff2');
   font-weight: 200; font-style: normal; font-display: optional;
 }
 @font-face {
   font-family: 'Svar';
-  src: url('/fonts/Svar/0_Svar%20Ultralight.otf') format('opentype');
+  src: url('/fonts/Svar/0_Svar%20Ultralight.woff2') format('woff2');
   font-weight: 100; font-style: normal; font-display: optional;
 }
 

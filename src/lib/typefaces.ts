@@ -57,7 +57,7 @@ function guessWeight(text: string): number {
 
 function parseOtfVariant(filename: string, folderName: string, index: number): OtfVariant {
   const withoutPrefix = filename.replace(/^\d+_/, '');
-  const stem = basename(withoutPrefix, '.otf');
+  const stem = basename(withoutPrefix, '.woff2');
 
   // Strip leading font name from stem to isolate the variant label
   const folderNorm = folderName.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -105,7 +105,7 @@ export function getAllTypefaces(): TypefaceData[] {
       const folderPath = join(FONTS_DIR, folderName);
 
       const files = readdirSync(folderPath);
-      const otfFiles = files.filter(f => extname(f).toLowerCase() === '.otf').sort();
+      const otfFiles = files.filter(f => extname(f).toLowerCase() === '.woff2').sort();
 
       const otfVariants: OtfVariant[] = otfFiles.map((filename, i) => {
         const prefixMatch = filename.match(/^(\d+)_/);

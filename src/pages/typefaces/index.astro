@@ -9,7 +9,7 @@ const fontFaces = all
   .flatMap(t =>
     t.otfVariants.map(v => {
       const fam = t.title.replace(/"/g, '\\"');
-      return `@font-face{font-family:"${fam}";src:url("${v.webPath}") format("opentype");font-weight:${v.weight};font-style:${v.style};font-display:swap;}`;
+      return `@font-face{font-family:"${fam}";src:url("${v.webPath}") format("woff2");font-weight:${v.weight};font-style:${v.style};font-display:swap;}`;
     })
   )
   .join('\n');
