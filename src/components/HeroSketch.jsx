@@ -6,22 +6,7 @@ export default function HeroSketch() {
   const containerRef = useRef(null);
   const [effect, setEffect] = useState('waves');
 
-  const [isDark, setIsDark] = useState(() =>
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-color-scheme: dark)').matches
-      : false
-  );
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = e => setIsDark(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
-
-  const colorsRef = useRef({ bg: 240, fg: 20 });
-  useEffect(() => {
-    colorsRef.current = isDark ? { bg: 20, fg: 235 } : { bg: 240, fg: 20 };
-  }, [isDark]);
+  const colorsRef = useRef({ bg: 20, fg: 235 });
 
   const effectRef = useRef(effect);
   useEffect(() => { effectRef.current = effect; }, [effect]);

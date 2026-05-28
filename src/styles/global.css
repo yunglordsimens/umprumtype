@@ -1814,6 +1814,12 @@ body.home-page {
   overscroll-behavior: none;
   background: #111118;
   color: #f2f2ef;
+  --bg: #111118;
+  --text: #f2f2ef;
+  --text-muted: rgba(255,255,255,0.5);
+  --text-subtle: rgba(255,255,255,0.3);
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
 }
 body.home-page #main {
   padding: 0;
@@ -1839,36 +1845,6 @@ body.home-page .site-footer { display: none; }
   -webkit-backdrop-filter: blur(14px);
 }
 
-/* Dark-mode inversion: site is dark → homepage becomes light */
-@media (prefers-color-scheme: dark) {
-  body.home-page {
-    background: #f5f5f0;
-    color: #111111;
-    /* Re-pin tokens to light values so hero-controls uses CSS vars correctly */
-    --bg: #f5f5f0;
-    --text: #111111;
-    --text-muted: #666666;
-    --text-subtle: #999999;
-    --border: rgba(0, 0, 0, 0.1);
-    --border-strong: rgba(0, 0, 0, 0.2);
-  }
-  body.home-page .site-nav {
-    background: rgba(245, 245, 240, 0.7);
-    border-bottom-color: rgba(0, 0, 0, 0.08);
-  }
-  body.home-page .site-nav__logo,
-  body.home-page .site-nav__links a {
-    color: rgba(0, 0, 0, 0.65);
-  }
-  body.home-page .site-nav__links a:hover,
-  body.home-page .site-nav__links a[aria-current="page"] {
-    color: #111111;
-  }
-  body.home-page .site-nav__burger::before,
-  body.home-page .site-nav__burger::after {
-    background: #111111;
-  }
-}
 body.home-page .site-nav {
   background: rgba(0, 0, 0, 0.6);
   border-bottom-color: rgba(255, 255, 255, 0.08);
