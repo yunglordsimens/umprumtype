@@ -7,7 +7,6 @@ export default function HeroSketch() {
   const [effect, setEffect] = useState('waves');
 
   const colorsRef = useRef({ bg: 20, fg: 235 });
-
   const effectRef = useRef(effect);
   useEffect(() => { effectRef.current = effect; }, [effect]);
 
@@ -21,6 +20,11 @@ export default function HeroSketch() {
     let pixelData = null;
     let typed = '';
     let needsRedraw = true;
+
+    // kinetic state
+    let kineticParticles = [];
+    let kineticDirty = false;
+    let prevEffect = 'waves';
 
     const onKey = (e) => {
       if (e.key === 'Backspace') {
@@ -56,8 +60,8 @@ export default function HeroSketch() {
 
       let maxLineWidth = 0;
       lines.forEach(line => {
-        const width = offCtx.measureText(line).width;
-        if (width > maxLineWidth) maxLineWidth = width;
+        const lw = offCtx.measureText(line).width;
+        if (lw > maxLineWidth) maxLineWidth = lw;
       });
       if (maxLineWidth > w * 0.9) fontSize *= (w * 0.9) / maxLineWidth;
 
@@ -71,7 +75,7 @@ export default function HeroSketch() {
       const totalHeight = lines.length * lineHeight;
       const startY = (h - totalHeight) / 2 + lineHeight / 2;
 
-      // blur layer for smooth wave slopes
+      // blur pass for smooth wave slopes
       offCtx.filter = 'blur(6px)';
       lines.forEach((line, i) => offCtx.fillText(line, w / 2, startY + i * lineHeight));
       offCtx.filter = 'none';
@@ -79,10 +83,44 @@ export default function HeroSketch() {
 
       pixelData = offCtx.getImageData(0, 0, w, h).data;
       needsRedraw = false;
+      kineticDirty = true; // text changed — rebuild kinetic particles
+    }
+
+    function buildKineticParticles(w, h) {
+      const step = 4;
+      const newTargets = [];
+      for (let y = 0; y < h; y += step) {
+        for (let x = 0; x < w; x += step) {
+          const idx = (y * w + x) * 4;
+          if (pixelData[idx] > 100) {
+            newTargets.push({ bx: x, by: y });
+          }
+        }
+      }
+
+      const cx = w / 2;
+      const cy = h / 2;
+      const prev = kineticParticles;
+
+      // reuse existing particle positions for smooth transition
+      kineticParticles = newTargets.map((t, i) => {
+        if (prev[i]) {
+          // explode outward from current position so they fly to new targets
+          const angle = Math.atan2(prev[i].y - cy, prev[i].x - cx);
+          return { x: prev[i].x + Math.cos(angle) * 60, y: prev[i].y + Math.sin(angle) * 60, bx: t.bx, by: t.by };
+        }
+        // new particles spawn from center
+        return { x: cx, y: cy, bx: t.bx, by: t.by };
+      });
+
+      kineticDirty = false;
     }
 
     import('p5').then(({ default: p5 }) => {
       const sketch = p => {
+        const MOUSE_R = 100;
+        const DOT_SIZE = 2;
+
         p.setup = () => {
           p.createCanvas(p.windowWidth, p.windowHeight);
           p.frameRate(60);
@@ -93,6 +131,7 @@ export default function HeroSketch() {
         p.draw = () => {
           if (needsRedraw) renderTextToBuffer();
 
+          const cur = effectRef.current;
           const { bg, fg } = colorsRef.current;
           p.background(bg);
           if (!pixelData) return;
@@ -101,7 +140,13 @@ export default function HeroSketch() {
           const h = offCanvas.height;
           const time = p.frameCount * 0.03;
 
-          if (effectRef.current === 'waves') {
+          // rebuild kinetic particles when switching to kinetic or text changed
+          if (cur === 'kinetic' && (kineticDirty || prevEffect !== 'kinetic')) {
+            buildKineticParticles(w, h);
+          }
+          prevEffect = cur;
+
+          if (cur === 'waves') {
             p.stroke(fg);
             p.noFill();
             p.strokeWeight(0.5);
@@ -137,7 +182,8 @@ export default function HeroSketch() {
               p.endShape();
             }
             p.pop();
-          } else {
+
+          } else if (cur === 'particles') {
             p.noStroke();
             p.fill(fg);
 
@@ -148,8 +194,7 @@ export default function HeroSketch() {
                   const n = p.noise(x * 0.005, y * 0.005, time);
 
                   const distToMouse = p.dist(p.mouseX, p.mouseY, x, y);
-                  let offsetX = 0;
-                  let offsetY = 0;
+                  let offsetX = 0, offsetY = 0;
                   if (distToMouse < 100) {
                     const force = p.map(distToMouse, 0, 100, 15, 0);
                     offsetX = (x - p.mouseX) * force * 0.01;
@@ -159,16 +204,46 @@ export default function HeroSketch() {
                   const drawX = x + (n * 10 - 5) + offsetX;
                   const drawY = y + (n * 10 - 5) + offsetY;
 
-                  if (n > 0.75) {
-                    p.rect(drawX, drawY, 8, 1);
-                  } else if (n < 0.25) {
-                    p.rect(drawX, drawY, 1, 8);
-                  } else {
-                    const size = n * 3;
-                    p.rect(drawX, drawY, size, size);
-                  }
+                  if (n > 0.75)       p.rect(drawX, drawY, 8, 1);
+                  else if (n < 0.25)  p.rect(drawX, drawY, 1, 8);
+                  else                p.rect(drawX, drawY, n * 3, n * 3);
                 }
               }
+            }
+
+          } else if (cur === 'kinetic') {
+            p.noStroke();
+            p.fill(fg);
+
+            const mx = p.mouseX;
+            const my = p.mouseY;
+
+            for (let i = 0; i < kineticParticles.length; i++) {
+              const pt = kineticParticles[i];
+              const dx = mx - pt.x;
+              const dy = my - pt.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+
+              if (dist < MOUSE_R) {
+                const force = (MOUSE_R - dist) / MOUSE_R;
+                const angle = Math.atan2(dy, dx);
+                pt.x -= Math.cos(angle) * force * 5 - Math.cos(angle + Math.PI / 2) * force * 15;
+                pt.y -= Math.sin(angle) * force * 5 - Math.sin(angle + Math.PI / 2) * force * 15;
+              } else {
+                pt.x += (pt.bx - pt.x) * 0.03;
+                pt.y += (pt.by - pt.y) * 0.03;
+              }
+
+              p.ellipse(pt.x, pt.y, DOT_SIZE, DOT_SIZE);
+            }
+
+            // mouse radius hint
+            if (mx > 0 && my > 0) {
+              p.noFill();
+              p.stroke(fg, 12);
+              p.strokeWeight(1);
+              p.ellipse(mx, my, MOUSE_R * 2, MOUSE_R * 2);
+              p.noStroke();
             }
           }
         };
@@ -189,6 +264,7 @@ export default function HeroSketch() {
       offCanvas = null;
       offCtx = null;
       pixelData = null;
+      kineticParticles = [];
     };
   }, []);
 
@@ -197,7 +273,7 @@ export default function HeroSketch() {
       <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden' }} />
       <div className="hero-controls">
         <div className="tf-sort">
-          {['waves', 'particles'].map(e => (
+          {['waves', 'particles', 'kinetic'].map(e => (
             <button key={e} aria-pressed={effect === e} onClick={() => setEffect(e)}>{e}</button>
           ))}
         </div>
