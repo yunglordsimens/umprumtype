@@ -1839,8 +1839,8 @@ body.home-page .site-footer { display: none; }
   padding: 0 var(--space-5);
   gap: 16px;
   z-index: 10;
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  border-bottom: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.85);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }

@@ -146,11 +146,10 @@ export default function HeroSketch() {
             p.noFill();
             p.strokeWeight(0.6);
 
-            const stretch = 1.15;
+            const stretch = 0.88;
             const mapCenterX = (w / 2 + (h / 2) * 0.4) * stretch;
             const mapCenterY = (h / 2 - (w / 2) * 0.1) * stretch;
-            // shift down so the top of the isometric field doesn't clip
-            const yShift = h * 0.14;
+            const yShift = h * 0.06;
 
             p.push();
             p.translate(w / 2 - mapCenterX, h / 2 - mapCenterY + yShift);
