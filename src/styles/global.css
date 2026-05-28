@@ -2026,6 +2026,22 @@ body.lib-page .site-footer { display: none; }
 /* Sort pills inside lib-toolbar must not wrap or grow */
 .lib-toolbar .tf-sort { flex-wrap: nowrap; flex-shrink: 0; }
 
+.lib-search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font: inherit;
+  font-size: var(--step--1);
+  color: var(--text);
+  width: 140px;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--border);
+  transition: border-color var(--dur-fast) var(--ease), width var(--dur-fast) var(--ease);
+}
+.lib-search-input::placeholder { color: var(--text-subtle); }
+.lib-search-input:focus { border-bottom-color: var(--text); width: 200px; }
+.lib-search-input::-webkit-search-cancel-button { cursor: pointer; }
+
 /* ── Tags drop-down panel (TypefaceIsland) ── */
 .tf-tags-panel {
   border-bottom: 1px solid var(--border);
@@ -2133,8 +2149,7 @@ body.lib-page .site-footer { display: none; }
 .lib-card:hover {
   transform: scale(1.05);
   z-index: 10;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), z-index 0s;
+  transition: transform 0.3s var(--ease), z-index 0s;
 }
 .lib-book {
   position: relative; width: 140px; height: 210px;

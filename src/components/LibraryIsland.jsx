@@ -187,6 +187,7 @@ export default function LibraryIsland() {
   const [openId, setOpenId]           = useState(null);
   const [sort, setSort]               = useState('title');
   const [sortDir, setSortDir]         = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
   const panelRef = useRef(null);
 
   useEffect(() => {
@@ -227,6 +228,13 @@ export default function LibraryIsland() {
     let books = library;
     if (activeTags.length > 0) {
       books = books.filter(b => b.tags.some(t => activeTags.includes(t)));
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      books = books.filter(b =>
+        b.title.toLowerCase().includes(q) ||
+        (b.author || '').toLowerCase().includes(q)
+      );
     }
     return [...books].sort((a, b) => {
       let av, bv;
@@ -279,6 +287,15 @@ export default function LibraryIsland() {
           </button>
 
           <div className="tf-sort">
+            <input
+              className="lib-search-input"
+              type="search"
+              placeholder="Search…"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              autoComplete="off"
+            />
+            <span className="tf-sort__divider" />
             {[['title','Title'],['author','Author']].map(([col, label]) => (
               <button key={col} aria-pressed={sort === col} onClick={() => cycleSort(col)}>
                 {label}{sort === col ? (sortDir === 1 ? ' ↑' : ' ↓') : ''}
