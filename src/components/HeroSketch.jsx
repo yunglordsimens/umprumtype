@@ -6,7 +6,7 @@ export default function HeroSketch() {
   const containerRef = useRef(null);
   const [effect, setEffect] = useState('waves');
 
-  const colorsRef = useRef({ bg: 20, fg: 235 });
+  const colorsRef = useRef({ bg: 0, fg: 255 });
   const effectRef = useRef(effect);
   useEffect(() => { effectRef.current = effect; }, [effect]);
 
