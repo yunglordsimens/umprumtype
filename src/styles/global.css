@@ -1930,7 +1930,6 @@ body.lib-page .site-footer { display: none; }
   background: var(--bg);
   overflow: hidden;
   color: var(--text);
-  position: relative;
 }
 
 /* ── Left filter panel ── */
@@ -2310,17 +2309,16 @@ body.lib-page .site-footer { display: none; }
 .lib-row__tag-more { font-size: var(--step--1); color: var(--text-subtle); }
 .lib-row__panel { overflow: hidden; }
 
-/* ── Right detail panel (orange) — overlays grid, no reflow ── */
+/* ── Right detail panel (orange) ── */
 .lib-detail {
-  background: var(--accent);
-  position: absolute; top: 0; right: 0; bottom: 0;
+  background: var(--accent); height: 100%;
   display: flex; flex-direction: column;
-  overflow: hidden;
-  box-shadow: -20px 0 40px rgba(0,0,0,0.12);
+  flex-shrink: 0; overflow: hidden;
+  box-shadow: -20px 0 40px rgba(0,0,0,0.08);
   transition: width 500ms cubic-bezier(0.16,1,0.3,1), opacity 500ms cubic-bezier(0.16,1,0.3,1);
-  width: 0; opacity: 0; pointer-events: none;
+  width: 0; opacity: 0;
 }
-.lib-detail.is-open { width: 420px; opacity: 1; pointer-events: auto; }
+.lib-detail.is-open { width: 420px; opacity: 1; }
 .lib-detail.is-open.is-expanded { width: min(100vw, calc(100vw - 288px)); }
 .lib-detail__inner {
   width: 420px; height: 100%;
