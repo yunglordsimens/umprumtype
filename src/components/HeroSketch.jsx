@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-const DEFAULT_WORD = 'UMPRUM TYPE';
+const DEFAULT_WORD = 'ARTSEMESTR\nSS26\nKŘIŽÍKOVA 12\n[C11]\n03—10/06';
 
 export default function HeroSketch() {
   const containerRef = useRef(null);
@@ -18,9 +18,9 @@ export default function HeroSketch() {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  const colorsRef = useRef({ bg: 0, fg: 255 });
+  const colorsRef = useRef({ bg: 240, fg: 20 });
   useEffect(() => {
-    colorsRef.current = isDark ? { bg: 255, fg: 0 } : { bg: 0, fg: 255 };
+    colorsRef.current = isDark ? { bg: 20, fg: 235 } : { bg: 240, fg: 20 };
   }, [isDark]);
 
   const effectRef = useRef(effect);
@@ -32,15 +32,16 @@ export default function HeroSketch() {
     let p5Instance;
 
     let offCanvas = document.createElement('canvas');
-    let offCtx = offCanvas.getContext('2d');
+    let offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
     let pixelData = null;
     let typed = '';
     let needsRedraw = true;
 
-    // Native listener — p.keyReleased is unreliable in p5 v2 instance mode
     const onKey = (e) => {
       if (e.key === 'Backspace') {
         typed = typed.slice(0, -1);
+      } else if (e.key === 'Enter') {
+        typed += '\n';
       } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         typed += e.key.toUpperCase();
       } else {
@@ -58,25 +59,38 @@ export default function HeroSketch() {
     function renderTextToBuffer() {
       const w = offCanvas.width;
       const h = offCanvas.height;
-      const word = typed || DEFAULT_WORD;
+      const textToRender = typed || DEFAULT_WORD;
+      const lines = textToRender.split('\n');
 
       offCtx.clearRect(0, 0, w, h);
       offCtx.fillStyle = '#000';
       offCtx.fillRect(0, 0, w, h);
 
-      // Auto-fit font so text fills ~85% of canvas width
-      let fontSize = Math.max(60, h * 0.22);
-      offCtx.font = `${fontSize}px "Times New Roman", serif`;
-      const measured = offCtx.measureText(word).width;
-      if (measured > w * 0.85) fontSize *= (w * 0.85) / measured;
+      let fontSize = Math.max(20, (h * 0.8) / (lines.length || 1));
+      offCtx.font = `900 ${fontSize}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
 
-      offCtx.filter = 'none';
-      offCtx.globalAlpha = 1;
+      let maxLineWidth = 0;
+      lines.forEach(line => {
+        const width = offCtx.measureText(line).width;
+        if (width > maxLineWidth) maxLineWidth = width;
+      });
+      if (maxLineWidth > w * 0.9) fontSize *= (w * 0.9) / maxLineWidth;
+
       offCtx.fillStyle = '#fff';
       offCtx.textAlign = 'center';
       offCtx.textBaseline = 'middle';
-      offCtx.font = `${fontSize}px "Times New Roman", serif`;
-      offCtx.fillText(word, w / 2, h / 2);
+      offCtx.font = `900 ${fontSize}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
+      offCtx.letterSpacing = '-2px';
+
+      const lineHeight = fontSize * 0.85;
+      const totalHeight = lines.length * lineHeight;
+      const startY = (h - totalHeight) / 2 + lineHeight / 2;
+
+      // blur layer for smooth wave slopes
+      offCtx.filter = 'blur(6px)';
+      lines.forEach((line, i) => offCtx.fillText(line, w / 2, startY + i * lineHeight));
+      offCtx.filter = 'none';
+      lines.forEach((line, i) => offCtx.fillText(line, w / 2, startY + i * lineHeight));
 
       pixelData = offCtx.getImageData(0, 0, w, h).data;
       needsRedraw = false;
@@ -86,7 +100,7 @@ export default function HeroSketch() {
       const sketch = p => {
         p.setup = () => {
           p.createCanvas(p.windowWidth, p.windowHeight);
-          p.frameRate(30);
+          p.frameRate(60);
           resizeBuffer(p.width, p.height);
           renderTextToBuffer();
         };
@@ -96,38 +110,79 @@ export default function HeroSketch() {
 
           const { bg, fg } = colorsRef.current;
           p.background(bg);
+          if (!pixelData) return;
+
+          const w = offCanvas.width;
+          const h = offCanvas.height;
+          const time = p.frameCount * 0.03;
 
           if (effectRef.current === 'waves') {
-            if (!pixelData) return;
             p.stroke(fg);
             p.noFill();
-            p.strokeWeight(0.75);
+            p.strokeWeight(0.5);
 
-            const w = offCanvas.width;
-            const h = offCanvas.height;
+            const stretch = 1.2;
+            const mapCenterX = (w / 2 + (h / 2) * 0.4) * stretch;
+            const mapCenterY = (h / 2 - (w / 2) * 0.1) * stretch;
 
-            for (let a = 0; a < h; a += 5) {
+            p.push();
+            p.translate(w / 2 - mapCenterX, h / 2 - mapCenterY);
+
+            const extX = Math.floor(h * 0.6);
+            const extY = Math.floor(w * 0.25);
+
+            for (let a = -extY; a < h + extY; a += 4) {
               p.beginShape();
-              for (let b = 0; b < w; b += 3) {
-                const idx = (a * w + b) * 4;
-                const brightness = pixelData[idx];
-                const vx = b + a * 0.06;
-                const vy = a - brightness * 0.18;
+              for (let b = -extX; b < w + extX; b += 3) {
+                let c = 0;
+                if (a >= 0 && a < h && b >= 0 && b < w) {
+                  const idx = (a * w + b) * 4;
+                  c = pixelData[idx];
+                }
+                const vx = (b + a * 0.4) * stretch;
+                let vy = (a - c * 0.1 - b * 0.1) * stretch;
+
+                const noiseTerrain = (p.noise((b + extX) * 0.008, (a + extY) * 0.008, time * 0.5) - 0.5) * 25;
+                const waveDrift = p.sin(b * 0.02 - time * 2.5) * 6 + p.cos(a * 0.02 + time * 1.5) * 4;
+                const textPresence = p.constrain(c / 150, 0, 1);
+                vy += (noiseTerrain + waveDrift) * (1 - textPresence);
+
                 p.vertex(vx, vy);
               }
               p.endShape();
             }
+            p.pop();
           } else {
-            // Perlin noise particles
             p.noStroke();
             p.fill(fg);
-            const t = p.frameCount * 0.007;
-            const freq = 0.004;
-            for (let y = 0; y < p.height; y += 8) {
-              for (let x = 0; x <= p.width; x += 8) {
-                const n = p.noise(x * freq, y * freq * 1.5, t);
-                const size = p.map(n, 0, 1, 0.3, 3.5);
-                if (n > 0.45) p.ellipse(x + p.map(n, 0.45, 1, 0, 6), y + p.map(n, 0.45, 1, 0, 6), size, size);
+
+            for (let y = 0; y < h; y += 6) {
+              for (let x = 0; x < w; x += 6) {
+                const idx = (y * w + x) * 4;
+                if (pixelData[idx] > 50) {
+                  const n = p.noise(x * 0.005, y * 0.005, time);
+
+                  const distToMouse = p.dist(p.mouseX, p.mouseY, x, y);
+                  let offsetX = 0;
+                  let offsetY = 0;
+                  if (distToMouse < 100) {
+                    const force = p.map(distToMouse, 0, 100, 15, 0);
+                    offsetX = (x - p.mouseX) * force * 0.01;
+                    offsetY = (y - p.mouseY) * force * 0.01;
+                  }
+
+                  const drawX = x + (n * 10 - 5) + offsetX;
+                  const drawY = y + (n * 10 - 5) + offsetY;
+
+                  if (n > 0.75) {
+                    p.rect(drawX, drawY, 8, 1);
+                  } else if (n < 0.25) {
+                    p.rect(drawX, drawY, 1, 8);
+                  } else {
+                    const size = n * 3;
+                    p.rect(drawX, drawY, size, size);
+                  }
+                }
               }
             }
           }
