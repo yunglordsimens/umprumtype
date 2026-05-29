@@ -252,7 +252,7 @@ export default function LibraryIsland() {
       }
       return av.localeCompare(bv, 'cs') * sortDir;
     });
-  }, [activeTags, library, sort, sortDir]);
+  }, [activeTags, library, sort, sortDir, searchQuery]);
 
   function cycleSort(col) {
     if (sort === col) setSortDir(d => d * -1);
