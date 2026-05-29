@@ -70,7 +70,7 @@ export default function SearchIsland() {
           ref={inputRef}
           className="site-search__input"
           type="search"
-          placeholder="Search…"
+          placeholder="Global Search…"
           value={query}
           onChange={e => setQuery(e.target.value)}
           onFocus={() => query.trim() && results.length > 0 && setOpen(true)}

@@ -290,7 +290,7 @@ export default function LibraryIsland() {
             <input
               className="lib-search-input"
               type="search"
-              placeholder="Search…"
+              placeholder="Search in Library…"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               autoComplete="off"
