@@ -144,6 +144,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   font-weight: 500;
   letter-spacing: -0.01em;
   font-size: var(--step-0);
+  text-decoration: none;
 }
 .site-nav__links {
   display: flex;
