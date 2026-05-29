@@ -4,7 +4,7 @@ const DEFAULT_WORD = 'ARTSEMESTR\nSS26\nKŘIŽÍKOVA 12\n[C11]\n03—10/06';
 
 export default function HeroSketch() {
   const containerRef = useRef(null);
-  const [effect, setEffect] = useState('waves');
+  const [effect, setEffect] = useState('dots');
 
   const colorsRef = useRef({ bg: 0, fg: 255 });
   const effectRef = useRef(effect);
@@ -241,7 +241,7 @@ export default function HeroSketch() {
       <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden' }} />
       <div className="hero-controls">
         <div className="tf-sort">
-          {['waves', 'dots'].map(e => (
+          {['dots', 'waves'].map(e => (
             <button key={e} aria-pressed={effect === e} onClick={() => setEffect(e)}>{e}</button>
           ))}
         </div>
