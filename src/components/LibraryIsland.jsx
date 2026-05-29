@@ -296,7 +296,7 @@ export default function LibraryIsland() {
               autoComplete="off"
             />
             <span className="tf-sort__divider" />
-            {[['title','Title'],['author','Author']].map(([col, label]) => (
+            {[['title','Title'],['author','Author'],['year','Year']].map(([col, label]) => (
               <button key={col} aria-pressed={sort === col} onClick={() => cycleSort(col)}>
                 {label}{sort === col ? (sortDir === 1 ? ' ↑' : ' ↓') : ''}
               </button>
