@@ -2131,7 +2131,7 @@ body.lib-page .site-footer { display: none; }
 .lib-add-btn:hover { opacity: 0.8; }
 
 /* ── Scroll area ── */
-.lib-scroll { flex: 1; overflow-y: auto; padding: 0 48px 48px; }
+.lib-scroll { flex: 1; overflow-y: auto; padding: 48px 48px 48px; }
 
 /* ── Book grid ── */
 .lib-grid {
@@ -2479,7 +2479,7 @@ body.lib-page .site-footer { display: none; }
 /* Mobile: panels become fixed overlays */
 @media (max-width: 767px) {
   .lib-toolbar { padding: 0 var(--space-5); height: 48px; }
-  .lib-scroll { padding: 0 20px 40px; }
+  .lib-scroll { padding: 32px 20px 40px; }
   .tf-island__scroll,
   .post-island__scroll,
   .store-island__scroll { padding-inline: 0; }
