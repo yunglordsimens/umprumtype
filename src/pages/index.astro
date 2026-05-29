@@ -1,10 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
 import HeroSketch from '../components/HeroSketch.jsx';
+import { getAllTypefaces } from '../lib/typefaces';
+
+const fontData = getAllTypefaces()
+  .filter(tf => tf.defaultVariant)
+  .map(tf => ({
+    family: tf.title,
+    path: tf.defaultVariant.webPath,
+    weight: tf.defaultVariant.weight,
+  }));
 ---
 
 <Base title="UMPRUM Type" description="Type design studio at UMPRUM, Prague." bodyClass="home-page">
   <div id="hero-container" style="position: fixed; inset: 0; z-index: 1;">
-    <HeroSketch client:load />
+    <HeroSketch client:load fontData={fontData} />
   </div>
 </Base>

@@ -14,7 +14,13 @@ function pBg(p, c)            { Array.isArray(c) ? p.background(c[0], c[1], c[2]
 function pStroke(p, c, a)     { Array.isArray(c) ? p.stroke(c[0], c[1], c[2], a ?? 255) : p.stroke(c, a ?? 255); }
 function pFill(p, c, a)       { Array.isArray(c) ? p.fill(c[0], c[1], c[2], a ?? 255) : p.fill(c, a ?? 255); }
 
-export default function HeroSketch() {
+// deterministic font assignment per character position
+function getCharFont(fonts, li, ci) {
+  if (!fonts.length) return null;
+  return fonts[(li * 17 + ci * 13) % fonts.length];
+}
+
+export default function HeroSketch({ fontData = [] }) {
   const containerRef = useRef(null);
   const [effect,  setEffect]  = useState('dots');
   const [palette, setPalette] = useState('mono');
@@ -32,9 +38,12 @@ export default function HeroSketch() {
     return () => mq.removeEventListener('change', h);
   }, []);
 
-  const colorsRef   = useRef({ bg: 14, fg: 235 });
-  const effectRef   = useRef(effect);
-  const paletteRef  = useRef(palette);
+  const colorsRef          = useRef({ bg: 14, fg: 235 });
+  const effectRef          = useRef(effect);
+  const paletteRef         = useRef(palette);
+  const loadedFontsRef     = useRef([]);
+  const charFontMapRef     = useRef(null);
+  const needsFontRedrawRef = useRef(false);
 
   useEffect(() => { effectRef.current  = effect;  }, [effect]);
   useEffect(() => { paletteRef.current = palette; }, [palette]);
@@ -48,6 +57,29 @@ export default function HeroSketch() {
       colorsRef.current = isDark ? { bg: 238, fg: 18 } : { bg: 14, fg: 235 };
     }
   }, [palette, isDark]);
+
+  // Load a random subset of typefaces via FontFace API
+  useEffect(() => {
+    if (!fontData.length) return;
+    const shuffled = [...fontData].sort(() => Math.random() - 0.5).slice(0, 14);
+    Promise.all(
+      shuffled.map(({ family, path, weight }) => {
+        try {
+          const font = new FontFace(family, `url(${path})`, { weight: String(weight || 400) });
+          return font.load()
+            .then(f => { document.fonts.add(f); return family; })
+            .catch(() => null);
+        } catch { return Promise.resolve(null); }
+      })
+    ).then(results => {
+      const loaded = results.filter(Boolean);
+      if (loaded.length > 0) {
+        loadedFontsRef.current = loaded;
+        charFontMapRef.current = null;
+        needsFontRedrawRef.current = true;
+      }
+    });
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -70,39 +102,88 @@ export default function HeroSketch() {
       else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey)
         typed += e.key.toUpperCase();
       else return;
+      charFontMapRef.current = null; // text changed → re-assign fonts
       needsRedraw = true;
     };
     window.addEventListener('keydown', onKey);
 
     function resizeBuffer(w, h) { offCanvas.width = w; offCanvas.height = h; }
 
+    function buildLineData(lines, fontSize) {
+      return lines.map((line, li) => {
+        const chars = [...line];
+        let totalW = 0;
+        const items = chars.map((ch, ci) => {
+          const fam = charFontMapRef.current?.[`${li}_${ci}`] ?? null;
+          const fontStr = fam
+            ? `900 ${fontSize}px "${fam}", "Helvetica Neue", Helvetica, sans-serif`
+            : `900 ${fontSize}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
+          offCtx.font = fontStr;
+          const cw = offCtx.measureText(ch).width;
+          totalW += cw;
+          return { ch, cw, fontStr };
+        });
+        return { items, totalW };
+      });
+    }
+
     function renderTextToBuffer() {
+      if (needsFontRedrawRef.current) {
+        charFontMapRef.current = null;
+        needsFontRedrawRef.current = false;
+      }
+
       const w = offCanvas.width, h = offCanvas.height;
       const lines = (typed || DEFAULT_WORD).split('\n');
+      const fonts = loadedFontsRef.current;
 
       offCtx.clearRect(0, 0, w, h);
       offCtx.fillStyle = '#000';
       offCtx.fillRect(0, 0, w, h);
+      offCtx.letterSpacing = '0px';
 
       let fontSize = Math.max(20, (h * 0.8) / (lines.length || 1));
-      offCtx.font = `900 ${fontSize}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
-      let maxW = 0;
-      lines.forEach(l => { const m = offCtx.measureText(l).width; if (m > maxW) maxW = m; });
-      if (maxW > w * 0.9) fontSize *= (w * 0.9) / maxW;
+
+      // Build per-char font assignment (stable per text state)
+      if (!charFontMapRef.current) {
+        const map = {};
+        lines.forEach((line, li) => {
+          [...line].forEach((ch, ci) => {
+            map[`${li}_${ci}`] = getCharFont(fonts, li, ci);
+          });
+        });
+        charFontMapRef.current = map;
+      }
+
+      // Build line data with per-char fonts; scale down if too wide
+      let lineData = buildLineData(lines, fontSize);
+      const maxLineW = lineData.reduce((m, ld) => Math.max(m, ld.totalW), 0);
+      if (maxLineW > w * 0.9) {
+        fontSize = fontSize * (w * 0.9) / maxLineW;
+        lineData = buildLineData(lines, fontSize);
+      }
 
       offCtx.fillStyle = '#fff';
-      offCtx.textAlign = 'center';
+      offCtx.textAlign = 'left';
       offCtx.textBaseline = 'middle';
-      offCtx.font = `900 ${fontSize}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
-      offCtx.letterSpacing = '-2px';
 
       const lh = fontSize * 0.85;
       const startY = (h - lines.length * lh) / 2 + lh / 2;
 
+      function drawLine(ld, li) {
+        let x = (w - ld.totalW) / 2;
+        const y = startY + li * lh;
+        ld.items.forEach(({ ch, cw, fontStr }) => {
+          offCtx.font = fontStr;
+          offCtx.fillText(ch, x, y);
+          x += cw;
+        });
+      }
+
       offCtx.filter = 'blur(6px)';
-      lines.forEach((l, i) => offCtx.fillText(l, w / 2, startY + i * lh));
+      lineData.forEach((ld, li) => drawLine(ld, li));
       offCtx.filter = 'none';
-      lines.forEach((l, i) => offCtx.fillText(l, w / 2, startY + i * lh));
+      lineData.forEach((ld, li) => drawLine(ld, li));
 
       pixelData = offCtx.getImageData(0, 0, w, h).data;
       needsRedraw = false;
@@ -140,7 +221,7 @@ export default function HeroSketch() {
         };
 
         p.draw = () => {
-          if (needsRedraw) renderTextToBuffer();
+          if (needsRedraw || needsFontRedrawRef.current) renderTextToBuffer();
 
           const cur = effectRef.current;
           if (cur === 'waves' && p.frameCount % 2 !== 0) return;
