@@ -1862,8 +1862,59 @@ body.home-page .site-footer { display: none; }
   border-bottom: 1px solid rgba(255,255,255,0.07);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+  color: rgba(255,255,255,0.7);
+}
+/* force white text regardless of system mode */
+.hero-controls .tf-sort button { color: rgba(255,255,255,0.6); }
+.hero-controls .tf-sort button[aria-pressed="true"] { color: #ffffff; }
+.hero-controls .tf-sort__divider { background: rgba(255,255,255,0.15); }
+
+/* ── Palette dot buttons ── */
+.hero-palette-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.hero-palette-dot.is-active   { border-color: #ffffff; }
+.hero-palette-dot--red        { background: #e8322a; border-color: #e8322a; }
+.hero-palette-dot--red.is-active { border-color: #ffffff; }
+.hero-palette-dot--yellow     { background: #f5c412; border-color: #f5c412; }
+.hero-palette-dot--yellow.is-active { border-color: #ffffff; }
+
+/* Dark system → site is dark → homepage is LIGHT (always contrasting) */
+@media (prefers-color-scheme: dark) {
+  body.home-page {
+    background: #f2f2ee;
+    color: #111111;
+    --bg: #f2f2ee;
+    --text: #111111;
+    --text-muted: rgba(0,0,0,0.5);
+    --text-subtle: rgba(0,0,0,0.3);
+    --border: rgba(0,0,0,0.1);
+    --border-strong: rgba(0,0,0,0.2);
+  }
+  body.home-page .site-nav {
+    background: rgba(242,242,238,0.75);
+    border-bottom-color: rgba(0,0,0,0.07);
+  }
+  body.home-page .site-nav__logo,
+  body.home-page .site-nav__links a { color: rgba(0,0,0,0.55); }
+  body.home-page .site-nav__logo:hover,
+  body.home-page .site-nav__links a:hover,
+  body.home-page .site-nav__links a[aria-current="page"] { color: #111111; }
+  body.home-page .site-nav__burger::before,
+  body.home-page .site-nav__burger::after { background: #111111; }
+  body.home-page .site-search__input { color: #111111; }
+  body.home-page .site-search__input::placeholder { color: rgba(0,0,0,0.35); }
+  body.home-page .site-search__icon { color: rgba(0,0,0,0.4); }
 }
 
+/* Light system — dark homepage (default) */
 body.home-page .site-nav {
   background: rgba(0, 0, 0, 0.6);
   border-bottom-color: rgba(255, 255, 255, 0.08);
