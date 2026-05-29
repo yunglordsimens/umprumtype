@@ -140,11 +140,16 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   align-items: center;
   gap: var(--space-8);
 }
-.site-nav__logo,
-.site-nav__logo:hover {
+.site-nav__logo {
   font-weight: 500;
   letter-spacing: -0.01em;
   font-size: var(--step-0);
+  text-decoration: none;
+  color: var(--text-muted);
+  transition: color var(--dur-fast) var(--ease);
+}
+.site-nav__logo:hover {
+  color: var(--text);
   text-decoration: none;
 }
 .site-nav__links {
@@ -1869,6 +1874,7 @@ body.home-page .site-nav__logo,
 body.home-page .site-nav__links a {
   color: rgba(255, 255, 255, 0.7);
 }
+body.home-page .site-nav__logo:hover,
 body.home-page .site-nav__links a:hover,
 body.home-page .site-nav__links a[aria-current="page"] {
   color: #ffffff;
