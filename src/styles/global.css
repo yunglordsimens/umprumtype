@@ -312,18 +312,22 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
   gap: var(--space-5);
   flex-wrap: wrap;
 }
-.site-footer__naki {
+.site-footer__naki-rule {
   margin-top: var(--space-5);
-  padding-top: var(--space-5);
   border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  font-size: var(--step--2);
+}
+.site-footer__naki {
+  padding-top: var(--space-4);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  font-size: var(--step--3);
   color: var(--text-subtle);
-  max-width: 72ch;
 }
 .site-footer__naki p { margin: 0; font-size: inherit; }
+@media (max-width: 720px) {
+  .site-footer__naki { grid-template-columns: 1fr; gap: var(--space-3); }
+}
 
 /* ---------- Scroll reveal ---------- */
 [data-reveal] {
