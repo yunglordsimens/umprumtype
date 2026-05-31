@@ -6,8 +6,319 @@
   <meta name="robots" content="noindex" />
   <title>UMPRUM Type — Admin</title>
   <link type="text/yaml" rel="cms-config-url" href="/admin/config.yml" />
+  <style>
+    .gw__drop {
+      border: 2px dashed #c8ccd0;
+      border-radius: 6px;
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      color: #555;
+      font-size: 13px;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+      outline: none;
+    }
+    .gw__drop:hover,
+    .gw__drop:focus,
+    .gw__drop--over { border-color: #3b82f6; background: #f0f7ff; }
+    .gw__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .gw__thumb {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: grab;
+      background: #f4f4f4;
+    }
+    .gw__thumb:active { cursor: grabbing; }
+    .gw__thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      display: block;
+    }
+    .gw__remove {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 20px;
+      height: 20px;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      font-size: 15px;
+      line-height: 20px;
+      text-align: center;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .gw__thumb:hover .gw__remove { opacity: 1; }
+    .gw__count { font-size: 11px; color: #777; margin: 6px 0 0; }
+    .gw__error { font-size: 12px; color: #c0392b; margin: 6px 0 0; }
+  </style>
 </head>
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+    (function () {
+      // Decap CMS exposes window.h (React.createElement) and window.createClass
+      var h = window.h;
+      var createClass = window.createClass;
+
+      function toArray(val) {
+        if (!val) return [];
+        if (typeof val.toJS === 'function') return val.toJS();
+        if (Array.isArray(val)) return val.slice();
+        return [];
+      }
+
+      function getToken() {
+        try {
+          var s = window.CMS.store.getState();
+          var user = s.getIn ? s.getIn(['auth', 'currentUser']) : null;
+          if (user) {
+            var t = user.get ? user.get('token') : user.token;
+            if (t) return t;
+          }
+        } catch (_) {}
+        var keys = ['decap-cms-user', 'netlify-cms-user'];
+        for (var i = 0; i < keys.length; i++) {
+          try {
+            var v = JSON.parse(localStorage.getItem(keys[i]));
+            if (v && v.token) return v.token;
+          } catch (_) {}
+        }
+        return null;
+      }
+
+      function getCollection() {
+        var m = window.location.hash.match(/#\/collections\/([^/]+)/);
+        return m ? m[1] : 'gallery';
+      }
+
+      function compressImage(file) {
+        var isPng = file.type === 'image/png';
+        return new Promise(function (resolve, reject) {
+          var MAX = 2400;
+          var img = new Image();
+          var url = URL.createObjectURL(file);
+          img.onload = function () {
+            URL.revokeObjectURL(url);
+            var w = img.naturalWidth;
+            var hh = img.naturalHeight;
+            if (w > MAX) { hh = Math.round(hh * MAX / w); w = MAX; }
+            var canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = hh;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, hh);
+            canvas.toBlob(
+              function (blob) {
+                var reader = new FileReader();
+                reader.onload = function () {
+                  resolve({ b64: reader.result.split(',')[1], isPng: isPng });
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+              },
+              isPng ? 'image/png' : 'image/jpeg',
+              isPng ? undefined : 0.82
+            );
+          };
+          img.onerror = reject;
+          img.src = url;
+        });
+      }
+
+      function uploadFile(b64, filename, collection, token) {
+        var filePath = 'public/uploads/' + collection + '/' + filename;
+        var apiUrl = 'https://api.github.com/repos/yunglordsimens/umprumtype/contents/' + filePath;
+        var headers = {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
+        };
+        return fetch(apiUrl, { headers: headers })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .catch(function () { return null; })
+          .then(function (existing) {
+            var body = { message: 'upload ' + filename, content: b64, branch: 'main' };
+            if (existing && existing.sha) body.sha = existing.sha;
+            return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
+          })
+          .then(function (res) {
+            if (!res.ok) throw new Error('GitHub API error ' + res.status);
+            return '/uploads/' + collection + '/' + filename;
+          });
+      }
+
+      var GalleryControl = createClass({
+        getInitialState: function () {
+          return {
+            images: toArray(this.props.value),
+            busy: false,
+            progress: '',
+            error: null,
+            dragOver: false,
+          };
+        },
+
+        componentDidUpdate: function (prevProps, prevState) {
+          if (prevState.images !== this.state.images) {
+            this.props.onChange(this.state.images);
+          }
+        },
+
+        processFiles: function (files) {
+          var self = this;
+          var imgs = [];
+          for (var i = 0; i < files.length; i++) {
+            if (files[i].type && files[i].type.indexOf('image/') === 0) imgs.push(files[i]);
+          }
+          if (!imgs.length) return;
+          var token = getToken();
+          if (!token) { self.setState({ error: 'Not authenticated — please log in again.' }); return; }
+          var collection = getCollection();
+          self.setState({ busy: true, error: null });
+          var results = [];
+          var chain = Promise.resolve();
+          imgs.forEach(function (file, i) {
+            chain = chain.then(function () {
+              self.setState({ progress: (i + 1) + ' / ' + imgs.length });
+              return compressImage(file)
+                .then(function (compressed) {
+                  var ext = compressed.isPng ? 'png' : 'jpg';
+                  var name = Date.now() + '-' + Math.random().toString(36).slice(2, 7) + '.' + ext;
+                  return uploadFile(compressed.b64, name, collection, token);
+                })
+                .then(function (path) { results.push(path); })
+                .catch(function (e) { self.setState({ error: e.message }); });
+            });
+          });
+          chain.then(function () {
+            self.setState(function (s) {
+              return { images: s.images.concat(results), busy: false, progress: '' };
+            });
+          });
+        },
+
+        onDrop: function (e) {
+          e.preventDefault();
+          this.setState({ dragOver: false });
+          this.processFiles(e.dataTransfer.files);
+        },
+        onDragOver: function (e) { e.preventDefault(); this.setState({ dragOver: true }); },
+        onDragLeave: function () { this.setState({ dragOver: false }); },
+        onFileChange: function (e) { this.processFiles(e.target.files); e.target.value = ''; },
+
+        removeImage: function (idx) {
+          this.setState(function (s) {
+            return { images: s.images.filter(function (_, i) { return i !== idx; }) };
+          });
+        },
+
+        onThumbDragStart: function (e, idx) {
+          this._dragIdx = idx;
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', String(idx));
+        },
+        onThumbDragEnter: function (e, idx) {
+          e.preventDefault();
+          var from = this._dragIdx;
+          if (from == null || from === idx) return;
+          this.setState(function (s) {
+            var arr = s.images.slice();
+            var moved = arr.splice(from, 1)[0];
+            arr.splice(idx, 0, moved);
+            return { images: arr };
+          });
+          this._dragIdx = idx;
+        },
+        onThumbDragOver: function (e) { e.preventDefault(); },
+        onThumbDragEnd: function () { this._dragIdx = null; },
+
+        render: function () {
+          var self = this;
+          var s = this.state;
+          return h('div', null,
+            h('div', {
+              className: 'gw__drop' + (s.dragOver ? ' gw__drop--over' : ''),
+              onDrop: function (e) { self.onDrop(e); },
+              onDragOver: function (e) { self.onDragOver(e); },
+              onDragLeave: function () { self.onDragLeave(); },
+              onClick: function () { if (!s.busy && self._fileInput) self._fileInput.click(); },
+              role: 'button',
+              tabIndex: 0,
+              onKeyDown: function (e) { if (e.key === 'Enter' && self._fileInput) self._fileInput.click(); },
+            },
+              h('input', {
+                ref: function (el) { self._fileInput = el; },
+                type: 'file',
+                multiple: true,
+                accept: 'image/*',
+                style: { display: 'none' },
+                onChange: function (e) { self.onFileChange(e); },
+              }),
+              s.busy ? ('Uploading ' + s.progress + '…') : '+ Add photos (click or drop multiple)'
+            ),
+            s.error ? h('p', { className: 'gw__error' }, s.error) : null,
+            s.images.length > 0
+              ? h('p', { className: 'gw__count' },
+                  s.images.length + ' photo' + (s.images.length !== 1 ? 's' : '') + ' — drag to reorder'
+                )
+              : null,
+            s.images.length > 0
+              ? h('div', { className: 'gw__grid' },
+                  s.images.map(function (src, idx) {
+                    return h('div', {
+                      key: src + '-' + idx,
+                      className: 'gw__thumb',
+                      draggable: true,
+                      onDragStart: function (e) { self.onThumbDragStart(e, idx); },
+                      onDragEnter: function (e) { self.onThumbDragEnter(e, idx); },
+                      onDragOver: function (e) { self.onThumbDragOver(e); },
+                      onDragEnd: function () { self.onThumbDragEnd(); },
+                    },
+                      h('img', { src: src, alt: '' }),
+                      h('button', {
+                        type: 'button',
+                        className: 'gw__remove',
+                        onClick: function (e) { e.stopPropagation(); self.removeImage(idx); },
+                        'aria-label': 'Remove',
+                      }, '×')
+                    );
+                  })
+                )
+              : null
+          );
+        },
+      });
+
+      var GalleryPreview = createClass({
+        render: function () {
+          var imgs = toArray(this.props.value);
+          if (!imgs.length) return null;
+          return h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: '6px' } },
+            imgs.map(function (src, i) {
+              return h('img', {
+                key: i, src: src, alt: '',
+                style: { height: '72px', width: 'auto', borderRadius: '3px', objectFit: 'cover' },
+              });
+            })
+          );
+        },
+      });
+
+      window.CMS.registerWidget('gallery-upload', GalleryControl, GalleryPreview);
+    })();
+  </script>
 </body>
 </html>

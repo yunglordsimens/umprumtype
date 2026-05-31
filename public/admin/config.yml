@@ -126,11 +126,10 @@ collections:
       - { label: "Tags", name: "tags", widget: "list", default: [] }
       - label: "Photos"
         name: "gallery"
-        widget: "list"
+        widget: "gallery-upload"
         required: false
         default: []
-        hint: "Upload any number of photos — they appear as a carousel in the accordion."
-        field: { label: "Photo", name: "photo", widget: "image" }
+        hint: "Upload photos — drag to reorder."
       - { label: "Text", name: "body", widget: "markdown", required: false }
       - { label: "Excerpt",    name: "excerpt",    widget: "text",    required: false }
       - { label: "Featured",   name: "featured",   widget: "boolean", default: false }
@@ -166,11 +165,10 @@ collections:
       - { label: "Tags", name: "tags", widget: "list", default: [] }
       - label: "Photos"
         name: "gallery"
-        widget: "list"
+        widget: "gallery-upload"
         required: false
         default: []
-        hint: "Upload any number of photos — they appear as a carousel in the accordion."
-        field: { label: "Photo", name: "photo", widget: "image" }
+        hint: "Upload photos — drag to reorder."
       - { label: "Text", name: "body", widget: "markdown", required: false }
       - { label: "Excerpt",    name: "excerpt",    widget: "text",    required: false }
       - { label: "Featured",   name: "featured",   widget: "boolean", default: false }
