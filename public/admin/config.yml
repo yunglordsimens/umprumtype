@@ -140,11 +140,6 @@ collections:
         widget: "string"
         required: false
         hint: "Full URL (https://...). Shows a click-to-activate iframe preview + link in the detail panel."
-      - label: "Website URL"
-        name: "siteUrl"
-        widget: "string"
-        required: false
-        hint: "Full URL (https://...). Shows a click-to-activate iframe preview + link in the detail panel."
 
   # -------------------------------------------------------------------------
   # JOURNAL
