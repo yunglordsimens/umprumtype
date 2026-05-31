@@ -2257,7 +2257,7 @@ body.lib-page .site-footer { display: none; }
 
 /* ── Book card ── */
 .lib-card {
-  display: flex; flex-direction: column; align-items: center; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end; cursor: pointer;
   position: relative; z-index: 1;
   transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), z-index 0s 300ms;
 }
