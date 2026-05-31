@@ -1179,6 +1179,47 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
   word-break: break-word;
 }
 
+/* ---------- Site embed (iframe preview) ---------- */
+.site-embed {
+  margin-top: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.site-embed__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: var(--step--1);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.site-embed__placeholder:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.site-embed__frame {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: block;
+}
+.site-embed__link {
+  font-size: var(--step--1);
+  color: var(--text-subtle);
+  text-underline-offset: 2px;
+}
+.site-embed__link:hover { color: var(--text); text-decoration: underline; }
+
 /* ---------- FilterPanel ---------- */
 .filter-panel {
   flex-shrink: 0;

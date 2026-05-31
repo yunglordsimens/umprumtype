@@ -24,6 +24,33 @@ function getPostHtml(slug) {
   return el ? el.innerHTML : '';
 }
 
+function SiteEmbed({ url }) {
+  const [active, setActive] = useState(false);
+  return (
+    <div className="site-embed">
+      {active ? (
+        <iframe
+          src={url}
+          className="site-embed__frame"
+          title="Site preview"
+          loading="lazy"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+        />
+      ) : (
+        <button className="site-embed__placeholder" onClick={() => setActive(true)}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+          </svg>
+          <span>Нажмите для интерактивного просмотра</span>
+        </button>
+      )}
+      <a href={url} target="_blank" rel="noopener noreferrer" className="site-embed__link">
+        или перейдите на сайт
+      </a>
+    </div>
+  );
+}
+
 function PostRow({ post, isOpen, onToggle, onTagClick, onEnter }) {
   const [html] = useState(() =>
     typeof document !== 'undefined' ? (getPostHtml(post.slug) || '') : ''
@@ -57,6 +84,7 @@ function PostRow({ post, isOpen, onToggle, onTagClick, onEnter }) {
             )}
             {post.excerpt && <p className="post-detail__excerpt">{post.excerpt}</p>}
             <div className="post__body" dangerouslySetInnerHTML={{ __html: html }} />
+            {post.siteUrl && <SiteEmbed url={post.siteUrl} />}
             {post.contact && (
               <aside className="post-detail__contact">
                 <h3>Contact</h3>

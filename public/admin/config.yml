@@ -135,6 +135,16 @@ collections:
       - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
       - { label: "Store Image (optional)", name: "storeImage", widget: "image", required: false, hint: "Cover image for the Store card." }
       - { label: "Contact info", name: "contact", widget: "text", required: false }
+      - label: "Website URL"
+        name: "siteUrl"
+        widget: "string"
+        required: false
+        hint: "Full URL (https://...). Shows a click-to-activate iframe preview + link in the detail panel."
+      - label: "Website URL"
+        name: "siteUrl"
+        widget: "string"
+        required: false
+        hint: "Full URL (https://...). Shows a click-to-activate iframe preview + link in the detail panel."
 
   # -------------------------------------------------------------------------
   # JOURNAL
@@ -168,3 +178,8 @@ collections:
       - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
       - { label: "Store Image (optional)", name: "storeImage", widget: "image", required: false, hint: "Cover image for the Store card." }
       - { label: "Contact info", name: "contact", widget: "text", required: false }
+      - label: "Website URL"
+        name: "siteUrl"
+        widget: "string"
+        required: false
+        hint: "Full URL (https://...). Shows a click-to-activate iframe preview + link in the detail panel."

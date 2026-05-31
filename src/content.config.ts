@@ -51,6 +51,7 @@ const projects = defineCollection({
     contact: z.string().optional(),
     featured: z.boolean().default(false),
     blocks: z.array(z.any()).optional(),
+    siteUrl: z.string().optional(),
   }),
 });
 
@@ -69,6 +70,7 @@ const journal = defineCollection({
     contact: z.string().optional(),
     featured: z.boolean().default(false),
     blocks: z.array(z.any()).optional(),
+    siteUrl: z.string().optional(),
   }),
 });
 
