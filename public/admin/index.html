@@ -70,10 +70,14 @@
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
-    (function () {
-      // Decap CMS exposes window.h (React.createElement) and window.createClass
+    console.log('[gw] script start — CMS:', typeof window.CMS, '| h:', typeof window.h, '| createClass:', typeof window.createClass);
+
+    try {
       var h = window.h;
       var createClass = window.createClass;
+
+      if (typeof h !== 'function') throw new Error('window.h is not a function: ' + typeof h);
+      if (typeof createClass !== 'function') throw new Error('window.createClass is not a function: ' + typeof createClass);
 
       function toArray(val) {
         if (!val) return [];
@@ -161,6 +165,8 @@
       }
 
       var GalleryControl = createClass({
+        displayName: 'GalleryControl',
+
         getInitialState: function () {
           return {
             images: toArray(this.props.value),
@@ -185,7 +191,7 @@
           }
           if (!imgs.length) return;
           var token = getToken();
-          if (!token) { self.setState({ error: 'Not authenticated — please log in again.' }); return; }
+          if (!token) { self.setState({ error: 'Not authenticated.' }); return; }
           var collection = getCollection();
           self.setState({ busy: true, error: null });
           var results = [];
@@ -248,68 +254,73 @@
         render: function () {
           var self = this;
           var s = this.state;
-          return h('div', null,
-            h('div', {
-              className: 'gw__drop' + (s.dragOver ? ' gw__drop--over' : ''),
-              onDrop: function (e) { self.onDrop(e); },
-              onDragOver: function (e) { self.onDragOver(e); },
-              onDragLeave: function () { self.onDragLeave(); },
-              onClick: function () { if (!s.busy && self._fileInput) self._fileInput.click(); },
-              role: 'button',
-              tabIndex: 0,
-              onKeyDown: function (e) { if (e.key === 'Enter' && self._fileInput) self._fileInput.click(); },
-            },
-              h('input', {
-                ref: function (el) { self._fileInput = el; },
-                type: 'file',
-                multiple: true,
-                accept: 'image/*',
-                style: { display: 'none' },
-                onChange: function (e) { self.onFileChange(e); },
-              }),
-              s.busy ? ('Uploading ' + s.progress + '…') : '+ Add photos (click or drop multiple)'
-            ),
-            s.error ? h('p', { className: 'gw__error' }, s.error) : null,
-            s.images.length > 0
-              ? h('p', { className: 'gw__count' },
-                  s.images.length + ' photo' + (s.images.length !== 1 ? 's' : '') + ' — drag to reorder'
-                )
-              : null,
-            s.images.length > 0
-              ? h('div', { className: 'gw__grid' },
-                  s.images.map(function (src, idx) {
-                    return h('div', {
-                      key: src + '-' + idx,
-                      className: 'gw__thumb',
-                      draggable: true,
-                      onDragStart: function (e) { self.onThumbDragStart(e, idx); },
-                      onDragEnter: function (e) { self.onThumbDragEnter(e, idx); },
-                      onDragOver: function (e) { self.onThumbDragOver(e); },
-                      onDragEnd: function () { self.onThumbDragEnd(); },
-                    },
-                      h('img', { src: src, alt: '' }),
-                      h('button', {
-                        type: 'button',
-                        className: 'gw__remove',
-                        onClick: function (e) { e.stopPropagation(); self.removeImage(idx); },
-                        'aria-label': 'Remove',
-                      }, '×')
-                    );
-                  })
-                )
-              : null
-          );
+          var children = [];
+
+          children.push(h('div', {
+            key: 'drop',
+            className: 'gw__drop' + (s.dragOver ? ' gw__drop--over' : ''),
+            onDrop: function (e) { self.onDrop(e); },
+            onDragOver: function (e) { self.onDragOver(e); },
+            onDragLeave: function () { self.onDragLeave(); },
+            onClick: function () { if (!s.busy && self._fileInput) self._fileInput.click(); },
+            role: 'button',
+            tabIndex: 0,
+            onKeyDown: function (e) { if (e.key === 'Enter' && self._fileInput) self._fileInput.click(); },
+          },
+            h('input', {
+              ref: function (el) { self._fileInput = el; },
+              type: 'file',
+              multiple: true,
+              accept: 'image/*',
+              style: { display: 'none' },
+              onChange: function (e) { self.onFileChange(e); },
+            }),
+            s.busy ? ('Uploading ' + s.progress + '...') : '+ Add photos (click or drop multiple)'
+          ));
+
+          if (s.error) {
+            children.push(h('p', { key: 'err', className: 'gw__error' }, s.error));
+          }
+
+          if (s.images.length > 0) {
+            children.push(h('p', { key: 'count', className: 'gw__count' },
+              s.images.length + ' photo' + (s.images.length !== 1 ? 's' : '') + ' - drag to reorder'
+            ));
+            children.push(h('div', { key: 'grid', className: 'gw__grid' },
+              s.images.map(function (src, idx) {
+                return h('div', {
+                  key: String(idx),
+                  className: 'gw__thumb',
+                  draggable: true,
+                  onDragStart: function (e) { self.onThumbDragStart(e, idx); },
+                  onDragEnter: function (e) { self.onThumbDragEnter(e, idx); },
+                  onDragOver: function (e) { self.onThumbDragOver(e); },
+                  onDragEnd: function () { self.onThumbDragEnd(); },
+                },
+                  h('img', { src: src, alt: '' }),
+                  h('button', {
+                    type: 'button',
+                    className: 'gw__remove',
+                    onClick: function (e) { e.stopPropagation(); self.removeImage(idx); },
+                  }, 'x')
+                );
+              })
+            ));
+          }
+
+          return h('div', null, children);
         },
       });
 
       var GalleryPreview = createClass({
+        displayName: 'GalleryPreview',
         render: function () {
           var imgs = toArray(this.props.value);
           if (!imgs.length) return null;
           return h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: '6px' } },
             imgs.map(function (src, i) {
               return h('img', {
-                key: i, src: src, alt: '',
+                key: String(i), src: src, alt: '',
                 style: { height: '72px', width: 'auto', borderRadius: '3px', objectFit: 'cover' },
               });
             })
@@ -318,7 +329,11 @@
       });
 
       window.CMS.registerWidget('gallery-upload', GalleryControl, GalleryPreview);
-    })();
+      console.log('[gw] registered successfully');
+
+    } catch (err) {
+      console.error('[gw] registration failed:', err.message, err.stack);
+    }
   </script>
 </body>
 </html>
