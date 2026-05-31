@@ -2280,9 +2280,7 @@ body.lib-page .site-footer { display: none; }
   justify-content: space-between; min-height: 190px; opacity: 0.8;
 }
 /* detail panel keeps fixed dimensions */
-.lib-book--lg { width: 140px; height: 210px; flex-shrink: 0; }
-.lib-book--lg .lib-book__cover { position: absolute; inset: 0; }
-.lib-book--lg .lib-book__img { height: 100%; object-fit: cover; }
+.lib-book--lg { width: 160px; flex-shrink: 0; }
 .lib-book__text-title {
   font-size: 10px;
   letter-spacing: 0.05em; font-weight: 700;
