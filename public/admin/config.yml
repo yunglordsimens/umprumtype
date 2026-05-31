@@ -113,6 +113,8 @@ collections:
     create: true
     slug: "{{year}}-{{slug}}"
     extension: "md"
+    media_folder: "/public/uploads/projects/{{slug}}"
+    public_folder: "/uploads/projects/{{slug}}"
     fields:
       - { label: "Title",  name: "title",  widget: "string" }
       - { label: "Author", name: "author", widget: "string", required: false }
@@ -151,6 +153,8 @@ collections:
     create: true
     slug: "{{year}}-{{slug}}"
     extension: "md"
+    media_folder: "/public/uploads/journal/{{slug}}"
+    public_folder: "/uploads/journal/{{slug}}"
     fields:
       - { label: "Title",   name: "title",   widget: "string" }
       - { label: "Author",  name: "author",  widget: "string",   required: false }
