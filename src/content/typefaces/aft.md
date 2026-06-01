@@ -26,7 +26,7 @@ specimens:
     Landauer!
 name: Aft
 designer: Jaromir Kveton
-mainSize: "10"
+mainSize: "15"
 featured: false
 tagline: Brief glitches
 order: 6
