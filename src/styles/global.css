@@ -93,7 +93,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
+#main { flex: 1; }
 img, picture, video, canvas, svg { display: block; max-width: 100%; }
 input, button, textarea, select { font: inherit; color: inherit; }
 button { background: none; border: none; cursor: pointer; }
@@ -1993,6 +1997,7 @@ body.home-page .site-nav__burger::after {
    ================================================================ */
 
 body.lib-page #main {
+  height: calc(100vh - var(--nav-h));
   height: calc(100dvh - var(--nav-h));
   overflow: hidden;
   display: flex;
@@ -2608,12 +2613,14 @@ body.lib-page #main {
   .store-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); padding-inline: var(--space-4); gap: var(--space-6) var(--space-4); }
   .lib-filter.is-open {
     position: fixed; top: var(--nav-h); left: 0;
+    height: calc(100vh - var(--nav-h));
     height: calc(100dvh - var(--nav-h));
     width: 280px !important; z-index: 200;
     box-shadow: 4px 0 24px rgba(0,0,0,0.12);
   }
   .lib-detail.is-open {
     position: fixed; top: var(--nav-h); right: 0;
+    height: calc(100vh - var(--nav-h));
     height: calc(100dvh - var(--nav-h));
     width: 100% !important; z-index: 200;
   }

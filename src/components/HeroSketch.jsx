@@ -191,9 +191,10 @@ export default function HeroSketch({ fontData = [] }) {
     }
 
     function buildDots(w, h) {
+      const step = Math.max(4, Math.round(w / 360)); // adaptive: ~1440px wide → step 4
       const targets = [];
-      for (let y = 0; y < h; y += 4)
-        for (let x = 0; x < w; x += 4)
+      for (let y = 0; y < h; y += step)
+        for (let x = 0; x < w; x += step)
           if (pixelData[(y * w + x) * 4] > 100)
             targets.push({ bx: x, by: y });
 
@@ -214,7 +215,8 @@ export default function HeroSketch({ fontData = [] }) {
 
         p.setup = () => {
           p.createCanvas(p.windowWidth, p.windowHeight);
-          p.frameRate(60);
+          p.pixelDensity(1);   // skip retina overdraw — biggest perf win
+          p.frameRate(30);
           p.noSmooth();
           resizeBuffer(p.width, p.height);
           renderTextToBuffer();
