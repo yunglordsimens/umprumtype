@@ -32,9 +32,6 @@ export default function DetailPanel({ children, onClose, isOpen = false, variant
             <span className="detail-panel__label">Details</span>
             {children}
           </div>
-          <div className="detail-panel__footer">
-            UMPRUM Type Library × 2026
-          </div>
         </div>
       </aside>
     </>

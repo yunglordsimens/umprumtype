@@ -263,7 +263,6 @@ export default function StoreIsland({ items }) {
               </div>
             )}
           </div>
-          <div className="lib-detail__footer">UMPRUM Type × 2026</div>
         </div>
       </aside>
 

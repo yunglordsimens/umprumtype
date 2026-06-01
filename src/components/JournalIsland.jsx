@@ -57,7 +57,7 @@ function PostRow({ post, isOpen, onToggle, onTagClick, onEnter }) {
   );
 
   return (
-    <li id={post.slug} className={`post-row${isOpen ? ' is-open' : ''}`} onMouseEnter={onEnter}>
+    <li id={post.slug} className={`post-row${isOpen ? ' is-open' : ''}`} onMouseEnter={isOpen ? undefined : onEnter}>
       <button className="post-row__btn" onClick={onToggle}>
         <time className="post-row__date" dateTime={post.dateIso}>{post.date}</time>
         <span className="post-row__title">{post.title}</span>
@@ -207,6 +207,7 @@ export default function JournalIsland({ posts }) {
   }, [showTags]);
 
   function togglePost(slug) {
+    setPreviewSrc(null);
     setOpenSlug(prev => prev === slug ? null : slug);
   }
 

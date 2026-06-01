@@ -368,7 +368,6 @@ export default function LibraryIsland() {
           <div className="lib-detail__scroll">
             {openBook && <BookDetail book={openBook} onTagClick={onTagClick} />}
           </div>
-          <div className="lib-detail__footer">UMPRUM Type × 2026</div>
         </div>
       </aside>
 
