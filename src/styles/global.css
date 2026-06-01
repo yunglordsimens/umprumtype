@@ -1943,6 +1943,18 @@ body.home-page .site-footer { display: none; }
 .hero-controls .tf-sort button[aria-pressed="true"] { color: #ffffff; }
 .hero-controls .tf-sort__divider { background: rgba(255,255,255,0.15); }
 
+/* yellow palette — light controls bar */
+.hero-controls--light {
+  background: rgba(245,196,18,0.92);
+  border-bottom-color: rgba(0,0,0,0.08);
+  color: rgba(0,0,0,0.7);
+}
+.hero-controls--light .tf-sort button { color: rgba(0,0,0,0.5); }
+.hero-controls--light .tf-sort button[aria-pressed="true"] { color: #000; }
+.hero-controls--light .tf-sort__divider { background: rgba(0,0,0,0.15); }
+.hero-controls--light .hero-palette-dot { border-color: rgba(0,0,0,0.25); }
+.hero-controls--light .hero-palette-dot.is-active { border-color: #000; }
+
 /* ── Palette dot buttons ── */
 .hero-palette-dot {
   width: 14px; height: 14px;

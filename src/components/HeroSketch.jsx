@@ -6,7 +6,7 @@ const DEFAULT_WORD = 'ARTSEMESTR\nSS26\nDOXXXXXXXX\nTYPOUMPRUM.CZ\n03—10/06\nK
 const PALETTES = {
   mono:   null,
   red:    { bg: [10, 10, 10],  fg: [232, 50,  38]  },
-  yellow: { bg: [10, 10, 10],  fg: [245, 196, 18]  },
+  yellow: { bg: [245, 196, 18], fg: [10, 10, 10]   },
 };
 
 // helpers so p5 calls accept both greyscale numbers and [r,g,b] arrays
@@ -361,7 +361,7 @@ export default function HeroSketch({ fontData = [] }) {
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden' }} />
-      <div className="hero-controls">
+      <div className={`hero-controls${palette === 'yellow' ? ' hero-controls--light' : ''}`}>
         <div className="tf-sort">
           {['dots', 'waves'].map(e => (
             <button key={e} aria-pressed={effect === e} onClick={() => setEffect(e)}>{e}</button>
