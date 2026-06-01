@@ -13,6 +13,7 @@ const PALETTES = {
 function pBg(p, c)            { Array.isArray(c) ? p.background(c[0], c[1], c[2]) : p.background(c); }
 function pStroke(p, c, a)     { Array.isArray(c) ? p.stroke(c[0], c[1], c[2], a ?? 255) : p.stroke(c, a ?? 255); }
 function pFill(p, c, a)       { Array.isArray(c) ? p.fill(c[0], c[1], c[2], a ?? 255) : p.fill(c, a ?? 255); }
+function toCSSColor(c)        { return Array.isArray(c) ? `rgb(${c[0]},${c[1]},${c[2]})` : `rgb(${c},${c},${c})`; }
 
 // deterministic font assignment per character position
 function getCharFont(fonts, li, ci) {
@@ -61,7 +62,7 @@ export default function HeroSketch({ fontData = [] }) {
   // Load a random subset of typefaces via FontFace API
   useEffect(() => {
     if (!fontData.length) return;
-    const shuffled = [...fontData].sort(() => Math.random() - 0.5).slice(0, 14);
+    const shuffled = [...fontData].sort(() => Math.random() - 0.5).slice(0, 8);
     Promise.all(
       shuffled.map(({ family, path, weight }) => {
         try {
@@ -92,9 +93,13 @@ export default function HeroSketch({ fontData = [] }) {
     let typed = '';
     let needsRedraw = true;
 
-    let dotsParticles = [];
+    // typed arrays for dots — 4× less GC, better cache locality
+    let nDots = 0;
+    let dotsX  = null, dotsY  = null;
+    let dotsBX = null, dotsBY = null;
     let dotsDirty = false;
     let prevEffect = 'dots';
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const onKey = (e) => {
       if (e.key === 'Backspace')      typed = typed.slice(0, -1);
@@ -191,21 +196,39 @@ export default function HeroSketch({ fontData = [] }) {
     }
 
     function buildDots(w, h) {
-      const step = Math.max(4, Math.round(w / 360)); // adaptive: ~1440px wide → step 4
-      const targets = [];
+      const step = Math.max(4, Math.round(w / 360));
+      const MAX_D = 7000;
+      const txs = [], tys = [];
       for (let y = 0; y < h; y += step)
         for (let x = 0; x < w; x += step)
-          if (pixelData[(y * w + x) * 4] > 100)
-            targets.push({ bx: x, by: y });
+          if (pixelData[(y * w + x) * 4] > 100) { txs.push(x); tys.push(y); }
 
-      const cx = w / 2, cy = h / 2, prev = dotsParticles;
-      dotsParticles = targets.map((t, i) => {
-        if (prev[i]) {
-          const a = Math.atan2(prev[i].y - cy, prev[i].x - cx);
-          return { x: prev[i].x + Math.cos(a) * 60, y: prev[i].y + Math.sin(a) * 60, bx: t.bx, by: t.by };
+      const srcN = txs.length;
+      const skip = srcN > MAX_D ? Math.ceil(srcN / MAX_D) : 1;
+      const newN = Math.ceil(srcN / skip);
+
+      const prevX = dotsX, prevY = dotsY, prevN = nDots;
+      const cx = w / 2, cy = h / 2;
+
+      dotsX  = new Float32Array(newN);
+      dotsY  = new Float32Array(newN);
+      dotsBX = new Float32Array(newN);
+      dotsBY = new Float32Array(newN);
+      nDots  = 0;
+
+      for (let si = 0; si < srcN && nDots < newN; si += skip) {
+        const bx = txs[si], by = tys[si];
+        if (prevX && nDots < prevN) {
+          const px = prevX[nDots], py = prevY[nDots];
+          const a = Math.atan2(py - cy, px - cx);
+          dotsX[nDots] = px + Math.cos(a) * 60;
+          dotsY[nDots] = py + Math.sin(a) * 60;
+        } else {
+          dotsX[nDots] = cx; dotsY[nDots] = cy;
         }
-        return { x: cx, y: cy, bx: t.bx, by: t.by };
-      });
+        dotsBX[nDots] = bx; dotsBY[nDots] = by;
+        nDots++;
+      }
       dotsDirty = false;
     }
 
@@ -216,7 +239,7 @@ export default function HeroSketch({ fontData = [] }) {
         p.setup = () => {
           p.createCanvas(p.windowWidth, p.windowHeight);
           p.pixelDensity(1);   // skip retina overdraw — biggest perf win
-          p.frameRate(30);
+          p.frameRate(reducedMotion ? 8 : 30);
           p.noSmooth();
           resizeBuffer(p.width, p.height);
           renderTextToBuffer();
@@ -235,7 +258,9 @@ export default function HeroSketch({ fontData = [] }) {
           const w = offCanvas.width, h = offCanvas.height;
           const time = p.frameCount * 0.015;
 
-          if (cur === 'dots' && (dotsDirty || prevEffect !== 'dots')) buildDots(w, h);
+          if ((cur === 'dots' || cur === 'waves') && (dotsDirty || prevEffect !== cur)) {
+            if (cur === 'dots') buildDots(w, h);
+          }
           prevEffect = cur;
 
           if (cur === 'waves') {
@@ -254,9 +279,9 @@ export default function HeroSketch({ fontData = [] }) {
             const extX = Math.floor(h * 0.4);
             const extY = Math.floor(w * 0.15);
 
-            for (let a = -extY; a < h + extY; a += 5) {
+            for (let a = -extY; a < h + extY; a += 8) {
               p.beginShape();
-              for (let b = -extX; b < w + extX; b += 4) {
+              for (let b = -extX; b < w + extX; b += 6) {
                 let c = 0;
                 if (a >= 0 && a < h && b >= 0 && b < w) c = pixelData[(a * w + b) * 4];
                 const vx = (b + a * 0.4) * stretch;
@@ -271,32 +296,46 @@ export default function HeroSketch({ fontData = [] }) {
             p.pop();
 
           } else if (cur === 'dots') {
-            p.noStroke();
-            pFill(p, fg);
-
+            const ctx = p.drawingContext;
             const mx = p.mouseX, my = p.mouseY;
-            for (let i = 0; i < dotsParticles.length; i++) {
-              const pt = dotsParticles[i];
-              const dx = mx - pt.x, dy = my - pt.y;
-              const dist = Math.sqrt(dx * dx + dy * dy);
-              if (dist < MOUSE_R) {
-                const force = (MOUSE_R - dist) / MOUSE_R;
-                const angle = Math.atan2(dy, dx);
-                pt.x -= Math.cos(angle) * force * 5 - Math.cos(angle + Math.PI / 2) * force * 15;
-                pt.y -= Math.sin(angle) * force * 5 - Math.sin(angle + Math.PI / 2) * force * 15;
-              } else {
-                pt.x += (pt.bx - pt.x) * 0.03;
-                pt.y += (pt.by - pt.y) * 0.03;
-              }
-              p.ellipse(pt.x, pt.y, 2, 2);
-            }
+            const MR2 = MOUSE_R * MOUSE_R;
+            const hasMouse = !reducedMotion && mx >= 0 && my >= 0 && mx < p.width && my < p.height;
 
-            if (mx > 0 && my > 0) {
-              p.noFill();
-              pStroke(p, fg, 12);
-              p.strokeWeight(1);
-              p.ellipse(mx, my, MOUSE_R * 2, MOUSE_R * 2);
-              p.noStroke();
+            // single path → single GPU flush instead of N individual draw calls
+            ctx.fillStyle = toCSSColor(fg);
+            ctx.beginPath();
+            for (let i = 0; i < nDots; i++) {
+              let x = dotsX[i], y = dotsY[i];
+              const bx = dotsBX[i], by = dotsBY[i];
+              if (hasMouse) {
+                const dx = mx - x, dy = my - y;
+                const dSq = dx * dx + dy * dy;
+                if (dSq < MR2) {
+                  const dist = Math.sqrt(dSq);
+                  const force = (MOUSE_R - dist) / MOUSE_R;
+                  const angle = Math.atan2(dy, dx);
+                  x -= Math.cos(angle) * force * 5 - Math.cos(angle + Math.PI / 2) * force * 15;
+                  y -= Math.sin(angle) * force * 5 - Math.sin(angle + Math.PI / 2) * force * 15;
+                } else {
+                  x += (bx - x) * 0.03; y += (by - y) * 0.03;
+                }
+              } else {
+                x += (bx - x) * 0.03; y += (by - y) * 0.03;
+              }
+              dotsX[i] = x; dotsY[i] = y;
+              ctx.rect(x - 1, y - 1, 2, 2);
+            }
+            ctx.fill();
+
+            if (hasMouse) {
+              ctx.save();
+              ctx.strokeStyle = toCSSColor(fg);
+              ctx.globalAlpha = 12 / 255;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.arc(mx, my, MOUSE_R, 0, Math.PI * 2);
+              ctx.stroke();
+              ctx.restore();
             }
           }
         };
@@ -314,7 +353,8 @@ export default function HeroSketch({ fontData = [] }) {
     return () => {
       window.removeEventListener('keydown', onKey);
       p5Instance?.remove();
-      offCanvas = null; offCtx = null; pixelData = null; dotsParticles = [];
+      offCanvas = null; offCtx = null; pixelData = null;
+      dotsX = dotsY = dotsBX = dotsBY = null; nDots = 0;
     };
   }, []);
 
