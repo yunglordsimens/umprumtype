@@ -70,8 +70,6 @@
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
-    console.log('[gw] script start — CMS:', typeof window.CMS, '| h:', typeof window.h, '| createClass:', typeof window.createClass);
-
     try {
       var h = window.h;
       var createClass = window.createClass;
@@ -143,7 +141,12 @@
         });
       }
 
-      function uploadFile(b64, filename, collection, token) {
+      function delay(ms) {
+        return new Promise(function (resolve) { setTimeout(resolve, ms); });
+      }
+
+      function uploadFile(b64, filename, collection, token, attempt) {
+        attempt = attempt || 0;
         var filePath = 'public/uploads/' + collection + '/' + filename;
         var apiUrl = 'https://api.github.com/repos/yunglordsimens/umprumtype/contents/' + filePath;
         var headers = {
@@ -159,6 +162,11 @@
             return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
           })
           .then(function (res) {
+            if (res.status === 409 && attempt < 4) {
+              return delay(800 * (attempt + 1)).then(function () {
+                return uploadFile(b64, filename, collection, token, attempt + 1);
+              });
+            }
             if (!res.ok) throw new Error('GitHub API error ' + res.status);
             return '/uploads/' + collection + '/' + filename;
           });
@@ -199,7 +207,8 @@
           imgs.forEach(function (file, i) {
             chain = chain.then(function () {
               self.setState({ progress: (i + 1) + ' / ' + imgs.length });
-              return compressImage(file)
+              var pause = i === 0 ? Promise.resolve() : delay(600);
+              return pause.then(function () { return compressImage(file); })
                 .then(function (compressed) {
                   var ext = compressed.isPng ? 'png' : 'jpg';
                   var name = Date.now() + '-' + Math.random().toString(36).slice(2, 7) + '.' + ext;
@@ -329,7 +338,6 @@
       });
 
       window.CMS.registerWidget('gallery-upload', GalleryControl, GalleryPreview);
-      console.log('[gw] registered successfully');
 
     } catch (err) {
       console.error('[gw] registration failed:', err.message, err.stack);
