@@ -1,9 +1,11 @@
 ---
 blocks: []
 title: "Graveyards "
-date: 2026-05-16T02:11:00.000+02:00
-category: review
-tags: []
+date: 2023-10-23T13:32:00.000+02:00
+category: process
+tags:
+  - graves
+  - process
 gallery:
   - /uploads/journal/1780309334353-8m4nf.jpg
   - /uploads/journal/1780309337139-qtl17.jpg
