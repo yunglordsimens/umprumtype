@@ -212,7 +212,7 @@ export default function StoreIsland({ items }) {
           <div className="lib-detail__scroll">
             {activeItem && (
               <div className="store-detail">
-                <div className="store-detail__header">
+                <div className="lib-detail__content">
                   <div className="lib-detail__cover" style={{ background: activeCover.bg }}>
                     {activeImg ? (
                       <img src={activeImg} alt={activeItem.title} className="lib-book__img" />

@@ -93,31 +93,27 @@ function toThumb(url) {
 function BookDetail({ book, onTagClick }) {
   const cover = getCover(book);
   return (
-    <div className="lib-accordion__content">
-      <div className="lib-book lib-book--lg">
-        <div className="lib-book__cover" style={{ background: cover.bg }}>
-          {book.image ? (
-            <img src={book.image} alt={book.title} className="lib-book__img" loading="lazy" />
-          ) : (
-            <div className="lib-book__text" style={{ color: cover.text }}>
-              <span className="lib-book__text-title">{book.title}</span>
-              <span className="lib-book__text-author">{book.author || ''}</span>
-            </div>
-          )}
-          <div className="lib-book__spine" />
-          <div className="lib-book__shine" />
-        </div>
-      </div>
-      <div className="lib-accordion__meta">
-        <h2 className="lib-accordion__title">{book.title}</h2>
-        {book.author && <p className="lib-accordion__author">{book.author}</p>}
-        {book.year   && <p className="lib-accordion__year">{book.year}</p>}
-        {book.tags.length > 0 && (
-          <div className="lib-accordion__tags">
-            {book.tags.map(t => (
-              <button key={t} className="lib-accordion__tag" onClick={() => onTagClick?.(t)}>{t}</button>
-            ))}
+    <div className="lib-detail__content">
+      <div className="lib-detail__cover" style={{ background: cover.bg }}>
+        {book.image ? (
+          <img src={book.image} alt={book.title} className="lib-book__img" loading="lazy" />
+        ) : (
+          <div className="lib-detail__cover-text" style={{ color: cover.text }}>
+            <span className="lib-detail__cover-title">{book.title}</span>
+            <span className="lib-detail__cover-author">{book.author || ''}</span>
           </div>
+        )}
+      </div>
+      <div className="lib-detail__meta">
+        <h2 className="lib-detail__title">{book.title}</h2>
+        {book.author && <p className="lib-detail__author">{book.author}</p>}
+        {book.year   && <p className="lib-detail__year">{book.year}</p>}
+        {book.tags.length > 0 && (
+          <ul className="lib-detail__tags">
+            {book.tags.map(t => (
+              <li key={t} className="lib-detail__tag" onClick={() => onTagClick?.(t)} style={{ cursor: 'pointer' }}>{t}</li>
+            ))}
+          </ul>
         )}
       </div>
     </div>
