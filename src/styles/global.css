@@ -1894,8 +1894,6 @@ body.home-page #main {
   max-width: 100%;
 }
 body.home-page .site-footer { display: none; }
-body.lib-page .site-footer { display: none; }
-body.lib-page { overflow: hidden; }
 
 .hero-controls {
   position: fixed;
