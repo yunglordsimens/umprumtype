@@ -2366,8 +2366,6 @@ body.lib-page #main {
 .lib-toolbar-count {
   font-size: var(--step--1);
   color: var(--text-subtle);
-  margin-left: auto;
-  flex-shrink: 0;
 }
 .lib-add-btn {
   display: flex; align-items: center; gap: 4px;
