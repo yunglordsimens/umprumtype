@@ -24,6 +24,71 @@ function getPostHtml(slug) {
   return el ? el.innerHTML : '';
 }
 
+const ViewStackIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor" aria-hidden="true">
+    <rect x="0" y="0" width="13" height="5" rx="1"/><rect x="0" y="8" width="13" height="5" rx="1"/>
+  </svg>
+);
+const ViewSlideIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor" aria-hidden="true">
+    <rect x="0" y="0" width="5" height="13" rx="1"/><rect x="8" y="0" width="5" height="13" rx="1"/>
+  </svg>
+);
+const ViewGridIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor" aria-hidden="true">
+    <rect x="0" y="0" width="5" height="5" rx="1"/><rect x="8" y="0" width="5" height="5" rx="1"/>
+    <rect x="0" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/>
+  </svg>
+);
+
+function sizeGalleryImg(e) {
+  const img = e.currentTarget;
+  const { naturalWidth: nw, naturalHeight: nh } = img;
+  if (!nw || !nh) return;
+  const containerW = img.closest('.post-detail__gallery')?.clientWidth || img.parentElement?.clientWidth || 0;
+  if (nh > nw && containerW > 0) {
+    img.style.height = Math.round(containerW * nw / nh) + 'px';
+    img.style.width = 'auto';
+  } else {
+    img.style.width = '100%';
+    img.style.height = 'auto';
+  }
+}
+
+function GalleryCarousel({ images, captions, excerpt }) {
+  const hasCaptions = captions?.some(Boolean);
+  return (
+    <div className={`gallery-carousel${!hasCaptions && excerpt ? ' gallery-carousel--sidebar' : ''}`}>
+      {!hasCaptions && excerpt && (
+        <p className="gallery-carousel__sidebar">{excerpt}</p>
+      )}
+      <div className="gallery-carousel__track">
+        {images.map((src, i) => (
+          <figure key={i} className="gallery-carousel__slide">
+            <img src={src} alt="" loading="lazy" />
+            {hasCaptions && captions[i] && (
+              <figcaption className="gallery-caption">{captions[i]}</figcaption>
+            )}
+          </figure>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function GalleryGrid({ images, captions }) {
+  return (
+    <div className="gallery-grid">
+      {images.map((src, i) => (
+        <figure key={i} className="gallery-grid__item">
+          <img src={src} alt="" loading="lazy" />
+          {captions?.[i] && <figcaption className="gallery-caption">{captions[i]}</figcaption>}
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 function SiteEmbed({ url }) {
   const [active, setActive] = useState(false);
   return (
@@ -51,7 +116,7 @@ function SiteEmbed({ url }) {
   );
 }
 
-function PostRow({ post, isOpen, onToggle, onTagClick, onEnter }) {
+function PostRow({ post, isOpen, onToggle, onTagClick, onEnter, galleryView }) {
   const [html] = useState(() =>
     typeof document !== 'undefined' ? (getPostHtml(post.slug) || '') : ''
   );
@@ -78,11 +143,24 @@ function PostRow({ post, isOpen, onToggle, onTagClick, onEnter }) {
               </div>
             )}
             {post.gallery.length > 0 && (
-              <div className="post-detail__gallery">
-                {post.gallery.map((img, i) => <img key={i} src={img} alt="" loading="lazy" />)}
-              </div>
+              galleryView === 'carousel' ? (
+                <GalleryCarousel images={post.gallery} captions={post.galleryCaptions} excerpt={post.excerpt} />
+              ) : galleryView === 'grid' ? (
+                <GalleryGrid images={post.gallery} captions={post.galleryCaptions} />
+              ) : (
+                <div className="post-detail__gallery">
+                  {post.gallery.map((img, i) => (
+                    <figure key={i} className="post-detail__gallery-item">
+                      <img src={img} alt="" loading="lazy" onLoad={sizeGalleryImg} />
+                      {post.galleryCaptions?.[i] && (
+                        <figcaption className="gallery-caption">{post.galleryCaptions[i]}</figcaption>
+                      )}
+                    </figure>
+                  ))}
+                </div>
+              )
             )}
-            {post.excerpt && <p className="post-detail__excerpt">{post.excerpt}</p>}
+            {galleryView !== 'carousel' && post.excerpt && <p className="post-detail__excerpt">{post.excerpt}</p>}
             <div className="post__body" dangerouslySetInnerHTML={{ __html: html }} />
             {post.siteUrl && <SiteEmbed url={post.siteUrl} />}
             {post.contact && (
@@ -108,6 +186,7 @@ export default function ProjectsIsland({ posts }) {
   const [sort, setSort]             = useState('name');
   const [shuffleSeed, setShuffleSeed] = useState(0);
   const [previewSrc, setPreviewSrc] = useState(null);
+  const [galleryView, setGalleryView] = useState('stack');
   const [mounted, setMounted]       = useState(false);
   const panelRef   = useRef(null);
   const previewRef = useRef(null);
@@ -256,6 +335,12 @@ export default function ProjectsIsland({ posts }) {
           <span className="lib-toolbar-count">
             {filtered.length < posts.length ? `${filtered.length} of ${posts.length}` : filtered.length}
           </span>
+          <span className="tf-sort__divider" />
+          <div className="tf-sort gallery-view-toggle">
+            <button aria-pressed={galleryView === 'stack'}    onClick={() => setGalleryView('stack')}    title="Stack"><ViewStackIcon /></button>
+            <button aria-pressed={galleryView === 'carousel'} onClick={() => setGalleryView('carousel')} title="Carousel"><ViewSlideIcon /></button>
+            <button aria-pressed={galleryView === 'grid'}     onClick={() => setGalleryView('grid')}     title="Grid"><ViewGridIcon /></button>
+          </div>
         </header>
 
         <div
@@ -302,6 +387,7 @@ export default function ProjectsIsland({ posts }) {
                     onToggle={() => togglePost(p.slug)}
                     onTagClick={onTagClick}
                     onEnter={() => setPreviewSrc(p.gallery[0] || null)}
+                    galleryView={galleryView}
                   />
                 ))}
               </ul>

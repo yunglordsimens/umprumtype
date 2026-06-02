@@ -24,10 +24,11 @@ const posts = entries.map(e => {
     category:    e.data.category,
     tags:        e.data.tags      ?? [],
     excerpt:     e.data.excerpt   ?? null,
-    gallery:     [...(e.data.gallery ?? []), ...blockImages],
-    purchasable: e.data.purchasable ?? false,
-    contact:     e.data.contact   ?? null,
-    siteUrl:     e.data.siteUrl   ?? null,
+    gallery:         [...(e.data.gallery ?? []), ...blockImages],
+    galleryCaptions: e.data.galleryCaptions ?? [],
+    purchasable:     e.data.purchasable ?? false,
+    contact:         e.data.contact   ?? null,
+    siteUrl:         e.data.siteUrl   ?? null,
   };
 });
 ---
