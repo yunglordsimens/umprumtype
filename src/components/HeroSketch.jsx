@@ -222,8 +222,11 @@ export default function HeroSketch({ fontData = [] }) {
     }
 
     function buildDots(w, h) {
-      const step = Math.max(3, Math.round(w / 500));
-      const MAX_D = 12000;
+      const MAX_PARTICLES = 14000;
+      const totalPixels = pixelData.length / 4;
+      let step = Math.max(2, Math.round(w / 500));
+      while ((totalPixels / (step * step)) > MAX_PARTICLES) step++;
+      const MAX_D = MAX_PARTICLES;
       const txs = [], tys = [];
       for (let y = 0; y < h; y += step)
         for (let x = 0; x < w; x += step)
