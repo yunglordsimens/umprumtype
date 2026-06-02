@@ -169,10 +169,10 @@ function PostRow({ post, isOpen, onToggle, onTagClick, onEnter, galleryView }) {
                 <p>{post.contact}</p>
               </aside>
             )}
-            <div className="post-row__close-wrap">
-              <button className="post-row__close-btn" onClick={onToggle} aria-label="Close">×</button>
-            </div>
           </article>
+          <div className="post-row__close-wrap">
+            <button className="post-row__close-btn" onClick={onToggle} aria-label="Close">×</button>
+          </div>
         </div>
       </div>
     </li>
