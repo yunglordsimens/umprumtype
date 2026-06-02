@@ -130,7 +130,13 @@ export default function HeroSketch({ fontData = [] }) {
     }
     updateWaveCache();
 
-    function resizeBuffer(w, h) { offCanvas.width = w; offCanvas.height = h; }
+    const BUFFER_MAX = 900;
+    let bufScale = 1;
+    function resizeBuffer(w, h) {
+      bufScale = Math.min(1, BUFFER_MAX / Math.max(w, h));
+      offCanvas.width  = Math.max(1, Math.round(w * bufScale));
+      offCanvas.height = Math.max(1, Math.round(h * bufScale));
+    }
     resizeBuffer(W, H);
 
     // ── keyboard ──
@@ -159,8 +165,7 @@ export default function HeroSketch({ fontData = [] }) {
       canvas.width = W; canvas.height = H;
       resizeBuffer(W, H);
       updateWaveCache();
-      needsRedraw = true;
-      dotsDirty = true;
+      needsRedraw = true; dotsDirty = true;
     };
     window.addEventListener('resize', onResize);
 
@@ -228,15 +233,18 @@ export default function HeroSketch({ fontData = [] }) {
     }
 
     function buildDots(w, h) {
+      // work in buffer space, then scale to screen
+      const bw = offCanvas.width, bh = offCanvas.height;
+      const inv = 1 / bufScale; // buffer → screen scale
       const MAX_PARTICLES = perfModeRef.current === 'lo' ? 8000 : 22000;
-      const totalPixels = pixelData.length / 4;
-      let step = Math.max(2, Math.round(w / 500));
+      const totalPixels = bw * bh;
+      let step = Math.max(2, Math.round(bw / 500));
       while ((totalPixels / (step * step)) > MAX_PARTICLES) step++;
       const MAX_D = MAX_PARTICLES;
       const txs = [], tys = [];
-      for (let y = 0; y < h; y += step)
-        for (let x = 0; x < w; x += step)
-          if (pixelData[(y * w + x) * 4] > 100) { txs.push(x); tys.push(y); }
+      for (let y = 0; y < bh; y += step)
+        for (let x = 0; x < bw; x += step)
+          if (pixelData[(y * bw + x) * 4] > 100) { txs.push(x); tys.push(y); }
       const srcN = txs.length;
       const skip = srcN > MAX_D ? Math.ceil(srcN / MAX_D) : 1;
       const newN = Math.ceil(srcN / skip);
@@ -248,7 +256,8 @@ export default function HeroSketch({ fontData = [] }) {
       dotsBY = new Float32Array(newN);
       nDots = 0;
       for (let si = 0; si < srcN && nDots < newN; si += skip) {
-        const bx = txs[si], by = tys[si];
+        // scale buffer coords → screen coords
+        const bx = txs[si] * inv, by = tys[si] * inv;
         if (prevX && nDots < prevN) {
           const px = prevX[nDots], py = prevY[nDots];
           const a = Math.atan2(py - cy, px - cx);
@@ -313,7 +322,8 @@ export default function HeroSketch({ fontData = [] }) {
             if (ex * ex + ey * ey > 0.04) { x += ex * 0.008; y += ey * 0.008; }
           }
           dotsX[i] = x; dotsY[i] = y;
-          dotPath.rect(x - 1, y - 1, 2, 2);
+          dotPath.moveTo(x + 1.5, y);
+          dotPath.arc(x, y, 1.5, 0, TWO_PI);
         }
         ctx.fill(dotPath);
 
@@ -356,7 +366,9 @@ export default function HeroSketch({ fontData = [] }) {
 
           for (let b = -extX; b < W + extX; b += 8) {
             let c = 0;
-            if (a >= 0 && a < H && b >= 0 && b < W) c = pixelData[(a * W + b) * 4];
+            const ba = Math.round(a * bufScale), bb = Math.round(b * bufScale);
+            const bw = offCanvas.width, bh = offCanvas.height;
+            if (ba >= 0 && ba < bh && bb >= 0 && bb < bw) c = pixelData[(ba * bw + bb) * 4];
             const vx    = b * stretch + a04s;
             const noise = Math.sin(b * 0.007 + na1) * 8 + Math.sin(b * 0.013 + na2) * 5;
             const wd    = Math.sin(b * 0.02 + t_b) * 6 + wdCos;
