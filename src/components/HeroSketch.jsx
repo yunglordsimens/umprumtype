@@ -92,6 +92,7 @@ export default function HeroSketch({ fontData = [] }) {
     let pixelData = null;
     let typed = '';
     let needsRedraw = true;
+    let textTimer = null;
 
     let nDots = 0;
     let dotsX = null, dotsY = null, dotsBX = null, dotsBY = null;
@@ -136,7 +137,8 @@ export default function HeroSketch({ fontData = [] }) {
         typed += e.key.toUpperCase();
       else return;
       charFontMapRef.current = null;
-      needsRedraw = true;
+      clearTimeout(textTimer);
+      textTimer = setTimeout(() => { needsRedraw = true; }, 80);
     };
     window.addEventListener('keydown', onKey);
 
@@ -285,7 +287,7 @@ export default function HeroSketch({ fontData = [] }) {
 
         const hasMouse = !reducedMotion && mouseX >= 0 && mouseX < W && mouseY >= 0 && mouseY < H;
         ctx.fillStyle = fgCSS;
-        ctx.beginPath();
+        const dotPath = new Path2D();
         for (let i = 0; i < nDots; i++) {
           let x = dotsX[i], y = dotsY[i];
           const bx = dotsBX[i], by = dotsBY[i];
@@ -299,17 +301,16 @@ export default function HeroSketch({ fontData = [] }) {
               x -= Math.cos(angle) * force * 5 - Math.cos(angle + HALF_PI) * force * 15;
               y -= Math.sin(angle) * force * 5 - Math.sin(angle + HALF_PI) * force * 15;
             } else {
-              x += (bx - x) * 0.03; y += (by - y) * 0.03;
+              x += (bx - x) * 0.008; y += (by - y) * 0.008;
             }
           } else {
             const ex = bx - x, ey = by - y;
-            // skip spring calc for settled dots (saves ~70% of physics after settling)
-            if (ex * ex + ey * ey > 0.04) { x += ex * 0.03; y += ey * 0.03; }
+            if (ex * ex + ey * ey > 0.04) { x += ex * 0.008; y += ey * 0.008; }
           }
           dotsX[i] = x; dotsY[i] = y;
-          ctx.rect(x - 1, y - 1, 2, 2);
+          dotPath.rect(x - 1, y - 1, 2, 2);
         }
-        ctx.fill();
+        ctx.fill(dotPath);
 
         if (hasMouse) {
           ctx.save();
@@ -370,6 +371,7 @@ export default function HeroSketch({ fontData = [] }) {
 
     return () => {
       cancelAnimationFrame(rafId);
+      clearTimeout(textTimer);
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseleave', onMouseLeave);
