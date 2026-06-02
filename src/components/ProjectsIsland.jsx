@@ -331,12 +331,11 @@ export default function ProjectsIsland({ posts }) {
                 {s.label}
               </button>
             ))}
-          </div>
-          <span className="lib-toolbar-count">
-            {filtered.length < posts.length ? `${filtered.length} of ${posts.length}` : filtered.length}
-          </span>
-          <span className="tf-sort__divider" />
-          <div className="tf-sort gallery-view-toggle">
+            <span className="tf-sort__divider" />
+            <span className="lib-toolbar-count">
+              {filtered.length < posts.length ? `${filtered.length} of ${posts.length}` : filtered.length}
+            </span>
+            <span className="tf-sort__divider" />
             <button aria-pressed={galleryView === 'stack'}    onClick={() => setGalleryView('stack')}    title="Stack"><ViewStackIcon /></button>
             <button aria-pressed={galleryView === 'carousel'} onClick={() => setGalleryView('carousel')} title="Carousel"><ViewSlideIcon /></button>
             <button aria-pressed={galleryView === 'grid'}     onClick={() => setGalleryView('grid')}     title="Grid"><ViewGridIcon /></button>
