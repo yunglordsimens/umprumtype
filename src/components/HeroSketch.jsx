@@ -55,7 +55,7 @@ export default function HeroSketch({ fontData = [] }) {
       colorsRef.current = { bg: [245, 196, 18], fg: [10, 10, 10] };
     } else {
       // mono: always contrasting with system
-      colorsRef.current = isDark ? { bg: 238, fg: 18 } : { bg: 28, fg: 235 };
+      colorsRef.current = isDark ? { bg: 255, fg: 0 } : { bg: 0, fg: 255 };
     }
   }, [palette, isDark]);
 
