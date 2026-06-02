@@ -344,7 +344,8 @@ export default function HeroSketch({ fontData = [] }) {
         ctx.translate(offX, offY);
         ctx.beginPath(); // single path — single GPU flush for ALL rows
 
-        for (let a = -extY; a < H + extY; a += 10) {
+        const waveStep = perfModeRef.current === 'lo' ? 14 : 7;
+        for (let a = -extY; a < H + extY; a += waveStep) {
           // hoist a-dependent terms outside inner loop
           const a04s  = a * 0.4 * stretch;
           const a_s   = a * stretch;
