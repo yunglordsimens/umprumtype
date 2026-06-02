@@ -40,17 +40,21 @@ export default function HeroSketch({ fontData = [] }) {
     return () => mq.removeEventListener('change', h);
   }, []);
 
+  const [perfMode, setPerfMode] = useState('hi');
+
   const colorsRef          = useRef({ bg: 28, fg: 235 });
   const effectRef          = useRef(effect);
+  const perfModeRef        = useRef(perfMode);
   const loadedFontsRef     = useRef([]);
   const charFontMapRef     = useRef(null);
   const needsFontRedrawRef = useRef(false);
 
   useEffect(() => { effectRef.current = effect; }, [effect]);
+  useEffect(() => { perfModeRef.current = perfMode; }, [perfMode]);
 
   useEffect(() => {
     if (palette === 'yellow-dark') {
-      colorsRef.current = { bg: [10, 10, 10], fg: [245, 196, 18] };
+      colorsRef.current = { bg: [0, 0, 0], fg: [245, 196, 18] };
     } else if (palette === 'yellow-light') {
       colorsRef.current = { bg: [245, 196, 18], fg: [10, 10, 10] };
     } else {
@@ -96,7 +100,7 @@ export default function HeroSketch({ fontData = [] }) {
 
     let nDots = 0;
     let dotsX = null, dotsY = null, dotsBX = null, dotsBY = null;
-    let dotsDirty = false, prevEffect = '';
+    let dotsDirty = false, prevEffect = '', prevPerfMode = perfModeRef.current;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const HALF_PI = Math.PI / 2;
     const TWO_PI  = Math.PI * 2;
@@ -224,7 +228,7 @@ export default function HeroSketch({ fontData = [] }) {
     }
 
     function buildDots(w, h) {
-      const MAX_PARTICLES = 14000;
+      const MAX_PARTICLES = perfModeRef.current === 'lo' ? 8000 : 22000;
       const totalPixels = pixelData.length / 4;
       let step = Math.max(2, Math.round(w / 500));
       while ((totalPixels / (step * step)) > MAX_PARTICLES) step++;
@@ -270,6 +274,7 @@ export default function HeroSketch({ fontData = [] }) {
       lastTs = ts - (dt % FRAME_MS);
       frameCount++;
 
+      if (perfModeRef.current !== prevPerfMode) { prevPerfMode = perfModeRef.current; dotsDirty = true; }
       if (needsRedraw || needsFontRedrawRef.current) renderTextToBuffer();
 
       const cur = effectRef.current;
@@ -398,6 +403,10 @@ export default function HeroSketch({ fontData = [] }) {
           <button className="hero-palette-cycle" onClick={cyclePalette} aria-label="Cycle color palette">
             {PALETTE_LABELS[palette]}
           </button>
+          <span className="tf-sort__divider" />
+          {['lo', 'hi'].map(m => (
+            <button key={m} aria-pressed={perfMode === m} onClick={() => setPerfMode(m)}>{m}</button>
+          ))}
         </div>
       </div>
     </div>
