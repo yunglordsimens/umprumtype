@@ -301,6 +301,7 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
   white-space: nowrap;
 }
 @media (max-width: 720px) { .site-nav__search { display: none; } }
+@media (max-width: 720px) { .hero-controls { display: none; } }
 body.home-page .site-search__input {
   border-color: rgba(255,255,255,0.25);
   color: rgba(255,255,255,0.8);
