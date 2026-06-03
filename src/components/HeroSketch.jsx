@@ -66,7 +66,7 @@ export default function HeroSketch({ fontData = [] }) {
   // Load a random subset of typefaces via FontFace API
   useEffect(() => {
     if (!fontData.length) return;
-    const shuffled = [...fontData].sort(() => Math.random() - 0.5).slice(0, 3);
+    const shuffled = [...fontData].sort(() => Math.random() - 0.5);
     Promise.all(
       shuffled.map(({ family, path, weight }) => {
         try {
