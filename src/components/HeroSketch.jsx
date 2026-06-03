@@ -233,7 +233,10 @@ export default function HeroSketch({ fontData = [] }) {
       }
       let lineData = buildLineData(lines, fontSize);
       const maxLineW = lineData.reduce((m, ld) => Math.max(m, ld.totalW), 0);
-      if (maxLineW > w * 0.9) {
+      if (W < 600 && maxLineW > 0) {
+        fontSize = fontSize * (w * 0.97) / maxLineW;
+        lineData = buildLineData(lines, fontSize);
+      } else if (maxLineW > w * 0.9) {
         fontSize = fontSize * (w * 0.9) / maxLineW;
         lineData = buildLineData(lines, fontSize);
       }
