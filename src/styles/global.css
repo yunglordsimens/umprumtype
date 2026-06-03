@@ -2072,6 +2072,11 @@ body.home-page .site-footer { display: none; }
   opacity: 0.5;
   white-space: nowrap;
 }
+.hero-quality-label__short { display: none; }
+@media (max-width: 600px) {
+  .hero-quality-label__full { display: none; }
+  .hero-quality-label__short { display: inline; }
+}
 .hero-quality-slider {
   -webkit-appearance: none;
   appearance: none;
