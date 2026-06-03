@@ -194,7 +194,7 @@ export default function HeroSketch({ fontData = [] }) {
         needsFontRedrawRef.current = false;
       }
       const w = offCanvas.width, h = offCanvas.height;
-      const lines = (typed || ' ').split('\n');
+      const lines = (typed || DEFAULT_WORD).split('\n');
       const fonts = loadedFontsRef.current;
       offCtx.clearRect(0, 0, w, h);
       offCtx.fillStyle = '#000';
@@ -384,45 +384,6 @@ export default function HeroSketch({ fontData = [] }) {
         ctx.restore();
       }
     }
-
-    // ── typewriter loop ──
-    const PHRASES = [
-      'Typo UMPRUM',
-      'opening\n3/6',
-      '6 pm',
-      'Kasárny Karlín\nC12.02',
-    ];
-    let phraseIdx = 0;
-    function redraw() { charFontMapRef.current = null; needsRedraw = true; }
-
-    function typePhrase() {
-      const target = PHRASES[phraseIdx];
-      let i = 0;
-      function typeChar() {
-        if (i >= target.length) { typewriterTimer = setTimeout(erasePhrase, 7000); return; }
-        const ch = target[i++];
-        typed += ch;
-        redraw();
-        typewriterTimer = setTimeout(typeChar, ch === '\n' ? 900 : 220 + Math.random() * 140);
-      }
-      typeChar();
-    }
-
-    function erasePhrase() {
-      function eraseChar() {
-        if (typed.length === 0) {
-          phraseIdx = (phraseIdx + 1) % PHRASES.length;
-          typewriterTimer = setTimeout(typePhrase, 600);
-          return;
-        }
-        typed = typed.slice(0, -1);
-        redraw();
-        typewriterTimer = setTimeout(eraseChar, 150 + Math.random() * 80);
-      }
-      eraseChar();
-    }
-
-    typewriterTimer = setTimeout(typePhrase, 400);
 
     renderTextToBuffer();
     rafId = requestAnimationFrame(loop);
