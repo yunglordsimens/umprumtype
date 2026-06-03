@@ -208,6 +208,7 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
   .site-nav__logo { position: absolute; left: 50%; transform: translateX(-50%); }
   .site-nav__home-item { display: block; }
   .site-nav__search-mobile { display: block; width: 100%; }
+  .site-nav { background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
   .site-nav__links {
     position: fixed;
     inset: var(--nav-h) 0 0 0;

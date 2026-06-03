@@ -150,17 +150,17 @@ const isActive = (prefix: string) =>
           }, { passive: true });
         }
 
-        // Swipe down from top of screen to open menu
+        // Swipe down on the nav bar to open menu
         let openStartY = 0, openStartX = 0;
-        document.addEventListener('touchstart', e => {
+        nav.addEventListener('touchstart', e => {
           openStartY = e.touches[0].clientY;
           openStartX = e.touches[0].clientX;
         }, { passive: true });
-        document.addEventListener('touchend', e => {
+        nav.addEventListener('touchend', e => {
           if (nav.dataset.menu === 'open') return;
           const dy = e.changedTouches[0].clientY - openStartY;
           const dx = Math.abs(e.changedTouches[0].clientX - openStartX);
-          if (openStartY < 60 && dy > 60 && dx < 60) {
+          if (dy > 40 && dx < 60) {
             nav.dataset.menu = 'open';
             burger?.setAttribute('aria-expanded', 'true');
           }
