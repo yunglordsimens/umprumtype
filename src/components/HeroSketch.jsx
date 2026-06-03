@@ -465,6 +465,7 @@ export default function HeroSketch({ fontData = [] }) {
       ].filter(Boolean).join(' ')}>
         {controls}
       </div>
+      <p className="hero-type-hint">Try to type</p>
       {mobileSlot && createPortal(
         <div className="hero-controls-mobile">{controls}</div>,
         mobileSlot
