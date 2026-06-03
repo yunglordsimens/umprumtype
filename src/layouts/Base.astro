@@ -46,6 +46,7 @@ const isActive = (prefix: string) =>
         <a href="/" class="site-nav__logo">UMPRUM Type</a>
         <button class="site-nav__burger" type="button" aria-label="Menu" aria-controls="siteNavLinks" aria-expanded="false"></button>
         <ul class="site-nav__links" id="siteNavLinks">
+          <li class="site-nav__search-mobile"><SearchIsland client:load /></li>
           <li class="site-nav__home-item"><a href="/" aria-current={isActive('/') && pathname === '/' ? 'page' : undefined}>Home</a></li>
           <li><a href="/typefaces" aria-current={isActive('/typefaces') ? 'page' : undefined}>Typefaces</a></li>
           <li><a href="/projects"  aria-current={isActive('/projects')  ? 'page' : undefined}>Projects</a></li>
@@ -139,7 +140,7 @@ const isActive = (prefix: string) =>
           if (e.key === 'Escape') closeMenu();
         });
 
-        // Swipe down to close menu
+        // Swipe down on open menu to close
         const links = document.getElementById('siteNavLinks');
         if (links) {
           let touchStartY = 0;
@@ -148,6 +149,22 @@ const isActive = (prefix: string) =>
             if (e.changedTouches[0].clientY - touchStartY > 60) closeMenu();
           }, { passive: true });
         }
+
+        // Swipe down from top of screen to open menu
+        let openStartY = 0, openStartX = 0;
+        document.addEventListener('touchstart', e => {
+          openStartY = e.touches[0].clientY;
+          openStartX = e.touches[0].clientX;
+        }, { passive: true });
+        document.addEventListener('touchend', e => {
+          if (nav.dataset.menu === 'open') return;
+          const dy = e.changedTouches[0].clientY - openStartY;
+          const dx = Math.abs(e.changedTouches[0].clientX - openStartX);
+          if (openStartY < 60 && dy > 60 && dx < 60) {
+            nav.dataset.menu = 'open';
+            burger?.setAttribute('aria-expanded', 'true');
+          }
+        }, { passive: true });
       }
     </script>
   </body>
