@@ -1996,6 +1996,7 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
 body.home-page {
   overflow: hidden;
   overscroll-behavior: none;
+  height: 100dvh;
   background: #111118;
   color: #f2f2ef;
   --bg: #111118;
