@@ -133,9 +133,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   top: 0;
   z-index: 50;
   height: var(--nav-h);
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: saturate(160%) blur(12px);
-  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
   transition: transform var(--dur) var(--ease);
 }
@@ -2153,7 +2151,7 @@ body.home-page .site-nav[data-menu="open"] .site-nav__burger { color: #fff; }
 /* Dark system overrides (must come after light defaults to win the cascade) */
 @media (prefers-color-scheme: dark) {
   body.home-page .site-nav {
-    background: rgba(242,242,238,0.75);
+    background: #f2f2ee;
     border-bottom-color: rgba(0,0,0,0.07);
   }
   body.home-page .site-nav__logo,
