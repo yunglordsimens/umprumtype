@@ -276,13 +276,12 @@ export default function LibraryIsland() {
     <div className="lib-layout">
       <div className="lib-main">
 
-        <header className="lib-toolbar">
-          <button className="lib-filter-btn" onClick={() => setShowTags(f => !f)} aria-pressed={showTags}>
-            <span className="lib-filter-btn__label">Tags</span>
-            {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
-          </button>
-
-          <div className="tf-sort">
+        <header className="lib-toolbar lib-toolbar--library">
+          <div className="lib-toolbar__row lib-toolbar__row--top">
+            <button className="lib-filter-btn" onClick={() => setShowTags(f => !f)} aria-pressed={showTags}>
+              <span className="lib-filter-btn__label">Tags</span>
+              {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
+            </button>
             <input
               className="lib-search-input"
               type="search"
@@ -291,7 +290,8 @@ export default function LibraryIsland() {
               onChange={e => setSearchQuery(e.target.value)}
               autoComplete="off"
             />
-            <span className="tf-sort__divider" />
+          </div>
+          <div className="lib-toolbar__row tf-sort lib-toolbar__row--sorts">
             {[['title','Title'],['author','Author'],['year','Year']].map(([col, label]) => (
               <button key={col} aria-pressed={sort === col} onClick={() => cycleSort(col)}>
                 {label}{sort === col ? (sortDir === 1 ? ' ↑' : ' ↓') : ''}
