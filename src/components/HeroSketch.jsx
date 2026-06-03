@@ -403,7 +403,7 @@ export default function HeroSketch({ fontData = [] }) {
         const ch = target[i++];
         typed += ch;
         redraw();
-        typewriterTimer = setTimeout(typeChar, ch === '\n' ? 700 : 160 + Math.random() * 100);
+        typewriterTimer = setTimeout(typeChar, ch === '\n' ? 900 : 220 + Math.random() * 140);
       }
       typeChar();
     }
