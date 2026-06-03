@@ -237,9 +237,9 @@ export default function HeroSketch({ fontData = [] }) {
       // work in buffer space, then scale to screen
       const bw = offCanvas.width, bh = offCanvas.height;
       const inv = 1 / bufScale; // buffer → screen scale
-      const MAX_PARTICLES = perfModeRef.current === 'lo' ? 8000 : 22000;
+      const MAX_PARTICLES = perfModeRef.current === 'lo' ? 8000 : 60000;
       const totalPixels = bw * bh;
-      let step = Math.max(2, Math.round(bw / 500));
+      let step = perfModeRef.current === 'lo' ? Math.max(2, Math.round(bw / 500)) : 1;
       while ((totalPixels / (step * step)) > MAX_PARTICLES) step++;
       const MAX_D = MAX_PARTICLES;
       const txs = [], tys = [];
