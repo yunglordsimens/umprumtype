@@ -388,7 +388,7 @@ export default function HeroSketch({ fontData = [] }) {
     // ── typewriter loop ──
     const PHRASES = [
       'Typo UMPRUM',
-      'opening 3/6',
+      'opening\n3/6',
       '6 pm',
       'Kasárny Karlín\nC12.02',
     ];
