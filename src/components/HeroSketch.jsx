@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-const DEFAULT_WORD = 'Typo UMPRUM\nopening\n3/6\n6 pm\nKasárny Karlín\nC12.02';
+const DEFAULT_WORD = 'Typo UMPRUM\nopening 3/6 6 pm\nKasárny Karlín\nC12.02';
 
 const PALETTE_CYCLE = [
   { key: 'mono'         },
