@@ -97,6 +97,7 @@ export default function HeroSketch({ fontData = [] }) {
     let typed = '';
     let needsRedraw = true;
     let textTimer = null;
+    let typewriterTimer = null;
 
     let nDots = 0;
     let dotsX = null, dotsY = null, dotsBX = null, dotsBY = null;
@@ -193,7 +194,7 @@ export default function HeroSketch({ fontData = [] }) {
         needsFontRedrawRef.current = false;
       }
       const w = offCanvas.width, h = offCanvas.height;
-      const lines = (typed || DEFAULT_WORD).split('\n');
+      const lines = (typed || ' ').split('\n');
       const fonts = loadedFontsRef.current;
       offCtx.clearRect(0, 0, w, h);
       offCtx.fillStyle = '#000';
@@ -384,12 +385,27 @@ export default function HeroSketch({ fontData = [] }) {
       }
     }
 
+    // ── typewriter ──
+    const TARGET = DEFAULT_WORD;
+    let typeIdx = 0;
+    function typeNext() {
+      if (typeIdx >= TARGET.length) return;
+      const ch = TARGET[typeIdx++];
+      typed += ch;
+      charFontMapRef.current = null;
+      needsRedraw = true;
+      const delay = ch === '\n' ? 320 : 55 + Math.random() * 90;
+      typewriterTimer = setTimeout(typeNext, delay);
+    }
+    typewriterTimer = setTimeout(typeNext, 400);
+
     renderTextToBuffer();
     rafId = requestAnimationFrame(loop);
 
     return () => {
       cancelAnimationFrame(rafId);
       clearTimeout(textTimer);
+      clearTimeout(typewriterTimer);
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseleave', onMouseLeave);
