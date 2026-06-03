@@ -46,6 +46,7 @@ const isActive = (prefix: string) =>
         <a href="/" class="site-nav__logo">UMPRUM Type</a>
         <button class="site-nav__burger" type="button" aria-label="Menu" aria-controls="siteNavLinks" aria-expanded="false">Menu</button>
         <ul class="site-nav__links" id="siteNavLinks">
+          <li id="anim-controls-slot" class="site-nav__anim-slot"></li>
           <li class="site-nav__search-mobile"><SearchIsland client:load /></li>
 <li><a href="/typefaces" aria-current={isActive('/typefaces') ? 'page' : undefined}>Typefaces</a></li>
           <li><a href="/projects"  aria-current={isActive('/projects')  ? 'page' : undefined}>Projects</a></li>

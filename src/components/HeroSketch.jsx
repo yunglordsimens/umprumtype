@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 const DEFAULT_WORD = 'typoumprum.doc\nopening 3/6 6 pm\nKasárny Karlín\nC12.02';
 
@@ -428,6 +429,32 @@ export default function HeroSketch({ fontData = [] }) {
     };
   }, []);
 
+  const controls = (
+    <div className="tf-sort">
+      {['dots', 'waves'].map(e => (
+        <button key={e} aria-pressed={effect === e} onClick={() => setEffect(e)}>{e}</button>
+      ))}
+      <span className="tf-sort__divider" />
+      <button className="hero-palette-cycle" onClick={cyclePalette} aria-label="Cycle color palette">
+        {PALETTE_LABELS[palette]}
+      </button>
+      <span className="tf-sort__divider" />
+      <span className="hero-quality-label">
+        <span className="hero-quality-label__full">Animation performance</span>
+        <span className="hero-quality-label__short">AP</span>
+      </span>
+      <input
+        type="range" min="1" max="5" step="1"
+        value={quality}
+        onChange={e => setQuality(+e.target.value)}
+        className="hero-quality-slider"
+        aria-label="Performance quality"
+      />
+    </div>
+  );
+
+  const mobileSlot = typeof document !== 'undefined' && document.getElementById('anim-controls-slot');
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden' }} />
@@ -436,28 +463,12 @@ export default function HeroSketch({ fontData = [] }) {
         (palette === 'yellow-light' || (palette === 'mono' && isDark)) ? 'hero-controls--light' : '',
         palette === 'yellow-light' ? 'hero-controls--yellow' : '',
       ].filter(Boolean).join(' ')}>
-        <div className="tf-sort">
-          {['dots', 'waves'].map(e => (
-            <button key={e} aria-pressed={effect === e} onClick={() => setEffect(e)}>{e}</button>
-          ))}
-          <span className="tf-sort__divider" />
-          <button className="hero-palette-cycle" onClick={cyclePalette} aria-label="Cycle color palette">
-            {PALETTE_LABELS[palette]}
-          </button>
-          <span className="tf-sort__divider" />
-          <span className="hero-quality-label">
-            <span className="hero-quality-label__full">Animation performance</span>
-            <span className="hero-quality-label__short">AP</span>
-          </span>
-          <input
-            type="range" min="1" max="5" step="1"
-            value={quality}
-            onChange={e => setQuality(+e.target.value)}
-            className="hero-quality-slider"
-            aria-label="Performance quality"
-          />
-        </div>
+        {controls}
       </div>
+      {mobileSlot && createPortal(
+        <div className="hero-controls-mobile">{controls}</div>,
+        mobileSlot
+      )}
     </div>
   );
 }
