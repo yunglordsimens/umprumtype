@@ -399,11 +399,11 @@ export default function HeroSketch({ fontData = [] }) {
       const target = PHRASES[phraseIdx];
       let i = 0;
       function typeChar() {
-        if (i >= target.length) { typewriterTimer = setTimeout(erasePhrase, 900); return; }
+        if (i >= target.length) { typewriterTimer = setTimeout(erasePhrase, 3000); return; }
         const ch = target[i++];
         typed += ch;
         redraw();
-        typewriterTimer = setTimeout(typeChar, ch === '\n' ? 320 : 55 + Math.random() * 90);
+        typewriterTimer = setTimeout(typeChar, ch === '\n' ? 500 : 110 + Math.random() * 80);
       }
       typeChar();
     }
@@ -412,12 +412,12 @@ export default function HeroSketch({ fontData = [] }) {
       function eraseChar() {
         if (typed.length === 0) {
           phraseIdx = (phraseIdx + 1) % PHRASES.length;
-          typewriterTimer = setTimeout(typePhrase, 350);
+          typewriterTimer = setTimeout(typePhrase, 600);
           return;
         }
         typed = typed.slice(0, -1);
         redraw();
-        typewriterTimer = setTimeout(eraseChar, 35 + Math.random() * 30);
+        typewriterTimer = setTimeout(eraseChar, 70 + Math.random() * 40);
       }
       eraseChar();
     }
