@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-const DEFAULT_WORD = 'typoumprum.doc\nopening 3/6 6 pm\nKasárny Karlín\nC12.02';
+const DEFAULT_WORD = 'typoumprum.doc\n4-9/6/2026\nKasárny Karlín\nC12.02';
 
 const PALETTE_CYCLE = [
-  { key: 'mono'         },
-  { key: 'yellow-dark'  },
-  { key: 'yellow-light' },
+  { key: 'mono'        },
+  { key: 'yellow-dark' },
 ];
-const PALETTE_LABELS = { mono: 'B/W', 'yellow-dark': 'Y/B', 'yellow-light': 'B/Y' };
+const PALETTE_LABELS = { mono: 'B/W', 'yellow-dark': 'Y/B' };
 
 const QUALITY_PARTICLES = [4000, 8000, 22000, 40000, 60000];
 const QUALITY_WAVE_STEP = [18, 14, 10, 7, 5];
@@ -211,14 +210,7 @@ export default function HeroSketch({ fontData = [] }) {
         needsFontRedrawRef.current = false;
       }
       const w = offCanvas.width, h = offCanvas.height;
-      const rawLines = (typed || DEFAULT_WORD).split('\n');
-      const lines = W < 600
-        ? rawLines.flatMap(line => {
-            const chunks = [];
-            for (let i = 0; i < line.length; i += 4) chunks.push(line.slice(i, i + 4));
-            return chunks.length ? chunks : [''];
-          })
-        : rawLines;
+      const lines = (typed || DEFAULT_WORD).split('\n');
       const fonts = loadedFontsRef.current;
       offCtx.clearRect(0, 0, w, h);
       offCtx.fillStyle = '#000';
