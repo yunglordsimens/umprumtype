@@ -139,31 +139,6 @@ const isActive = (prefix: string) =>
           if (e.key === 'Escape') closeMenu();
         });
 
-        // Swipe down on open menu to close
-        const links = document.getElementById('siteNavLinks');
-        if (links) {
-          let touchStartY = 0;
-          links.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
-          links.addEventListener('touchend', e => {
-            if (e.changedTouches[0].clientY - touchStartY > 60) closeMenu();
-          }, { passive: true });
-        }
-
-        // Swipe down on the nav bar to open menu
-        let openStartY = 0, openStartX = 0;
-        nav.addEventListener('touchstart', e => {
-          openStartY = e.touches[0].clientY;
-          openStartX = e.touches[0].clientX;
-        }, { passive: true });
-        nav.addEventListener('touchend', e => {
-          if (nav.dataset.menu === 'open') return;
-          const dy = e.changedTouches[0].clientY - openStartY;
-          const dx = Math.abs(e.changedTouches[0].clientX - openStartX);
-          if (dy > 40 && dx < 60) {
-            nav.dataset.menu = 'open';
-            burger?.setAttribute('aria-expanded', 'true');
-          }
-        }, { passive: true });
       }
     </script>
   </body>
