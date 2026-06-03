@@ -47,8 +47,7 @@ const isActive = (prefix: string) =>
         <button class="site-nav__burger" type="button" aria-label="Menu" aria-controls="siteNavLinks" aria-expanded="false"></button>
         <ul class="site-nav__links" id="siteNavLinks">
           <li class="site-nav__search-mobile"><SearchIsland client:load /></li>
-          <li class="site-nav__home-item"><a href="/" aria-current={isActive('/') && pathname === '/' ? 'page' : undefined}>Home</a></li>
-          <li><a href="/typefaces" aria-current={isActive('/typefaces') ? 'page' : undefined}>Typefaces</a></li>
+<li><a href="/typefaces" aria-current={isActive('/typefaces') ? 'page' : undefined}>Typefaces</a></li>
           <li><a href="/projects"  aria-current={isActive('/projects')  ? 'page' : undefined}>Projects</a></li>
           <li><a href="/journal"   aria-current={isActive('/journal')   ? 'page' : undefined}>Journal</a></li>
           <li><a href="/store"     aria-current={isActive('/store')     ? 'page' : undefined}>Store</a></li>
