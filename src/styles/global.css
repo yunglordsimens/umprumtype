@@ -200,7 +200,7 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
 
 @media (max-width: 720px) {
   .site-nav__inner { padding-inline: var(--space-5); }
-  .site-nav__burger { display: block; order: -1; }
+  .site-nav__burger { display: block; margin-left: auto; }
   .site-nav__links {
     position: fixed;
     inset: var(--nav-h) 0 0 0;
