@@ -273,7 +273,7 @@ export default function HeroSketch({ fontData = [] }) {
     }
 
     // ── frame loop ──
-    const FRAME_MS = reducedMotion ? 125 : 1000 / 30;
+    const FRAME_MS = reducedMotion ? 125 : 1000 / 60;
     let lastTs = 0, frameCount = 0, rafId;
 
     function loop(ts) {
@@ -292,7 +292,7 @@ export default function HeroSketch({ fontData = [] }) {
       ctx.fillRect(0, 0, W, H);
       if (!pixelData) return;
 
-      const time = frameCount * 0.015;
+      const time = frameCount * 0.022;
       const fgCSS = toCSSColor(fg);
 
       if (cur === 'dots') {
@@ -315,11 +315,11 @@ export default function HeroSketch({ fontData = [] }) {
               x -= Math.cos(angle) * force * 5 - Math.cos(angle + HALF_PI) * force * 15;
               y -= Math.sin(angle) * force * 5 - Math.sin(angle + HALF_PI) * force * 15;
             } else {
-              x += (bx - x) * 0.008; y += (by - y) * 0.008;
+              x += (bx - x) * 0.014; y += (by - y) * 0.014;
             }
           } else {
             const ex = bx - x, ey = by - y;
-            if (ex * ex + ey * ey > 0.04) { x += ex * 0.008; y += ey * 0.008; }
+            if (ex * ex + ey * ey > 0.04) { x += ex * 0.014; y += ey * 0.014; }
           }
           dotsX[i] = x; dotsY[i] = y;
           dotPath.moveTo(x + 1.5, y);
