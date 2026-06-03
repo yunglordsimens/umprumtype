@@ -9,6 +9,20 @@ const PALETTE_CYCLE = [
 ];
 const PALETTE_LABELS = { mono: 'B/W', 'yellow-dark': 'Y/B', 'yellow-light': 'B/Y' };
 
+const QUALITY_PARTICLES = [4000, 8000, 22000, 40000, 60000];
+const QUALITY_WAVE_STEP = [18, 14, 10, 7, 5];
+
+function detectQuality() {
+  if (typeof window === 'undefined') return 3;
+  const isMobile = 'ontouchstart' in window && window.innerWidth < 1024;
+  if (isMobile) return 2;
+  const cores = navigator.hardwareConcurrency ?? 4;
+  const mem = navigator.deviceMemory ?? 4;
+  if (cores >= 8 && mem >= 8) return 4;
+  if (cores >= 4) return 3;
+  return 2;
+}
+
 function toCSSColor(c) { return Array.isArray(c) ? `rgb(${c[0]},${c[1]},${c[2]})` : `rgb(${c},${c},${c})`; }
 
 // deterministic font assignment per character position
@@ -40,17 +54,17 @@ export default function HeroSketch({ fontData = [] }) {
     return () => mq.removeEventListener('change', h);
   }, []);
 
-  const [perfMode, setPerfMode] = useState('hi');
+  const [quality, setQuality] = useState(() => detectQuality());
 
   const colorsRef          = useRef({ bg: 28, fg: 235 });
   const effectRef          = useRef(effect);
-  const perfModeRef        = useRef(perfMode);
+  const qualityRef         = useRef(quality);
   const loadedFontsRef     = useRef([]);
   const charFontMapRef     = useRef(null);
   const needsFontRedrawRef = useRef(false);
 
   useEffect(() => { effectRef.current = effect; }, [effect]);
-  useEffect(() => { perfModeRef.current = perfMode; }, [perfMode]);
+  useEffect(() => { qualityRef.current = quality; }, [quality]);
 
   useEffect(() => {
     if (palette === 'yellow-dark') {
@@ -101,7 +115,7 @@ export default function HeroSketch({ fontData = [] }) {
 
     let nDots = 0;
     let dotsX = null, dotsY = null, dotsBX = null, dotsBY = null;
-    let dotsDirty = false, prevEffect = '', prevPerfMode = perfModeRef.current;
+    let dotsDirty = false, prevEffect = '', prevPerfMode = qualityRef.current;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const HALF_PI = Math.PI / 2;
     const TWO_PI  = Math.PI * 2;
@@ -244,9 +258,9 @@ export default function HeroSketch({ fontData = [] }) {
       // work in buffer space, then scale to screen
       const bw = offCanvas.width, bh = offCanvas.height;
       const inv = 1 / bufScale; // buffer → screen scale
-      const MAX_PARTICLES = perfModeRef.current === 'lo' ? 8000 : 60000;
+      const MAX_PARTICLES = QUALITY_PARTICLES[qualityRef.current - 1];
       const totalPixels = bw * bh;
-      let step = perfModeRef.current === 'lo' ? Math.max(2, Math.round(bw / 500)) : 1;
+      let step = qualityRef.current <= 2 ? Math.max(2, Math.round(bw / 500)) : 1;
       while ((totalPixels / (step * step)) > MAX_PARTICLES) step++;
       const MAX_D = MAX_PARTICLES;
       const txs = [], tys = [];
@@ -291,7 +305,7 @@ export default function HeroSketch({ fontData = [] }) {
       lastTs = ts - (dt % FRAME_MS);
       frameCount++;
 
-      if (perfModeRef.current !== prevPerfMode) { prevPerfMode = perfModeRef.current; dotsDirty = true; }
+      if (qualityRef.current !== prevPerfMode) { prevPerfMode = qualityRef.current; dotsDirty = true; }
       if (needsRedraw || needsFontRedrawRef.current) renderTextToBuffer();
 
       const cur = effectRef.current;
@@ -362,7 +376,7 @@ export default function HeroSketch({ fontData = [] }) {
         ctx.translate(offX, offY);
         ctx.beginPath(); // single path — single GPU flush for ALL rows
 
-        const waveStep = perfModeRef.current === 'lo' ? 14 : 7;
+        const waveStep = QUALITY_WAVE_STEP[qualityRef.current - 1];
         for (let a = -extY; a < H + extY; a += waveStep) {
           // hoist a-dependent terms outside inner loop
           const a04s  = a * 0.4 * stretch;
@@ -426,9 +440,13 @@ export default function HeroSketch({ fontData = [] }) {
             {PALETTE_LABELS[palette]}
           </button>
           <span className="tf-sort__divider" />
-          {['lo', 'hi'].map(m => (
-            <button key={m} aria-pressed={perfMode === m} onClick={() => setPerfMode(m)}>{m}</button>
-          ))}
+          <input
+            type="range" min="1" max="5" step="1"
+            value={quality}
+            onChange={e => setQuality(+e.target.value)}
+            className="hero-quality-slider"
+            aria-label="Performance quality"
+          />
         </div>
       </div>
     </div>

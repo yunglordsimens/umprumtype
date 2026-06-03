@@ -2066,6 +2066,37 @@ body.home-page .site-footer { display: none; }
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
+.hero-quality-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 64px;
+  height: 2px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  margin: 0 2px;
+  align-self: center;
+}
+.hero-quality-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  cursor: pointer;
+}
+.hero-quality-slider::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  cursor: pointer;
+}
+.hero-controls--light .hero-quality-slider { background: rgba(0,0,0,0.2); }
+.hero-controls--light .hero-quality-slider::-webkit-slider-thumb { background: rgba(0,0,0,0.8); }
+.hero-controls--light .hero-quality-slider::-moz-range-thumb { background: rgba(0,0,0,0.8); }
 
 /* Dark system → site is dark → homepage is LIGHT (always contrasting) */
 @media (prefers-color-scheme: dark) {
