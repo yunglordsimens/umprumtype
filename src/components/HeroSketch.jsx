@@ -417,7 +417,7 @@ export default function HeroSketch({ fontData = [] }) {
         }
         typed = typed.slice(0, -1);
         redraw();
-        typewriterTimer = setTimeout(eraseChar, 70 + Math.random() * 40);
+        typewriterTimer = setTimeout(eraseChar, 150 + Math.random() * 80);
       }
       eraseChar();
     }
