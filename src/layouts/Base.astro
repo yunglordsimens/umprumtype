@@ -46,6 +46,7 @@ const isActive = (prefix: string) =>
         <a href="/" class="site-nav__logo">UMPRUM Type</a>
         <button class="site-nav__burger" type="button" aria-label="Menu" aria-controls="siteNavLinks" aria-expanded="false"></button>
         <ul class="site-nav__links" id="siteNavLinks">
+          <li class="site-nav__home-item"><a href="/" aria-current={isActive('/') && pathname === '/' ? 'page' : undefined}>Home</a></li>
           <li><a href="/typefaces" aria-current={isActive('/typefaces') ? 'page' : undefined}>Typefaces</a></li>
           <li><a href="/projects"  aria-current={isActive('/projects')  ? 'page' : undefined}>Projects</a></li>
           <li><a href="/journal"   aria-current={isActive('/journal')   ? 'page' : undefined}>Journal</a></li>
@@ -137,6 +138,16 @@ const isActive = (prefix: string) =>
         window.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') closeMenu();
         });
+
+        // Swipe down to close menu
+        const links = document.getElementById('siteNavLinks');
+        if (links) {
+          let touchStartY = 0;
+          links.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+          links.addEventListener('touchend', e => {
+            if (e.changedTouches[0].clientY - touchStartY > 60) closeMenu();
+          }, { passive: true });
+        }
       }
     </script>
   </body>

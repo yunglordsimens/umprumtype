@@ -173,6 +173,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-7) 0; }
   color: var(--text);
   text-decoration: none;
 }
+.site-nav__home-item { display: none; }
 .site-nav__burger {
   display: none;
   width: 32px;
@@ -202,6 +203,7 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
   .site-nav__inner { padding-inline: var(--space-5); position: relative; }
   .site-nav__burger { display: block; order: -1; }
   .site-nav__logo { position: absolute; left: 50%; transform: translateX(-50%); }
+  .site-nav__home-item { display: block; }
   .site-nav__links {
     position: fixed;
     inset: var(--nav-h) 0 0 0;
