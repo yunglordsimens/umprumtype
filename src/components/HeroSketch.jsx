@@ -127,7 +127,8 @@ export default function HeroSketch({ fontData = [] }) {
     ctx.imageSmoothingEnabled = false;
     container.appendChild(canvas);
 
-    let W = window.innerWidth, H = window.innerHeight;
+    let W = container.offsetWidth || window.innerWidth;
+    let H = container.offsetHeight || window.innerHeight;
     canvas.width = W; canvas.height = H;
 
     // ── cached wave geometry — recomputed only on resize ──
@@ -176,7 +177,8 @@ export default function HeroSketch({ fontData = [] }) {
 
     // ── resize ──
     const onResize = () => {
-      W = window.innerWidth; H = window.innerHeight;
+      W = container.offsetWidth || window.innerWidth;
+      H = container.offsetHeight || window.innerHeight;
       canvas.width = W; canvas.height = H;
       resizeBuffer(W, H);
       updateWaveCache();
