@@ -440,6 +440,7 @@ export default function HeroSketch({ fontData = [] }) {
             {PALETTE_LABELS[palette]}
           </button>
           <span className="tf-sort__divider" />
+          <span className="hero-quality-label">перформанс анимации</span>
           <input
             type="range" min="1" max="5" step="1"
             value={quality}

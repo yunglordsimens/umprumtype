@@ -2067,6 +2067,11 @@ body.home-page .site-footer { display: none; }
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
+.hero-quality-label {
+  font-size: var(--step--2);
+  opacity: 0.5;
+  white-space: nowrap;
+}
 .hero-quality-slider {
   -webkit-appearance: none;
   appearance: none;
