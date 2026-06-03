@@ -2308,7 +2308,6 @@ body.lib-page #main {
 }
 .lib-toolbar__row { display: flex; align-items: center; gap: 8px; }
 .lib-toolbar__row--top { flex: 1; }
-.lib-toolbar__row--top .lib-search-input { flex: 1; width: auto; }
 @media (max-width: 720px) {
   .lib-toolbar--library {
     height: auto; flex-direction: column;
