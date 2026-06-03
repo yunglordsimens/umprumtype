@@ -399,7 +399,7 @@ export default function HeroSketch({ fontData = [] }) {
       const target = PHRASES[phraseIdx];
       let i = 0;
       function typeChar() {
-        if (i >= target.length) { typewriterTimer = setTimeout(erasePhrase, 10000); return; }
+        if (i >= target.length) { typewriterTimer = setTimeout(erasePhrase, 7000); return; }
         const ch = target[i++];
         typed += ch;
         redraw();
