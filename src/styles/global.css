@@ -192,7 +192,7 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
 @media (max-width: 720px) {
   .site-nav { background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; height: auto; }
   .site-nav__inner { padding-inline: var(--space-5); padding-block: 14px; position: relative; flex-wrap: wrap; height: auto; align-items: center; align-content: flex-start; }
-  .site-nav__burger { display: block; }
+  .site-nav__burger { display: block; margin-left: auto; }
   .site-nav__logo { }
   .site-nav__home-item { display: none; }
   .site-nav__search-mobile { display: block; width: 100%; }
