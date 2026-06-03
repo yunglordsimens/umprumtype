@@ -441,8 +441,8 @@ export default function HeroSketch({ fontData = [] }) {
           </button>
           <span className="tf-sort__divider" />
           <span className="hero-quality-label">
-            <span className="hero-quality-label__full">anim. perf.</span>
-            <span className="hero-quality-label__short">PA</span>
+            <span className="hero-quality-label__full">Animation performance</span>
+            <span className="hero-quality-label__short">AP</span>
           </span>
           <input
             type="range" min="1" max="5" step="1"
