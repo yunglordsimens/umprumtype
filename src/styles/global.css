@@ -196,6 +196,9 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
   .site-nav__logo { }
   .site-nav__home-item { display: none; }
   .site-nav__search-mobile { display: block; width: 100%; }
+  .site-nav__search-mobile .site-search,
+  .site-nav__search-mobile .site-search__wrap { width: 100%; }
+  .site-nav__search-mobile .site-search__input { width: 100%; box-sizing: border-box; border-radius: var(--radius); }
   .site-nav__links {
     position: static;
     flex: 0 0 100%;
@@ -2131,10 +2134,8 @@ body.home-page .site-footer { display: none; }
 
 /* Light system — dark homepage (default) */
 body.home-page .site-nav {
-  background: rgba(0, 0, 0, 0.6);
+  background: #111118;
   border-bottom-color: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
 }
 body.home-page .site-nav__logo,
 body.home-page .site-nav__links a {
