@@ -29,13 +29,15 @@ collections:
     delete: true
     slug: "{{slug}}"
     extension: "md"
+    media_folder: "/public/fonts/{{slug}}"
+    public_folder: "/fonts/{{slug}}"
     summary: "{{name}} — {{designer}}, {{year}}"
     sortable_fields: ["name", "designer", "year"]
     fields:
       - label: "Name"
         name: "name"
         widget: "string"
-        hint: "Display name exactly as it appears on the specimen page."
+        hint: "Display name of the typeface."
 
       - label: "Designer"
         name: "designer"
@@ -47,6 +49,61 @@ collections:
         value_type: "int"
         min: 2000
         max: 2100
+
+      - label: "Font files (.woff2)"
+        name: "fonts"
+        widget: "list"
+        required: false
+        hint: "Upload each .woff2 variant. Files go to public/fonts/{slug}/."
+        fields:
+          - label: "File"
+            name: "file"
+            widget: "file"
+            hint: "Upload .woff2 file"
+            media_library:
+              config:
+                multiple: false
+          - label: "Variant name"
+            name: "variant"
+            widget: "string"
+            default: "Regular"
+            hint: "e.g. Regular, Bold, Light Italic"
+          - label: "Weight"
+            name: "weight"
+            widget: "number"
+            default: 400
+            hint: "100 = Thin, 300 = Light, 400 = Regular, 700 = Bold, 900 = Black"
+          - label: "Style"
+            name: "style"
+            widget: "select"
+            options: ["normal", "italic"]
+            default: "normal"
+
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        required: false
+        default: []
+        hint: "e.g. serif, display, experimental, text"
+
+      - label: "Description"
+        name: "description"
+        widget: "text"
+        required: false
+        hint: "About the typeface — shown on the specimen page."
+
+      - label: "Specimen headline"
+        name: "mainText"
+        widget: "string"
+        required: false
+        hint: "Short phrase displayed large on specimen page."
+
+      - label: "Preview size"
+        name: "mainSize"
+        widget: "string"
+        default: "6em"
+        required: false
+        hint: "e.g. 6em, 4em — controls size in the typeface tile."
 
       - label: "Designer URL"
         name: "authorUrl"
@@ -65,43 +122,17 @@ collections:
         widget: "string"
         required: false
 
-      - label: "Preview size (em)"
-        name: "mainSize"
-        widget: "string"
-        default: "6"
-        required: false
-        hint: "Base size for the preview text in the tile and tester. 6em = 96px default."
-
-      - label: "Specimen headline"
-        name: "mainText"
-        widget: "string"
-        required: false
-        hint: "Short phrase displayed large on the specimen page. Overrides info.txt mainText."
-
-      - label: "About the typeface"
-        name: "aboutFont"
-        widget: "text"
-        required: false
-        hint: "One or two paragraphs. Overrides info.txt aboutFont."
-
-      - label: "Tags"
-        name: "tags"
-        widget: "list"
-        required: false
-        default: []
-        hint: "e.g. serif, display, experimental"
-
       - label: "Featured on homepage"
         name: "featured"
         widget: "boolean"
         default: false
-        hint: "Featured typefaces appear first in the homepage bento grid."
+        hint: "Featured typefaces appear first in the homepage grid."
 
       - label: "Notes (internal)"
         name: "body"
         widget: "markdown"
         required: false
-        hint: "Internal editorial notes. Not shown on the public site."
+        hint: "Internal notes. Not shown on the public site."
 
   # -------------------------------------------------------------------------
   # PROJECTS

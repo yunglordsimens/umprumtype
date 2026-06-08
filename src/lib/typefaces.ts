@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import { join, extname, basename } from 'path';
+import yaml from 'js-yaml';
 
 export interface OtfVariant {
   filename: string;
@@ -91,6 +92,21 @@ function parseInfoTxt(content: string): Record<string, string> {
   return result;
 }
 
+const CONTENT_DIR = join(process.cwd(), 'src', 'content', 'typefaces');
+
+function readMarkdownMeta(slug: string): Record<string, any> {
+  const mdPath = join(CONTENT_DIR, `${slug}.md`);
+  if (!existsSync(mdPath)) return {};
+  try {
+    const raw = readFileSync(mdPath, 'utf-8');
+    const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    if (!match) return {};
+    return (yaml.load(match[1]) as Record<string, any>) ?? {};
+  } catch {
+    return {};
+  }
+}
+
 let _cache: TypefaceData[] | null = null;
 
 export function getAllTypefaces(): TypefaceData[] {
@@ -103,6 +119,7 @@ export function getAllTypefaces(): TypefaceData[] {
     .map(dir => {
       const folderName = dir.name;
       const folderPath = join(FONTS_DIR, folderName);
+      const slug = toSlug(folderName);
 
       const files = readdirSync(folderPath);
       const otfFiles = files.filter(f => extname(f).toLowerCase() === '.woff2').sort();
@@ -118,10 +135,11 @@ export function getAllTypefaces(): TypefaceData[] {
       if (existsSync(infoPath)) {
         try {
           info = parseInfoTxt(readFileSync(infoPath, 'utf-8'));
-        } catch {
-          // ignore read/parse errors
-        }
+        } catch { /* ignore */ }
       }
+
+      // Markdown frontmatter overrides info.txt
+      const md = readMarkdownMeta(slug);
 
       const styleTexts: string[] = [];
       for (let i = 0; info[`styleText${i}`] !== undefined; i++) {
@@ -132,24 +150,31 @@ export function getAllTypefaces(): TypefaceData[] {
       const defaultVariant = otfVariants[mainStyleNo] ?? otfVariants[0] ?? null;
 
       const rawTags = (info['tags'] ?? '').trim();
-      const tags =
-        !rawTags || rawTags === '---'
-          ? []
-          : rawTags.split(',').map(t => t.trim()).filter(Boolean);
+      const infoTags = !rawTags || rawTags === '---'
+        ? []
+        : rawTags.split(',').map(t => t.trim()).filter(Boolean);
+      const mdTags = Array.isArray(md.tags) ? md.tags.map(String) : [];
+      const tags = mdTags.length ? mdTags : infoTags;
+
+      const mdAboutDesigner = [
+        md.designer || info['designer']?.trim() || '',
+        md.authorUrl ? `<a href="${md.authorUrl}">${md.authorUrl.replace(/^https?:\/\//, '')}</a>` : '',
+        md.authorEmail ? `<a href="mailto:${md.authorEmail}">${md.authorEmail}</a>` : '',
+      ].filter(Boolean).join('<br>');
 
       return {
-        slug: toSlug(folderName),
+        slug,
         folderName,
-        title: info['name']?.trim() || folderName,
-        designer: info['designer']?.trim() || 'Unknown',
-        year: info['date'] ? parseInt(info['date'].trim(), 10) || null : null,
-        mainText: info['mainText']?.trim() || '',
-        mainSize: info['mainSize']?.trim() || '6em',
+        title: (md.name as string) || info['name']?.trim() || folderName,
+        designer: (md.designer as string) || info['designer']?.trim() || 'Unknown',
+        year: (md.year as number) || (info['date'] ? parseInt(info['date'].trim(), 10) || null : null),
+        mainText: (md.mainText as string) || info['mainText']?.trim() || '',
+        mainSize: md.mainSize ? String(md.mainSize) : info['mainSize']?.trim() || '6em',
         styleTexts,
         styleSize: info['styleSize']?.trim() || '4em',
         mainStyleNo,
-        aboutFont: info['aboutFont']?.trim() || '',
-        aboutDesigner: info['aboutDesigner']?.trim() || '',
+        aboutFont: (md.description as string) || info['aboutFont']?.trim() || '',
+        aboutDesigner: info['aboutDesigner']?.trim() || mdAboutDesigner,
         tags,
         otfVariants,
         defaultVariant,
