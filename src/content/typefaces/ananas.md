@@ -21,7 +21,7 @@ description: Ananas began as an idea to create a serif counterpart to a
   approaches with a constructed primitivism. Its simplified, dynamic forms are
   designed to be both distinctive and highly functional, offering strong
   readability across various sizes and long texts.
-mainSize: 4em
+mainSize: "4"
 authorUrl: https://www.jaromirkveton.com
 classification: serif
 scripts:
