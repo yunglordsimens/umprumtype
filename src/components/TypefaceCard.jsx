@@ -96,9 +96,6 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
         onClick={onOpen}
         aria-expanded={isOpen}
       >
-        {tf.tags?.length > 0 && (
-          <span className="tfa-trigger__tags">{tf.tags.join(' · ')}</span>
-        )}
         <span className="tfa-trigger__meta-inline">
           <span className="tfa-trigger__meta-name">{tf.title}</span>
           {tf.designer && <span className="tfa-trigger__meta-designer">{tf.designer}</span>}
