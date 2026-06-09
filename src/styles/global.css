@@ -907,8 +907,9 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
   letter-spacing: 0.1em;
   color: var(--text-muted);
   margin-bottom: 0.5em;
-  display: block;
+  display: none;
 }
+.tfa-trigger.is-open .tfa-trigger__tags { display: block; }
 .tfa-trigger__meta-inline {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
