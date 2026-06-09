@@ -2333,19 +2333,8 @@ body.lib-page #main {
   .lib-toolbar--library .lib-toolbar__row--top { padding: var(--space-2) 0; }
   .lib-toolbar--library .lib-toolbar__row--sorts { padding: var(--space-2) 0; border-top: 1px solid var(--border); }
 }
-.lib-filter-btn-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  flex-shrink: 0;
-}
-.lib-filter-btn-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
 .lib-filter-btn {
+  flex-shrink: 0;
   display: flex; align-items: center; gap: 8px;
   font-size: 0.875rem; font-weight: 500;
   background: none; border: none; cursor: pointer;
@@ -2403,9 +2392,9 @@ body.lib-page #main {
 }
 .tf-tags-panel__inner {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 16px var(--space-5);
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px var(--space-5) 16px;
 }
 .tf-tags-panel__chips {
   flex: 1;
@@ -2438,8 +2427,6 @@ body.lib-page #main {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-shrink: 0;
-  padding-top: 2px;
 }
 .tf-tags-clear {
   font-size: 0.8125rem;
