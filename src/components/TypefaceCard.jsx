@@ -107,6 +107,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
             fontFamily: `"${fam}", var(--font-ui)`,
             fontWeight: current?.weight || 400,
             fontStyle: current?.style || 'normal',
+            fontSize: tf.mainSize || '6em',
           }}
         >
           {tf.styleTexts[0] || tf.mainText || tf.title}
