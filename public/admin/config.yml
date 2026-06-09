@@ -103,7 +103,7 @@ collections:
         widget: "string"
         default: "6em"
         required: false
-        hint: "e.g. 6em, 4em — controls size in the typeface tile."
+        hint: "Controls font size in the collapsed typeface row. Recommended: 3em (small/dense text fonts), 4em (text fonts), 5em (default), 6em (display), 8em (very large display), 10em (headline/poster). Use larger values for fonts with small x-height or thin strokes."
 
       - label: "Designer URL"
         name: "authorUrl"
