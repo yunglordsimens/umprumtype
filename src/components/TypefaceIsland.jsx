@@ -131,10 +131,22 @@ export default function TypefaceIsland({ typefaces }) {
       <div className="lib-main">
 
         <header className="lib-toolbar">
-          <button className="lib-filter-btn" onClick={() => setShowTags(f => !f)} aria-pressed={showTags}>
-            <span className="lib-filter-btn__label">Tags</span>
-            {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
-          </button>
+          <div className="lib-filter-btn-wrap">
+            <button className="lib-filter-btn" onClick={() => setShowTags(f => !f)} aria-pressed={showTags}>
+              <span className="lib-filter-btn__label">Tags</span>
+              {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
+            </button>
+            {showTags && (
+              <div className="lib-filter-btn-actions">
+                {activeTags.length > 0 && (
+                  <button className="tf-tags-clear" onClick={() => { captureFlip(); setActiveTags([]); }}>Clear</button>
+                )}
+                <button className="tf-tags-close" onClick={() => setShowTags(false)} aria-label="Close tags">
+                  <CloseIcon />
+                </button>
+              </div>
+            )}
+          </div>
 
           <div className="tf-sort">
             {SORTS.map(s => (
@@ -171,20 +183,6 @@ export default function TypefaceIsland({ typefaces }) {
                   {tag}
                 </button>
               ))}
-            </div>
-            <div className="tf-tags-panel__actions">
-              {activeTags.length > 0 && (
-                <button className="tf-tags-clear" onClick={() => { captureFlip(); setActiveTags([]); }}>
-                  Clear
-                </button>
-              )}
-              <button
-                className="tf-tags-close"
-                onClick={() => setShowTags(false)}
-                aria-label="Close tags"
-              >
-                <CloseIcon />
-              </button>
             </div>
           </div>
         </div>
