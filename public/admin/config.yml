@@ -96,7 +96,7 @@ collections:
         name: "mainText"
         widget: "string"
         required: false
-        hint: "Short phrase displayed large on specimen page."
+        hint: "Text shown in the collapsed preview row AND as the starting text in the expanded specimen (editable by visitor). If empty, falls back to the typeface name."
 
       - label: "Preview size"
         name: "mainSize"
