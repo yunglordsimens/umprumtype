@@ -166,7 +166,7 @@ export function getAllTypefaces(): TypefaceData[] {
         slug,
         folderName,
         title: (md.name as string) || info['name']?.trim() || folderName,
-        designer: (md.designer as string) || info['designer']?.trim() || 'Unknown',
+        designer: (md.author as string) || (md.designer as string) || info['designer']?.trim() || 'Unknown',
         year: (md.year as number) || (info['date'] ? parseInt(info['date'].trim(), 10) || null : null),
         mainText: (md.mainText as string) || info['mainText']?.trim() || '',
         mainSize: md.mainSize ? String(md.mainSize) : info['mainSize']?.trim() || '6em',
