@@ -1,10 +1,29 @@
 ---
 mode: text
+year: 2024
 fonts:
   - variant: Regular
     file: /fonts/Aft-Regular.woff2
     style: normal
     weight: 400
+tags:
+  - serif
+  - text
+  - experimental
+description: Constructed. Dynamic. Primitive. Aft draws inspiration from Tyfa
+  Text – its refined, simplified forms that break from traditional calligraphy.
+  Its monolinear, tapering strokes, curved arches, and minimal or absent serifs
+  make the uppercase E nearly sans-serif. Aft combines Tyfa's design with a
+  pursuit of primitiveness, influenced by experiments in micro-legibility by
+  Émile Javal and Charles Dreyfuss, as well as Daniel Fisset's research on
+  dyslexic typefaces. While these influences are primarily aesthetic, the
+  typeface remains legible at small sizes. Rather than avoiding print errors, it
+  embraces them as visual input. Serifs and shapes merge into solid forms, with
+  a focus on stroke endings and letter recognition over fine detail. The
+  distinctive lowercase g exemplifies its use of unique proportions – an
+  approach applied across the alphabet to form a unified system of abstract
+  strokes.
+mainSize: "5"
 authorUrl: https://www.jaromirkveton.com
 classification: serif
 scripts:
@@ -26,28 +45,9 @@ specimens:
     Landauer!
 name: Aft
 designer: Jaromir Kveton
-mainSize: "15"
 featured: false
 tagline: Brief glitches
 order: 6
 authorEmail: hello@jaromirkveton.com
-tags:
-  - serif
-  - text
-  - experimental
-description: Constructed. Dynamic. Primitive. Aft draws inspiration from Tyfa
-  Text – its refined, simplified forms that break from traditional calligraphy.
-  Its monolinear, tapering strokes, curved arches, and minimal or absent serifs
-  make the uppercase E nearly sans-serif. Aft combines Tyfa's design with a
-  pursuit of primitiveness, influenced by experiments in micro-legibility by
-  Émile Javal and Charles Dreyfuss, as well as Daniel Fisset's research on
-  dyslexic typefaces. While these influences are primarily aesthetic, the
-  typeface remains legible at small sizes. Rather than avoiding print errors, it
-  embraces them as visual input. Serifs and shapes merge into solid forms, with
-  a focus on stroke endings and letter recognition over fine detail. The
-  distinctive lowercase g exemplifies its use of unique proportions – an
-  approach applied across the alphabet to form a unified system of abstract
-  strokes.
-year: 2024
 purchasable: false
 ---
