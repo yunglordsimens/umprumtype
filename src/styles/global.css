@@ -2839,6 +2839,22 @@ body.lib-page #main {
 /* Mobile: panels become fixed overlays */
 @media (max-width: 767px) {
   .lib-toolbar { padding: 0 var(--space-5); height: 48px; }
+  .lib-toolbar:not(.lib-toolbar--library) {
+    height: auto;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-5);
+    row-gap: var(--space-1);
+  }
+  .lib-toolbar:not(.lib-toolbar--library) .tf-sort {
+    flex-wrap: wrap;
+    width: 100%;
+    flex-shrink: 1;
+    justify-content: flex-start;
+    row-gap: var(--space-1);
+  }
+  .lib-toolbar:not(.lib-toolbar--library) .tf-sort__divider { display: none; }
+  .lib-toolbar:not(.lib-toolbar--library) .lib-toolbar-count { margin-left: auto; }
   .lib-scroll { padding: 32px 20px 40px; }
   .tf-island__scroll,
   .post-island__scroll { padding: 0; }
