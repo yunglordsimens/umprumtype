@@ -238,8 +238,13 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
     border: 1px solid var(--border);
     color: var(--text-muted);
   }
-  .site-nav__links a[aria-current="page"],
   .site-nav__links a:hover { color: var(--text); border-color: var(--text); text-decoration: none; }
+  .site-nav__links a[aria-current="page"] {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+    text-decoration: none;
+  }
   .site-nav[data-menu="open"] .site-nav__links {
     max-height: 300px;
     padding: var(--space-3) 0;
