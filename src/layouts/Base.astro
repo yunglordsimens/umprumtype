@@ -66,7 +66,7 @@ const isActive = (prefix: string) =>
       <slot />
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer" id="siteFooter" data-expanded={isActive('/info') ? 'true' : 'false'}>
       <div class="container site-footer__inner">
         <span>Umprum Type</span>
         <span>Prague · {year}</span>
@@ -142,6 +142,13 @@ const isActive = (prefix: string) =>
         });
 
       }
+
+      // Footer toggle (click locks expand; second click closes)
+      const siteFooter = document.getElementById('siteFooter');
+      siteFooter?.addEventListener('click', () => {
+        const open = siteFooter.dataset.expanded === 'true';
+        siteFooter.dataset.expanded = open ? 'false' : 'true';
+      });
     </script>
   </body>
 </html>

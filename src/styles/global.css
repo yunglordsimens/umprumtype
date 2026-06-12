@@ -334,6 +334,7 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
   padding: var(--space-3) 0;
   color: var(--text-muted);
   font-size: var(--step--1);
+  cursor: pointer;
 }
 .site-footer__inner {
   display: flex;
@@ -349,25 +350,37 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
   font-size: var(--step--1);
 }
 .site-footer__naki-rule {
-  margin-top: var(--space-3);
-  border-top: 1px solid var(--border);
+  margin-top: 0;
+  border-top: 1px solid transparent;
+  transition: margin-top var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 .site-footer__naki {
   max-width: none;
-  padding-top: var(--space-4);
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  overflow: hidden;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-5);
   font-size: var(--step--3);
   color: var(--text-subtle);
+  transition: max-height var(--dur) var(--ease), opacity var(--dur) var(--ease), padding-top var(--dur) var(--ease);
 }
 .site-footer__naki p { margin: 0; font-size: inherit; }
-@media (max-width: 720px) {
-  .site-footer__naki { grid-template-columns: 1fr; gap: var(--space-3); }
+.site-footer:hover .site-footer__naki-rule,
+.site-footer[data-expanded="true"] .site-footer__naki-rule {
+  margin-top: var(--space-3);
+  border-top-color: var(--border);
+}
+.site-footer:hover .site-footer__naki,
+.site-footer[data-expanded="true"] .site-footer__naki {
+  max-height: 500px;
+  opacity: 1;
+  padding-top: var(--space-4);
 }
 @media (max-width: 720px) {
-  .site-footer__naki-rule,
-  .site-footer__naki { display: none; }
+  .site-footer__naki { grid-template-columns: 1fr; gap: var(--space-3); }
   .site-footer__inner { padding-inline: var(--space-5); }
 }
 
@@ -881,7 +894,7 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
 /* ---------- Typefaces accordion ---------- */
 .tfa-list {
   margin: 0;
-  padding: 0 var(--space-5);
+  padding: 0;
   list-style: none;
 }
 .tfa-item {
@@ -2019,9 +2032,9 @@ body.home-page {
   overflow: hidden;
   overscroll-behavior: none;
   height: 100dvh;
-  background: #111118;
+  background: #000;
   color: #f2f2ef;
-  --bg: #111118;
+  --bg: #000;
   --text: #f2f2ef;
   --text-muted: rgba(255,255,255,0.5);
   --text-subtle: rgba(255,255,255,0.3);
