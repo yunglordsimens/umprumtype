@@ -2054,21 +2054,15 @@ body.home-page #main {
 body.home-page .site-footer { display: none; }
 
 .hero-controls {
-  position: fixed;
-  top: var(--nav-h);
-  left: 0;
-  right: 0;
+  flex-shrink: 0;
   height: 48px;
   display: flex;
   align-items: center;
   padding: 0 var(--space-5);
   gap: 16px;
-  z-index: 10;
-  background: rgba(0, 0, 0, 0.38);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  color: rgba(255,255,255,0.7);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
 }
 .hero-controls .tf-sort button {
   color: rgba(255,255,255,0.65);

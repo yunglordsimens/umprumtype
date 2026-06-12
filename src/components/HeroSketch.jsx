@@ -456,8 +456,15 @@ export default function HeroSketch({ fontData = [] }) {
   const mobileSlot = typeof document !== 'undefined' && document.getElementById('anim-controls-slot');
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden' }} />
+    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
+      <div className={[
+        'hero-controls',
+        (palette === 'yellow-light' || (palette === 'mono' && isDark)) ? 'hero-controls--light' : '',
+        palette === 'yellow-light' ? 'hero-controls--yellow' : '',
+      ].filter(Boolean).join(' ')}>
+        {controls}
+      </div>
+      <div ref={containerRef} style={{ flex: 1, width: '100%', overflow: 'hidden', position: 'relative' }} />
       <p className="hero-type-hint">Try to type</p>
       {mobileSlot && createPortal(
         <div className="hero-controls-mobile">{controls}</div>,
