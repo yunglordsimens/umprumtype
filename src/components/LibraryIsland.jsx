@@ -179,7 +179,10 @@ export default function LibraryIsland() {
   const [loading, setLoading]         = useState(true);
   const [activeTags, setActiveTags]   = useState([]);
   const [showTags, setShowTags]       = useState(false);
-  const [viewMode, setViewMode]       = useState('grid');
+  const [viewMode, setViewMode]       = useState(() => {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches) return 'list';
+    return 'grid';
+  });
   const [openId, setOpenId]           = useState(null);
   const [sort, setSort]               = useState('title');
   const [sortDir, setSortDir]         = useState(1);

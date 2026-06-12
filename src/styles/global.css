@@ -2843,8 +2843,11 @@ body.lib-page #main {
   .tf-island__scroll,
   .post-island__scroll { padding: 0; }
   .store-island__scroll { padding-inline: 0; }
-  .lib-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); column-gap: 16px; row-gap: 16px; }
-  .lib-card__info { padding-bottom: 32px; }
+  .lib-grid { grid-template-columns: repeat(2, 1fr); column-gap: 16px; row-gap: 24px; }
+  .lib-card__info { padding-bottom: 24px; }
+  .lib-book { width: 100%; max-width: 140px; }
+  .lib-card__title { font-size: 0.8125rem; }
+  .lib-card__author { font-size: 0.6875rem; }
   .store-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); padding-inline: var(--space-4); gap: var(--space-6) var(--space-4); }
   .lib-filter.is-open {
     position: fixed; top: var(--nav-h); left: 0;
