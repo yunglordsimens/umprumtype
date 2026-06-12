@@ -113,6 +113,9 @@ const isActive = (prefix: string) =>
             } else if (Math.abs(dy) > threshold) {
               nav.dataset.hidden = dy > 0 ? 'true' : 'false';
             }
+            if (Math.abs(dy) > threshold && nav.dataset.menu === 'open') {
+              closeMenu();
+            }
             if (progress) {
               const h = document.documentElement.scrollHeight - window.innerHeight;
               const pct = h > 0 ? (y / h) * 100 : 0;
@@ -139,6 +142,10 @@ const isActive = (prefix: string) =>
         });
         window.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') closeMenu();
+        });
+        document.addEventListener('click', (e) => {
+          if (nav.dataset.menu !== 'open') return;
+          if (!nav.contains(e.target)) closeMenu();
         });
 
       }
