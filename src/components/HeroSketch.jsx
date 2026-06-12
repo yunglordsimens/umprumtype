@@ -458,13 +458,6 @@ export default function HeroSketch({ fontData = [] }) {
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden' }} />
-      <div className={[
-        'hero-controls',
-        (palette === 'yellow-light' || (palette === 'mono' && isDark)) ? 'hero-controls--light' : '',
-        palette === 'yellow-light' ? 'hero-controls--yellow' : '',
-      ].filter(Boolean).join(' ')}>
-        {controls}
-      </div>
       <p className="hero-type-hint">Try to type</p>
       {mobileSlot && createPortal(
         <div className="hero-controls-mobile">{controls}</div>,
