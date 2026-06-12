@@ -2,7 +2,7 @@ backend:
   name: github
   repo: yunglordsimens/umprumtype
   branch: main
-  base_url: https://decap-cms-oauth-gamma.vercel.app
+  base_url: https://typoumprum.cz
   auth_endpoint: api/auth
 
 media_folder: "public/uploads"
