@@ -210,7 +210,15 @@ export default function HeroSketch({ fontData = [] }) {
         needsFontRedrawRef.current = false;
       }
       const w = offCanvas.width, h = offCanvas.height;
-      const lines = (typed || DEFAULT_WORD).split('\n');
+      let lines = (typed || DEFAULT_WORD).split('\n');
+      if (W < 600) {
+        lines = lines.flatMap(line => {
+          if (line.length <= 4) return [line];
+          const chunks = [];
+          for (let i = 0; i < line.length; i += 4) chunks.push(line.slice(i, i + 4));
+          return chunks;
+        });
+      }
       const fonts = loadedFontsRef.current;
       offCtx.clearRect(0, 0, w, h);
       offCtx.fillStyle = '#000';
