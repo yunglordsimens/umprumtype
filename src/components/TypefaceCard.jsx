@@ -46,10 +46,13 @@ function VariantSpecimen({ variant, fam, initialSize, baseText, showLabel }) {
           columnCount: cols,
           columnGap: '1em',
           whiteSpace: cols > 1 ? 'normal' : 'nowrap',
-          overflow: 'hidden',
+          overflowX: cols > 1 ? 'hidden' : 'auto',
+          overflowY: cols > 1 ? 'auto' : 'hidden',
           maxHeight: cols > 1 ? '10lh' : undefined,
           display: 'block',
           outline: 'none',
+          WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-x pan-y',
         }}
       />
     </div>
