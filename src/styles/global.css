@@ -2467,6 +2467,9 @@ body.lib-page #main {
   height: 48px; display: flex; align-items: center;
   padding: 0 var(--space-5); gap: 16px; flex-shrink: 0;
   border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: relative;
+  z-index: 5;
 }
 .lib-toolbar__row { display: flex; align-items: center; gap: 8px; }
 .lib-toolbar__row--top { flex: 1; }
