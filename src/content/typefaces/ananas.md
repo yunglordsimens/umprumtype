@@ -10,18 +10,6 @@ fonts:
     file: /fonts/Ananas-Italic.woff2
     style: italic
     weight: 400
-tags:
-  - serif
-  - text
-  - renaissance
-description: Ananas began as an idea to create a serif counterpart to a
-  grotesque typeface. It reimagines sans-serif principles through the lens of
-  classic Renaissance typefaces without aiming for historical revival. Instead,
-  it explores their contemporary interpretation by merging traditional
-  approaches with a constructed primitivism. Its simplified, dynamic forms are
-  designed to be both distinctive and highly functional, offering strong
-  readability across various sizes and long texts.
-mainSize: "4"
 authorUrl: https://www.jaromirkveton.com
 classification: serif
 scripts:
@@ -53,6 +41,18 @@ designer: Jaromír Květoň
 featured: true
 tagline: Nonpareille focus; 47:2–1
 order: 1
+tags:
+  - serif
+  - text
+  - renaissance
+description: Ananas began as an idea to create a serif counterpart to a
+  grotesque typeface. It reimagines sans-serif principles through the lens of
+  classic Renaissance typefaces without aiming for historical revival. Instead,
+  it explores their contemporary interpretation by merging traditional
+  approaches with a constructed primitivism. Its simplified, dynamic forms are
+  designed to be both distinctive and highly functional, offering strong
+  readability across various sizes and long texts.
+mainSize: ""
 authorEmail: hello@jaromirkveton.com
 purchasable: false
 ---
