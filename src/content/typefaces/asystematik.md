@@ -7,16 +7,6 @@ fonts:
     style: normal
     weight: 400
 classification: script
-tags:
-  - handwritten
-  - calligraphic
-description: Asystematik draws inspiration from Oldřich Menhart's handwritten
-  Manuskript (1943). The project focused on analyzing and defining each of his
-  letterforms to better understand their construction. The final design reflects
-  my interpretation, shaped by technical insight into calligraphic techniques.
-  With its organic forms, Asystematik pairs especially well with illustrations,
-  complementing their expressive character.
-mainSize: "10"
 authorInstagram: "@jaroslav_lekes"
 scripts:
   - latin
@@ -31,6 +21,16 @@ designer: Jaroslav Lekeš
 featured: false
 tagline: Lino & Dřevo
 order: 7
+tags:
+  - handwritten
+  - calligraphic
+description: Asystematik draws inspiration from Oldřich Menhart's handwritten
+  Manuskript (1943). The project focused on analyzing and defining each of his
+  letterforms to better understand their construction. The final design reflects
+  my interpretation, shaped by technical insight into calligraphic techniques.
+  With its organic forms, Asystematik pairs especially well with illustrations,
+  complementing their expressive character.
+mainSize: ""
 authorEmail: lekesjara@gmail.com
 purchasable: false
 ---
