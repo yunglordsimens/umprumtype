@@ -202,7 +202,7 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
   .site-nav__search-mobile .site-search,
   .site-nav__search-mobile .site-search__wrap { width: 100%; }
   .site-nav__search-mobile .site-search__input { width: 100% !important; box-sizing: border-box; border-radius: 9999px; transition: none; }
-  .site-nav__anim-slot { display: block; width: 100%; padding-bottom: var(--space-2); border-bottom: 1px solid var(--border); margin-bottom: var(--space-1); }
+  .site-nav__anim-slot { display: block; width: 100%; padding-top: var(--space-3); border-top: 1px solid var(--border); margin-top: var(--space-2); }
   .hero-controls-mobile .tf-sort { flex-wrap: wrap; gap: var(--space-2); }
   .hero-controls-mobile .tf-sort button { color: var(--text-muted); border-color: var(--border); }
   .hero-controls-mobile .tf-sort button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
