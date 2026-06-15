@@ -61,6 +61,23 @@ const isActive = (prefix: string) =>
         </div>
       </div>
     </nav>
+    <script is:inline>
+      (function () {
+        try {
+          var n = document.getElementById('siteNav');
+          if (!n) return;
+          n.classList.add('no-transition');
+          if (sessionStorage.getItem('siteMenu') === 'open') {
+            n.dataset.menu = 'open';
+            var b = n.querySelector('.site-nav__burger');
+            if (b) b.setAttribute('aria-expanded', 'true');
+          }
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () { n.classList.remove('no-transition'); });
+          });
+        } catch (_) {}
+      })();
+    </script>
 
     <main id="main">
       <slot />
@@ -131,10 +148,6 @@ const isActive = (prefix: string) =>
           try { sessionStorage.setItem('siteMenu', state); } catch (_) {}
         };
         const closeMenu = () => setMenu('closed');
-        // Restore persisted state on page load
-        try {
-          if (sessionStorage.getItem('siteMenu') === 'open') setMenu('open');
-        } catch (_) {}
         burger?.addEventListener('click', () => {
           setMenu(nav.dataset.menu === 'open' ? 'closed' : 'open');
         });

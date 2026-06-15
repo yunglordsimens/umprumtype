@@ -259,6 +259,9 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
     opacity: 1;
     pointer-events: auto;
   }
+  .site-nav.no-transition,
+  .site-nav.no-transition .site-nav__links,
+  .site-nav.no-transition * { transition: none !important; animation: none !important; }
 }
 
 /* ---------- Global search ---------- */
