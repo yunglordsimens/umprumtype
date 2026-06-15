@@ -1,11 +1,6 @@
 ---
-fonts: []
-mainText: MB9AZGCP4
-author: Eva Havlová
-name: Haase Symbole
-designer: Eva Havlová
 year: 2024
-tags: []
+fonts: []
 description: Haase Englische Antiqua is a text typeface originally used for
   letterpress printing, revived through a semester project focused on the Prague
   printing house Gottlieb Haase und Söhne. Developed collaboratively, the
@@ -15,6 +10,11 @@ description: Haase Englische Antiqua is a text typeface originally used for
   stylistic refinement, blending German precision with Central European
   aesthetics. This revival pays homage to the craftsmanship of the time,
   adapting a forgotten type for contemporary use.
+mainText: B9AZGCP4M
+author: Eva Havlová
+name: Haase Symbole
+designer: Eva Havlová
+tags: []
 mainSize: "15"
 featured: false
 ---
