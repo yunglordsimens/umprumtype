@@ -285,14 +285,6 @@ export default function LibraryIsland() {
               <span className="lib-filter-btn__label">Tags</span>
               {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
             </button>
-            <input
-              className="lib-search-input"
-              type="search"
-              placeholder="Search in Library…"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              autoComplete="off"
-            />
           </div>
           <div className="lib-toolbar__row tf-sort lib-toolbar__row--sorts">
             {[['title','Title'],['author','Author'],['year','Year']].map(([col, label]) => (

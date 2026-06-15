@@ -9,15 +9,30 @@ const SearchIcon = () => (
 
 const TYPE_LABEL = { typeface: 'Typeface', journal: 'Journal', project: 'Project' };
 
+function placeholderForPath(pathname) {
+  if (!pathname || pathname === '/') return 'Global search';
+  if (pathname.startsWith('/typefaces')) return 'Search typeface';
+  if (pathname.startsWith('/library'))   return 'Search in library';
+  if (pathname.startsWith('/projects'))  return 'Search projects';
+  if (pathname.startsWith('/journal'))   return 'Search journal';
+  if (pathname.startsWith('/store'))     return 'Search store';
+  return 'Global search';
+}
+
 export default function SearchIsland() {
   const [query, setQuery]       = useState('');
   const [results, setResults]   = useState([]);
   const [index, setIndex]       = useState(null);
   const [open, setOpen]         = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
+  const [placeholder, setPlaceholder] = useState('Global search');
   const inputRef = useRef(null);
   const dropRef  = useRef(null);
   const wrapRef  = useRef(null);
+
+  useEffect(() => {
+    setPlaceholder(placeholderForPath(window.location.pathname));
+  }, []);
 
   const loadIndex = useCallback(async () => {
     if (index) return index;
@@ -70,7 +85,7 @@ export default function SearchIsland() {
           ref={inputRef}
           className="site-search__input"
           type="search"
-          placeholder="Global Search…"
+          placeholder={placeholder}
           value={query}
           onChange={e => setQuery(e.target.value)}
           onFocus={() => query.trim() && results.length > 0 && setOpen(true)}
@@ -88,11 +103,8 @@ export default function SearchIsland() {
                 className={`site-search__result${i === activeIdx ? ' is-active' : ''}`}
                 onMouseEnter={() => setActiveIdx(i)}
               >
-                <span className="site-search__result-title">{item.title}</span>
-                <span className="site-search__result-meta">
-                  {item.sub && <span>{item.sub}</span>}
-                  <span className="site-search__result-type">{TYPE_LABEL[item.type]}</span>
-                </span>
+                <span className="site-search__result-title" title={item.title}>{item.title}</span>
+                <span className="site-search__result-type">{TYPE_LABEL[item.type]}</span>
               </a>
             </li>
           ))}
