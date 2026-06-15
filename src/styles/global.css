@@ -2329,13 +2329,24 @@ body.home-page .site-nav[data-menu="open"] .site-nav__burger { color: #fff; }
   body.home-page .site-search__icon { color: rgba(0,0,0,0.4); }
 }
 @media (max-width: 720px) {
-  body.home-page .site-nav__links {
+  body.home-page:not(.home-light) .site-nav__links {
     background: rgba(17, 17, 24, 0.96);
   }
-  body.home-page .site-nav__links a {
+  body.home-page:not(.home-light) .site-nav__links a {
     color: rgba(242, 242, 239, 0.9);
   }
-  body.home-page { overflow: auto; overscroll-behavior: auto; }
+  body.home-page.home-light .site-nav__links {
+    background: #fff;
+  }
+  body.home-page.home-light .site-nav__links a {
+    color: rgba(0, 0, 0, 0.7);
+    border-color: rgba(0, 0, 0, 0.15);
+  }
+  body.home-page.home-light .site-nav__links a[aria-current="page"] {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+  }
 }
 
 /* ================================================================
