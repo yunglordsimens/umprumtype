@@ -2558,6 +2558,22 @@ body.lib-page #main {
   flex-wrap: wrap;
   margin: -2px;
 }
+.tf-tags-panel__done {
+  position: sticky;
+  bottom: 0;
+  align-self: stretch;
+  padding: 10px 16px;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  border-radius: 9999px;
+  font-size: var(--step--1);
+  font-family: var(--font-ui);
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity 150ms;
+}
+.tf-tags-panel__done:hover { opacity: 0.85; }
 .tf-tag-chip {
   display: inline-flex;
   align-items: center;

@@ -205,6 +205,13 @@ export default function TypefaceIsland({ typefaces }) {
                 </button>
               ))}
             </div>
+            <button
+              className="tf-tags-panel__done"
+              onClick={() => setShowTags(false)}
+              aria-label="Close tags"
+            >
+              Show results {activeTags.length > 0 ? `(${activeTags.length} tag${activeTags.length > 1 ? 's' : ''})` : ''}
+            </button>
           </div>
         </div>
 
