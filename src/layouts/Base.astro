@@ -126,26 +126,23 @@ const isActive = (prefix: string) =>
           });
         }, { passive: true });
 
-        // Burger toggle
+        // Burger toggle (persistent across page navigation via sessionStorage)
         const burger = nav.querySelector('.site-nav__burger');
-        const closeMenu = () => {
-          nav.dataset.menu = 'closed';
-          burger?.setAttribute('aria-expanded', 'false');
+        const setMenu = (state) => {
+          nav.dataset.menu = state;
+          burger?.setAttribute('aria-expanded', state === 'open' ? 'true' : 'false');
+          try { sessionStorage.setItem('siteMenu', state); } catch (_) {}
         };
+        const closeMenu = () => setMenu('closed');
+        // Restore persisted state on page load
+        try {
+          if (sessionStorage.getItem('siteMenu') === 'open') setMenu('open');
+        } catch (_) {}
         burger?.addEventListener('click', () => {
-          const open = nav.dataset.menu === 'open';
-          nav.dataset.menu = open ? 'closed' : 'open';
-          burger.setAttribute('aria-expanded', open ? 'false' : 'true');
-        });
-        nav.querySelectorAll('.site-nav__links a').forEach((a) => {
-          a.addEventListener('click', closeMenu);
+          setMenu(nav.dataset.menu === 'open' ? 'closed' : 'open');
         });
         window.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') closeMenu();
-        });
-        document.addEventListener('click', (e) => {
-          if (nav.dataset.menu !== 'open') return;
-          if (!nav.contains(e.target)) closeMenu();
         });
 
       }
@@ -157,14 +154,6 @@ const isActive = (prefix: string) =>
         siteFooter.dataset.expanded = open ? 'false' : 'true';
       });
 
-      // Always start with menu closed (handles bfcache restore)
-      window.addEventListener('pageshow', () => {
-        const n = document.getElementById('siteNav');
-        if (n) {
-          n.dataset.menu = 'closed';
-          n.querySelector('.site-nav__burger')?.setAttribute('aria-expanded', 'false');
-        }
-      });
     </script>
   </body>
 </html>

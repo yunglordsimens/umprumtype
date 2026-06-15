@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { Fragment, useState, useMemo, useEffect } from 'react';
 
 const SHEET_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9pcn-Vt6gV9lCYZEK1Ly6ZKdEIYqN-VoIu9EkPqDqkFCAwT5R_eqaKz6priy-ixFZQWD3CtX263O_/pub?output=csv';
@@ -90,39 +90,41 @@ function toThumb(url) {
   return url.startsWith('http') ? url : null;
 }
 
-function BookDetail({ book, onTagClick }) {
-  const cover = getCover(book);
+function BookDetail({ book, onTagClick, onClose }) {
+  const hasImage = !!book.image;
   return (
-    <div className="lib-detail__content">
-      <div className="lib-detail__cover" style={{ background: cover.bg }}>
-        {book.image ? (
-          <img src={book.image} alt={book.title} className="lib-book__img" loading="lazy" />
+    <div className="lib-accordion__inner">
+      <div className="lib-accordion__cover">
+        {hasImage ? (
+          <img src={book.image} alt={book.title} className="lib-accordion__img" loading="lazy" />
         ) : (
-          <div className="lib-detail__cover-text" style={{ color: cover.text }}>
-            <span className="lib-detail__cover-title">{book.title}</span>
-            <span className="lib-detail__cover-author">{book.author || ''}</span>
+          <div className="lib-accordion__cover-default" aria-hidden="true" />
+        )}
+      </div>
+      <div className="lib-accordion__meta">
+        <h2 className="lib-accordion__title">{book.title}</h2>
+        {book.author && <p className="lib-accordion__author">{book.author}</p>}
+        {book.year   && <p className="lib-accordion__year">{book.year}</p>}
+        {book.tags.length > 0 && (
+          <div className="lib-accordion__tags">
+            {book.tags.map(t => (
+              <button
+                key={t}
+                className="lib-accordion__tag"
+                onClick={(e) => { e.stopPropagation(); onTagClick?.(t); }}
+              >{t}</button>
+            ))}
           </div>
         )}
       </div>
-      <div className="lib-detail__meta">
-        <h2 className="lib-detail__title">{book.title}</h2>
-        {book.author && <p className="lib-detail__author">{book.author}</p>}
-        {book.year   && <p className="lib-detail__year">{book.year}</p>}
-        {book.tags.length > 0 && (
-          <ul className="lib-detail__tags">
-            {book.tags.map(t => (
-              <li key={t} className="lib-detail__tag" onClick={() => onTagClick?.(t)} style={{ cursor: 'pointer' }}>{t}</li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <button className="lib-accordion__close" onClick={onClose} aria-label="Close">×</button>
     </div>
   );
 }
 
 // Grid card — shows cover + basic info, click to toggle
 function BookCard({ book, isOpen, onToggle }) {
-  const cover = getCover(book);
+  const hasImage = !!book.image;
   return (
     <div
       className={`lib-card${isOpen ? ' is-open' : ''}`}
@@ -132,44 +134,37 @@ function BookCard({ book, isOpen, onToggle }) {
       onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onToggle()}
     >
       <div className="lib-book">
-        <div className="lib-book__cover" style={{ background: cover.bg }}>
-          {book.image ? (
+        <div className={`lib-book__cover${hasImage ? '' : ' lib-book__cover--default'}`}>
+          {hasImage && (
             <img src={book.image} alt={book.title} className="lib-book__img" loading="lazy" />
-          ) : (
-            <div className="lib-book__text" style={{ color: cover.text }}>
-              <span className="lib-book__text-title">{book.title}</span>
-              <span className="lib-book__text-author">{book.author || ''}</span>
-            </div>
           )}
-          <div className="lib-book__spine" />
-          <div className="lib-book__shine" />
+          {hasImage && <div className="lib-book__spine" />}
+          {hasImage && <div className="lib-book__shine" />}
         </div>
       </div>
       <div className="lib-card__info">
         <h4 className="lib-card__title">{book.title}</h4>
-        <p className="lib-card__author">{book.author || <em>—</em>}</p>
+        <p className="lib-card__author">{book.author || ''}</p>
         {book.year && <p className="lib-card__year">{book.year}</p>}
       </div>
     </div>
   );
 }
 
-// List row — opens orange side panel (no accordion)
-function LibRow({ book, isOpen, onToggle }) {
+// List row — accordion (detail opens inline under the row)
+function LibRow({ book, isOpen, onToggle, onTagClick }) {
   return (
     <li className={`lib-row${isOpen ? ' is-open' : ''}`}>
       <button className="lib-row__trigger" onClick={onToggle}>
         <span className="lib-row__title">{book.title}</span>
         <span className="lib-row__author">{book.author || '—'}</span>
         <span className="lib-row__year">{book.year || '—'}</span>
-        <span className="lib-row__tags">
-          {book.tags.slice(0, 3).map(t => {
-            const c = TAG_COVERS[t];
-            return <span key={t} className="lib-row__tag-chip" style={{ background: c?.bg || '#404040', color: c?.text || '#fff' }}>{t}</span>;
-          })}
-          {book.tags.length > 3 && <span className="lib-row__tag-more">+{book.tags.length - 3}</span>}
-        </span>
       </button>
+      {isOpen && (
+        <div className="lib-row__panel">
+          <BookDetail book={book} onTagClick={onTagClick} onClose={onToggle} />
+        </div>
+      )}
     </li>
   );
 }
@@ -271,8 +266,6 @@ export default function LibraryIsland() {
     setActiveTags([tag]);
   }
 
-  const openBook = filtered.find(b => b.id === openId) || null;
-
   if (loading) return <div className="lib-loading">Loading…</div>;
 
   return (
@@ -318,18 +311,24 @@ export default function LibraryIsland() {
           ) : viewMode === 'grid' ? (
             <div className="lib-grid">
               {filtered.map(book => (
-                <BookCard
-                  key={book.id}
-                  book={book}
-                  isOpen={openId === book.id}
-                  onToggle={() => toggleBook(book.id)}
-                />
+                <Fragment key={book.id}>
+                  <BookCard
+                    book={book}
+                    isOpen={openId === book.id}
+                    onToggle={() => toggleBook(book.id)}
+                  />
+                  {openId === book.id && (
+                    <div className="lib-grid-accordion">
+                      <BookDetail book={book} onTagClick={onTagClick} onClose={() => setOpenId(null)} />
+                    </div>
+                  )}
+                </Fragment>
               ))}
             </div>
           ) : (
             <div className="lib-list-wrap">
               <div className="lib-list-header">
-                {[['title','Title'],['author','Author'],['year','Year'],['tags','Tags']].map(([col, label]) => (
+                {[['title','Title'],['author','Author'],['year','Year']].map(([col, label]) => (
                   <button key={col} className={`lib-list-header__col${sort === col ? ' is-active' : ''}`} onClick={() => cycleSort(col)}>
                     {label}{sort === col ? (sortDir === 1 ? ' ↑' : ' ↓') : ''}
                   </button>
@@ -342,6 +341,7 @@ export default function LibraryIsland() {
                     book={book}
                     isOpen={openId === book.id}
                     onToggle={() => toggleBook(book.id)}
+                    onTagClick={onTagClick}
                   />
                 ))}
               </ul>
@@ -349,18 +349,6 @@ export default function LibraryIsland() {
           )}
         </div>
       </div>
-
-      {/* ── Right detail panel (orange, same as store) ── */}
-      <aside className={`lib-detail${openBook ? ' is-open' : ''}`}>
-        <div className="lib-detail__inner">
-          <button className="lib-detail__close" onClick={() => setOpenId(null)} aria-label="Close">
-            <ChevronLeftIcon />
-          </button>
-          <div className="lib-detail__scroll">
-            {openBook && <BookDetail book={openBook} onTagClick={onTagClick} />}
-          </div>
-        </div>
-      </aside>
 
     </div>
   );
