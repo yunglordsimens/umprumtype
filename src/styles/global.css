@@ -2463,9 +2463,18 @@ body.lib-page #main {
   .lib-toolbar--library {
     height: auto; flex-direction: column;
     align-items: stretch; padding: var(--space-2) var(--space-5); gap: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border-strong);
+    z-index: 5;
   }
   .lib-toolbar--library .lib-toolbar__row--top { padding: var(--space-2) 0; }
-  .lib-toolbar--library .lib-toolbar__row--sorts { padding: var(--space-2) 0; border-top: 1px solid var(--border); }
+  .lib-toolbar--library .lib-toolbar__row--sorts {
+    padding: var(--space-2) 0;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+  }
+  .lib-toolbar--library .tf-sort__divider { display: none; }
 }
 .lib-filter-btn {
   flex-shrink: 0;
@@ -3021,12 +3030,11 @@ body.lib-page #main {
   .lib-book { width: 100%; max-width: 140px; }
   .lib-card__title { font-size: 0.8125rem; overflow-wrap: anywhere; word-break: break-word; }
   .lib-card__author { font-size: 0.6875rem; overflow-wrap: anywhere; word-break: break-word; }
-  .lib-list-header { grid-template-columns: 2fr 1fr; gap: var(--space-2); padding: var(--space-2); font-size: 10px; }
-  .lib-list-header__col:nth-child(3) { display: none; }
-  .lib-row__trigger { grid-template-columns: 2fr 1fr; gap: var(--space-2); padding: var(--space-2); align-items: start; }
-  .lib-row__year { display: none; }
+  .lib-list-header { grid-template-columns: 2fr 1.4fr 0.6fr; gap: var(--space-2); padding: var(--space-2); font-size: 10px; }
+  .lib-row__trigger { grid-template-columns: 2fr 1.4fr 0.6fr; gap: var(--space-2); padding: var(--space-2); align-items: start; }
   .lib-row__title { font-size: 0.875rem; }
   .lib-row__author { font-size: 0.75rem; }
+  .lib-row__year { font-size: 0.75rem; text-align: right; }
   .lib-accordion__inner { grid-template-columns: 120px 1fr; gap: var(--space-4); }
   .lib-accordion__cover { width: 120px; }
   .lib-accordion__close { grid-column: 1 / -1; justify-self: end; }
