@@ -15,6 +15,6 @@ author: Eva Havlová
 name: Haase Symbole
 designer: Eva Havlová
 tags: []
-mainSize: "15"
+mainSize: ""
 featured: false
 ---
