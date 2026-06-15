@@ -63,7 +63,8 @@ export default function TypefaceIsland({ typefaces }) {
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
-    panel.style.maxHeight = showTags ? '1000px' : '0';
+    const cap = Math.round(window.innerHeight * 0.6);
+    panel.style.maxHeight = showTags ? `${cap}px` : '0';
     panel.style.opacity   = showTags ? '1' : '0';
   }, [showTags]);
 

@@ -2543,6 +2543,8 @@ body.lib-page #main {
   border-bottom: 1px solid var(--border);
   background: var(--surface);
   flex-shrink: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .tf-tags-panel__inner {
   display: flex;
