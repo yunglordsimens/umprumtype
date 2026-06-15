@@ -2767,14 +2767,16 @@ body.lib-page #main {
 }
 .lib-accordion__cover {
   width: 220px;
-  aspect-ratio: 2 / 3;
-  overflow: hidden;
   border-radius: 2px 4px 4px 2px;
-  background: #d8d8d6;
+  overflow: hidden;
   box-shadow: 6px 10px 18px rgba(0,0,0,0.08), 2px 3px 6px rgba(0,0,0,0.04);
 }
-.lib-accordion__img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.lib-accordion__cover-default { width: 100%; height: 100%; }
+.lib-accordion__img { width: 100%; height: auto; display: block; }
+.lib-accordion__cover-default {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background: #d8d8d6;
+}
 .lib-accordion__meta { min-width: 0; }
 .lib-accordion__title { font-size: 1.5rem; font-weight: 500; line-height: 1.2; margin-bottom: var(--space-2); color: var(--text); }
 .lib-accordion__author { font-size: var(--step-0); color: var(--text-muted); margin-bottom: var(--space-1); }
