@@ -206,8 +206,16 @@ body.lib-page .site-nav__inner { padding-left: var(--space-5); }
   .hero-controls-mobile .tf-sort { flex-wrap: wrap; gap: var(--space-2); }
   .hero-controls-mobile .tf-sort button { color: var(--text-muted); border-color: var(--border); }
   .hero-controls-mobile .tf-sort button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
-  .hero-controls-mobile .hero-quality-slider { background: var(--border); }
-  .hero-controls-mobile .hero-quality-slider::-webkit-slider-thumb { background: var(--text); }
+  .hero-controls-mobile .hero-quality-slider {
+    background: var(--border);
+    width: 100%;
+    height: 24px;
+    padding: 10px 0;
+    background-clip: content-box;
+    touch-action: pan-x;
+  }
+  .hero-controls-mobile .hero-quality-slider::-webkit-slider-thumb { background: var(--text); width: 20px; height: 20px; }
+  .hero-controls-mobile .hero-quality-slider::-moz-range-thumb { background: var(--text); width: 20px; height: 20px; }
   .hero-controls-mobile .hero-quality-label { color: var(--text-muted); }
   .site-nav__links {
     position: static;
@@ -2153,6 +2161,7 @@ body.home-page.home-light .hero-type-hint { color: rgba(0,0,0,0.5); }
   cursor: pointer;
   margin: 0 2px;
   align-self: center;
+  touch-action: pan-x;
 }
 .hero-quality-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
