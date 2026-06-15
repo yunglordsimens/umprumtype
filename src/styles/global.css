@@ -2676,11 +2676,10 @@ body.lib-page #main {
   position: relative;
   border-radius: 2px 4px 4px 2px; overflow: hidden;
   box-shadow: 6px 10px 18px rgba(0,0,0,0.08), 2px 3px 6px rgba(0,0,0,0.04);
-  aspect-ratio: 2 / 3;
-  background: #d8d8d6;
 }
 .lib-book__cover--default {
   background: #d8d8d6;
+  aspect-ratio: 2 / 3;
 }
 .lib-book__img { width: 100%; height: auto; display: block; }
 .lib-book__text {
