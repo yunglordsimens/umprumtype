@@ -560,6 +560,24 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
   margin-left: 2px;
   opacity: 0.7;
 }
+/* Tags capsule on typefaces is plain text (no outline) to match other pages */
+.tf-cap--tags {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.tf-cap--tags:hover {
+  border: none;
+  color: var(--text);
+  opacity: 1;
+}
+.tf-cap--tags.is-active {
+  border: none;
+  background: transparent;
+  color: var(--text);
+}
 .tf-filters {
   display: flex;
   flex-direction: column;
