@@ -113,9 +113,6 @@ const isActive = (prefix: string) =>
             } else if (Math.abs(dy) > threshold) {
               nav.dataset.hidden = dy > 0 ? 'true' : 'false';
             }
-            if (Math.abs(dy) > threshold && nav.dataset.menu === 'open') {
-              closeMenu();
-            }
             if (progress) {
               const h = document.documentElement.scrollHeight - window.innerHeight;
               const pct = h > 0 ? (y / h) * 100 : 0;
