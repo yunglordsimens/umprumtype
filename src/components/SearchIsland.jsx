@@ -78,7 +78,7 @@ export default function SearchIsland() {
   }, []);
 
   return (
-    <div className="site-search" ref={wrapRef} role="search">
+    <div className={`site-search${open ? ' is-open' : ''}`} ref={wrapRef} role="search">
       <div className="site-search__wrap">
         <span className="site-search__icon" aria-hidden="true"><SearchIcon /></span>
         <input
@@ -93,6 +93,14 @@ export default function SearchIsland() {
           aria-autocomplete="list"
           aria-expanded={open}
         />
+        {query && (
+          <button
+            type="button"
+            className="site-search__clear"
+            onClick={() => { setQuery(''); setOpen(false); inputRef.current?.focus(); }}
+            aria-label="Clear search"
+          >×</button>
+        )}
       </div>
       {open && (
         <ul ref={dropRef} className="site-search__dropdown" role="listbox">
@@ -103,6 +111,7 @@ export default function SearchIsland() {
                 className={`site-search__result${i === activeIdx ? ' is-active' : ''}`}
                 onMouseEnter={() => setActiveIdx(i)}
               >
+                <span className="site-search__result-icon" aria-hidden="true"><SearchIcon /></span>
                 <span className="site-search__result-title" title={item.title}>{item.title}</span>
                 <span className="site-search__result-type">{TYPE_LABEL[item.type]}</span>
               </a>
