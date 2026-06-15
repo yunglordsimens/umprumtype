@@ -1301,6 +1301,9 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
 }
 .gallery-grid__item {
   margin: 0;
+  overflow: hidden;
+  border-radius: 2px;
+  cursor: pointer;
 }
 .gallery-grid__item img {
   display: block;
@@ -1308,7 +1311,9 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
   height: 160px;
   object-fit: cover;
   border-radius: 2px;
+  transition: transform 350ms cubic-bezier(0.16,1,0.3,1);
 }
+.gallery-grid__item:hover img { transform: scale(1.15); }
 
 /* ---------- Gallery view toggle ---------- */
 .gallery-view-toggle button {
@@ -2046,12 +2051,38 @@ body.home-page {
   --border: rgba(255,255,255,0.08);
   --border-strong: rgba(255,255,255,0.15);
 }
+body.home-page {
+  overscroll-behavior: none;
+  touch-action: none;
+}
 body.home-page #main {
   padding: 0;
   margin: 0;
   max-width: 100%;
 }
 body.home-page .site-footer { display: none; }
+
+/* Light theme on home (when canvas is white/yellow) */
+body.home-page.home-light {
+  --bg: #fff;
+  --text: #000;
+  --text-muted: rgba(0,0,0,0.55);
+  --text-subtle: rgba(0,0,0,0.35);
+  --border: rgba(0,0,0,0.1);
+  --border-strong: rgba(0,0,0,0.2);
+  background: #fff;
+  color: #000;
+}
+body.home-page.home-light .site-nav {
+  background: #fff;
+  border-bottom-color: rgba(0,0,0,0.1);
+}
+body.home-page.home-light .hero-controls {
+  background: #fff;
+  border-bottom-color: rgba(0,0,0,0.1);
+  color: rgba(0,0,0,0.6);
+}
+body.home-page.home-light .hero-type-hint { color: rgba(0,0,0,0.5); }
 
 .hero-controls {
   flex-shrink: 0;
@@ -2648,9 +2679,9 @@ body.lib-page #main {
 }
 .lib-row__trigger:hover { background: var(--border); }
 .lib-row.is-open .lib-row__trigger { background: color-mix(in srgb, var(--border) 60%, transparent); }
-.lib-row__title { font-weight: 500; font-size: 1.05rem; }
-.lib-row__author, .lib-row__year { color: var(--text-muted); }
-.lib-row__tags { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.lib-row__title { font-weight: 500; font-size: 1.05rem; overflow-wrap: anywhere; word-break: break-word; min-width: 0; }
+.lib-row__author, .lib-row__year { color: var(--text-muted); overflow-wrap: anywhere; word-break: break-word; min-width: 0; }
+.lib-row__tags { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; min-width: 0; }
 .lib-row__tag-chip {
   font-size: 10px; padding: 2px 7px; border-radius: 999px;
   font-weight: 600; letter-spacing: 0.03em; white-space: nowrap;
@@ -2862,8 +2893,15 @@ body.lib-page #main {
   .lib-grid { grid-template-columns: repeat(2, 1fr); column-gap: 16px; row-gap: 24px; }
   .lib-card__info { padding-bottom: 24px; }
   .lib-book { width: 100%; max-width: 140px; }
-  .lib-card__title { font-size: 0.8125rem; }
-  .lib-card__author { font-size: 0.6875rem; }
+  .lib-card__title { font-size: 0.8125rem; overflow-wrap: anywhere; word-break: break-word; }
+  .lib-card__author { font-size: 0.6875rem; overflow-wrap: anywhere; word-break: break-word; }
+  .lib-list-header { grid-template-columns: 2fr 1fr; gap: var(--space-2); padding: var(--space-2); font-size: 10px; }
+  .lib-list-header__col:nth-child(3),
+  .lib-list-header__col:nth-child(4) { display: none; }
+  .lib-row__trigger { grid-template-columns: 2fr 1fr; gap: var(--space-2); padding: var(--space-2); align-items: start; }
+  .lib-row__year, .lib-row__tags { display: none; }
+  .lib-row__title { font-size: 0.875rem; }
+  .lib-row__author { font-size: 0.75rem; }
   .store-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); padding-inline: var(--space-4); gap: var(--space-6) var(--space-4); }
   .lib-filter.is-open {
     position: fixed; top: var(--nav-h); left: 0;

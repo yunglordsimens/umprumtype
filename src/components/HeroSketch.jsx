@@ -75,6 +75,9 @@ export default function HeroSketch({ fontData = [] }) {
       // mono: always contrasting with system
       colorsRef.current = isDark ? { bg: 255, fg: 0 } : { bg: 0, fg: 255 };
     }
+    const isLightVisual = (palette === 'mono' && isDark) || palette === 'yellow-light';
+    document.body.classList.toggle('home-light', isLightVisual);
+    return () => { document.body.classList.remove('home-light'); };
   }, [palette, isDark]);
 
   // Load a random subset of typefaces via FontFace API
@@ -168,12 +171,24 @@ export default function HeroSketch({ fontData = [] }) {
     };
     window.addEventListener('keydown', onKey);
 
-    // ── mouse ──
+    // ── mouse / touch ──
     let mouseX = -1, mouseY = -1;
     const onMouseMove = e => { mouseX = e.clientX; mouseY = e.clientY; };
     const onMouseLeave = () => { mouseX = -1; mouseY = -1; };
+    const onTouch = e => {
+      if (e.touches && e.touches.length > 0) {
+        mouseX = e.touches[0].clientX;
+        mouseY = e.touches[0].clientY;
+      }
+      e.preventDefault();
+    };
+    const onTouchEnd = () => { mouseX = -1; mouseY = -1; };
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseleave', onMouseLeave);
+    canvas.addEventListener('touchstart', onTouch, { passive: false });
+    canvas.addEventListener('touchmove', onTouch, { passive: false });
+    canvas.addEventListener('touchend', onTouchEnd);
+    canvas.addEventListener('touchcancel', onTouchEnd);
 
     // ── resize ──
     const onResize = () => {
@@ -423,6 +438,10 @@ export default function HeroSketch({ fontData = [] }) {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseleave', onMouseLeave);
       window.removeEventListener('resize', onResize);
+      canvas.removeEventListener('touchstart', onTouch);
+      canvas.removeEventListener('touchmove', onTouch);
+      canvas.removeEventListener('touchend', onTouchEnd);
+      canvas.removeEventListener('touchcancel', onTouchEnd);
       canvas.remove();
       offCanvas = null; offCtx = null; pixelData = null;
       dotsX = dotsY = dotsBX = dotsBY = null; nDots = 0;

@@ -156,6 +156,15 @@ const isActive = (prefix: string) =>
         const open = siteFooter.dataset.expanded === 'true';
         siteFooter.dataset.expanded = open ? 'false' : 'true';
       });
+
+      // Always start with menu closed (handles bfcache restore)
+      window.addEventListener('pageshow', () => {
+        const n = document.getElementById('siteNav');
+        if (n) {
+          n.dataset.menu = 'closed';
+          n.querySelector('.site-nav__burger')?.setAttribute('aria-expanded', 'false');
+        }
+      });
     </script>
   </body>
 </html>
