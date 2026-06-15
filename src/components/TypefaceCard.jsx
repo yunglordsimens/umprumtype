@@ -101,8 +101,10 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
       >
         <span className="tfa-trigger__meta-inline">
           <span className="tfa-trigger__meta-name">{tf.title}</span>
-          {tf.designer && <span className="tfa-trigger__meta-designer">{tf.designer}</span>}
-          {tf.year && <span className="tfa-trigger__meta-year">{tf.year}</span>}
+          <span className="tfa-trigger__meta-byline">
+            {tf.designer && <span className="tfa-trigger__meta-designer">{tf.designer}</span>}
+            {tf.year && <span className="tfa-trigger__meta-year">{tf.year}</span>}
+          </span>
         </span>
         <span
           className="tfa-trigger__preview"

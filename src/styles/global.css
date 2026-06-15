@@ -965,17 +965,24 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
 .tfa-trigger.is-open .tfa-trigger__tags { display: block; }
 .tfa-trigger__meta-inline {
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: var(--space-2);
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
   width: 100%;
   font-size: var(--step--1);
   color: var(--text-muted);
   font-family: var(--font-ui);
-  margin-bottom: 0.25em;
+  padding-top: var(--space-3);
+  margin-bottom: var(--space-2);
 }
-.tfa-trigger__meta-name     { grid-column: 2 / 4;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tfa-trigger__meta-designer { grid-column: 4 / 10; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tfa-trigger__meta-year     { grid-column: 10 / 11; white-space: nowrap; text-align: left; }
+.tfa-trigger__meta-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tfa-trigger__meta-byline {
+  display: flex;
+  gap: var(--space-4);
+  min-width: 0;
+  align-items: baseline;
+}
+.tfa-trigger__meta-designer { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tfa-trigger__meta-year { white-space: nowrap; }
 .tfa-trigger__preview {
   display: block;
   font-size: clamp(3rem, 15vw, 15rem);
@@ -1047,7 +1054,7 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
 }
 .tfa-panel__info {
   margin-top: var(--space-6);
-  padding-top: var(--space-6);
+  padding-top: var(--space-5);
   border-top: 1px solid var(--border);
 }
 
@@ -1083,18 +1090,22 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
   margin-bottom: var(--space-3);
   font-weight: 400;
 }
-.tfa-about p,
+.tfa-about p {
+  font-size: var(--step--3);
+  color: var(--text);
+  line-height: 1.5;
+}
 .tfa-about--designer p {
   font-size: var(--step--3);
   color: var(--text-muted);
-  line-height: 1.4;
+  line-height: 1.5;
 }
 .tfa-about--designer a {
-  color: var(--text);
+  color: var(--text-muted);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
-.tfa-about--designer a:hover { color: var(--text-muted); }
+.tfa-about--designer a:hover { color: var(--text); }
 
 .tfa-panel .specimen__reset {
   font-size: var(--step-0);
