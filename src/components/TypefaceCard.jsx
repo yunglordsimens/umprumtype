@@ -11,25 +11,24 @@ function VariantSpecimen({ variant, fam, initialSize, baseText, showLabel }) {
   // Set text only once on mount — never overwrite user edits
   useEffect(() => {
     if (ref.current) {
-      ref.current.textContent = (baseText + ' ').repeat(6).trim();
+      ref.current.textContent = (baseText + ' ').repeat(12).trim();
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const cols = size > 80 ? 1 : size > 40 ? 2 : 3;
+  const multiLine = cols > 1;
 
   return (
     <div className="tfa-specimen">
       <div className="tfa-specimen__header">
-        {showLabel && variant.variantName && (
-          <span className="tfa-specimen__label">{variant.variantName}</span>
-        )}
-        <div className="tfa-specimen__controls">
-          <input
-            type="range" min="8" max="240" step="1" value={size}
-            onChange={e => setSize(+e.target.value)}
-          />
-          <span className="tfa-specimen__value">{size}px</span>
-        </div>
+        <input
+          type="range" min="8" max="240" step="1" value={size}
+          onChange={e => setSize(+e.target.value)}
+          className="tfa-specimen__slider"
+          aria-label="Font size"
+        />
+        <span className="tfa-specimen__label">{showLabel ? (variant.variantName || 'Regular') : ''}</span>
+        <span className="tfa-specimen__value">{size}px</span>
       </div>
       <div
         ref={ref}
@@ -45,10 +44,10 @@ function VariantSpecimen({ variant, fam, initialSize, baseText, showLabel }) {
           lineHeight: lineHeightFor(size),
           columnCount: cols,
           columnGap: '1em',
-          whiteSpace: cols > 1 ? 'normal' : 'nowrap',
-          overflowX: cols > 1 ? 'hidden' : 'auto',
-          overflowY: cols > 1 ? 'auto' : 'hidden',
-          maxHeight: cols > 1 ? '10lh' : undefined,
+          whiteSpace: multiLine ? 'normal' : 'nowrap',
+          overflowX: multiLine ? 'hidden' : 'auto',
+          overflowY: multiLine ? 'hidden' : 'hidden',
+          height: multiLine ? '450px' : undefined,
           display: 'block',
           outline: 'none',
           WebkitOverflowScrolling: 'touch',
@@ -64,7 +63,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
     Math.max(0, tf.mainStyleNo),
     Math.max(0, tf.otfVariants.length - 1)
   );
-  const initialSizePx = Math.max(72, Math.round((parseFloat(tf.mainSize) || 6) * 16));
+  const initialSizePx = Math.max(16, Math.round((parseFloat(tf.styleSize) || 4) * 16));
 
   const panelRef = useRef(null);
   const fam = tf.title.replace(/"/g, '\\"');

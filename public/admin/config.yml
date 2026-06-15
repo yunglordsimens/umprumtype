@@ -98,12 +98,19 @@ collections:
         required: false
         hint: "Text shown in the collapsed preview row AND as the starting text in the expanded specimen (editable by visitor). If empty, falls back to the typeface name."
 
-      - label: "Preview size"
+      - label: "Preview size (collapsed row)"
         name: "mainSize"
         widget: "string"
         default: "6em"
         required: false
-        hint: "Controls font size in the collapsed typeface row. Recommended: 3em (small/dense text fonts), 4em (text fonts), 5em (default), 6em (display), 8em (very large display), 10em (headline/poster). Use larger values for fonts with small x-height or thin strokes."
+        hint: "Font size in the collapsed typeface row. Recommended: 3em (small/dense text fonts), 4em (text fonts), 5em (default), 6em (display), 8em (very large display), 10em (headline/poster)."
+
+      - label: "Tester size (opened detail)"
+        name: "testerSize"
+        widget: "string"
+        default: "4em"
+        required: false
+        hint: "Initial font size for the tester when the typeface detail is opened. Important for small/text typefaces — use 2em or 3em so multiple cuts are visible at once. Recommended: 2em (small text), 3em (text), 4em (default), 6em (display)."
 
       - label: "Designer URL"
         name: "authorUrl"
@@ -121,12 +128,6 @@ collections:
         name: "authorEmail"
         widget: "string"
         required: false
-
-      - label: "Featured on homepage"
-        name: "featured"
-        widget: "boolean"
-        default: false
-        hint: "Featured typefaces appear first in the homepage grid."
 
       - label: "Notes (internal)"
         name: "body"

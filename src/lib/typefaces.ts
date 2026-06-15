@@ -171,7 +171,7 @@ export function getAllTypefaces(): TypefaceData[] {
         mainText: (md.mainText as string) || info['mainText']?.trim() || '',
         mainSize: md.mainSize ? String(md.mainSize) : info['mainSize']?.trim() || '6em',
         styleTexts,
-        styleSize: info['styleSize']?.trim() || '4em',
+        styleSize: md.testerSize ? String(md.testerSize) : info['styleSize']?.trim() || '4em',
         mainStyleNo,
         aboutFont: (md.description as string) || info['aboutFont']?.trim() || '',
         aboutDesigner: info['aboutDesigner']?.trim() || mdAboutDesigner,
