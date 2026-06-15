@@ -10,7 +10,7 @@ description: Haase Englische Antiqua is a text typeface originally used for
   stylistic refinement, blending German precision with Central European
   aesthetics. This revival pays homage to the craftsmanship of the time,
   adapting a forgotten type for contemporary use.
-mainText: B9AZGCP4M
+mainText: 9AZGCP4MB
 author: Eva Havlová
 name: Haase Symbole
 designer: Eva Havlová
