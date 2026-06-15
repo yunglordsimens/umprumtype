@@ -2188,6 +2188,18 @@ body.home-page.home-light .site-nav {
   background: #fff;
   border-bottom-color: rgba(0,0,0,0.1);
 }
+body.home-page.home-light .site-nav__logo,
+body.home-page.home-light .site-nav__links a {
+  color: rgba(0,0,0,0.55);
+}
+body.home-page.home-light .site-nav__logo:hover,
+body.home-page.home-light .site-nav__links a:hover,
+body.home-page.home-light .site-nav__links a[aria-current="page"] {
+  color: #000;
+}
+body.home-page.home-light .site-nav__burger { color: rgba(0,0,0,0.55); }
+body.home-page.home-light .site-nav__burger:hover,
+body.home-page.home-light .site-nav[data-menu="open"] .site-nav__burger { color: #000; }
 body.home-page.home-light .hero-controls {
   background: #fff;
   border-bottom-color: rgba(0,0,0,0.1);
