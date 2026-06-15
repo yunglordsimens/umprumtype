@@ -9,8 +9,8 @@ const CloseIcon = () => (
 
 const SORTS = [
   { key: 'name',     label: 'Name' },
-  { key: 'year',     label: 'Year' },
   { key: 'designer', label: 'Author' },
+  { key: 'year',     label: 'Year' },
   { key: 'shuffle',  label: 'Shuffle' },
 ];
 
@@ -27,6 +27,7 @@ export default function TypefaceIsland({ typefaces }) {
   const [showTags, setShowTags]     = useState(false);
   const [openSlug, setOpenSlug]     = useState(null);
   const [sort, setSort]             = useState('name');
+  const [sortDir, setSortDir]       = useState(1);
   const [shuffleSeed, setShuffleSeed] = useState(0);
   const panelRef  = useRef(null);
   const listRef   = useRef(null);
@@ -73,19 +74,19 @@ export default function TypefaceIsland({ typefaces }) {
     }
     const out = [...list];
     if (sort === 'year') {
-      out.sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+      out.sort((a, b) => ((a.year ?? 0) - (b.year ?? 0)) * sortDir);
     } else if (sort === 'designer') {
-      out.sort((a, b) => (a.designer ?? '').localeCompare(b.designer ?? '', 'cs'));
+      out.sort((a, b) => (a.designer ?? '').localeCompare(b.designer ?? '', 'cs') * sortDir);
     } else if (sort === 'shuffle') {
       for (let i = out.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [out[i], out[j]] = [out[j], out[i]];
       }
     } else {
-      out.sort((a, b) => a.title.localeCompare(b.title, 'cs'));
+      out.sort((a, b) => a.title.localeCompare(b.title, 'cs') * sortDir);
     }
     return out;
-  }, [activeTags, sort, shuffleSeed, typefaces]);
+  }, [activeTags, sort, sortDir, shuffleSeed, typefaces]);
 
   useLayoutEffect(() => {
     const ul = listRef.current;
@@ -126,26 +127,57 @@ export default function TypefaceIsland({ typefaces }) {
     setOpenSlug(prev => prev === slug ? null : slug);
   }
 
+  function cycleSort(key) {
+    captureFlip();
+    if (key === 'shuffle') {
+      setSort('shuffle');
+      setShuffleSeed(n => n + 1);
+      return;
+    }
+    if (sort === key) setSortDir(d => d * -1);
+    else { setSort(key); setSortDir(1); }
+  }
+
+  function handleTagsCapsuleClick() {
+    if (showTags) {
+      setShowTags(false);
+      if (activeTags.length > 0) { captureFlip(); setActiveTags([]); }
+    } else {
+      setShowTags(true);
+    }
+  }
+
   return (
     <div className="lib-layout">
       <div className="lib-main">
 
         <header className="lib-toolbar">
-          <button className="lib-filter-btn" onClick={() => setShowTags(f => !f)} aria-pressed={showTags}>
-            <span className="lib-filter-btn__label">Tags</span>
-            {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
+          <button
+            className={`tf-cap tf-cap--tags${showTags || activeTags.length > 0 ? ' is-active' : ''}`}
+            onClick={handleTagsCapsuleClick}
+            aria-pressed={showTags}
+          >
+            <span>Tags</span>
+            {activeTags.length > 0 && <span className="tf-cap__count">{activeTags.length}</span>}
+            {(showTags || activeTags.length > 0) && <span className="tf-cap__x" aria-hidden="true">×</span>}
           </button>
 
           <div className="tf-sort">
-            {SORTS.map(s => (
-              <button
-                key={s.key}
-                aria-pressed={sort === s.key}
-                onClick={() => { captureFlip(); setSort(s.key); if (s.key === 'shuffle') setShuffleSeed(n => n + 1); }}
-              >
-                {s.label}
-              </button>
-            ))}
+            {SORTS.map(s => {
+              const active = sort === s.key;
+              const arrow = active && s.key !== 'shuffle' ? (sortDir === 1 ? '↑' : '↓') : null;
+              return (
+                <button
+                  key={s.key}
+                  className={`tf-cap${active ? ' is-active' : ''}`}
+                  aria-pressed={active}
+                  onClick={() => cycleSort(s.key)}
+                >
+                  <span>{s.label}</span>
+                  {arrow && <span className="tf-cap__arrow">{arrow}</span>}
+                </button>
+              );
+            })}
           </div>
 
           <span className="lib-toolbar-count">
@@ -161,14 +193,6 @@ export default function TypefaceIsland({ typefaces }) {
             transition: 'max-height 400ms var(--ease), opacity 280ms var(--ease)' }}
         >
           <div className="tf-tags-panel__inner">
-            <div className="tf-tags-panel__actions">
-              {activeTags.length > 0 && (
-                <button className="tf-tags-clear" onClick={() => { captureFlip(); setActiveTags([]); }}>Clear</button>
-              )}
-              <button className="tf-tags-close" onClick={() => setShowTags(false)} aria-label="Close tags">
-                <CloseIcon />
-              </button>
-            </div>
             <div className="tf-tags-panel__chips">
               {allTagsOrdered.map(tag => (
                 <button

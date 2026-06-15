@@ -507,23 +507,37 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
 .tf-sort { display: flex; gap: var(--space-2); flex-wrap: wrap; padding: 0; margin: 0; align-items: center; }
 .tf-sort__divider { width: 1px; height: 16px; background: var(--border); margin: 0 var(--space-1); flex-shrink: 0; }
 .tf-sort button,
-.tf-filter-row button {
-  padding: 2px 8px;
+.tf-filter-row button,
+.tf-cap {
+  padding: 2px 10px;
   background: transparent;
   border: 1px solid var(--border);
   border-radius: 9999px;
   color: var(--text-muted);
   font-size: var(--step--1);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
 .tf-sort button:hover,
-.tf-filter-row button:hover { color: var(--text); border-color: var(--border-strong); }
+.tf-filter-row button:hover,
+.tf-cap:hover { color: var(--text); border-color: var(--border-strong); }
 .tf-sort button[aria-pressed="true"],
-.tf-filter-row button[aria-pressed="true"] {
+.tf-filter-row button[aria-pressed="true"],
+.tf-cap.is-active {
   color: var(--bg);
   background: var(--text);
   border-color: var(--text);
+}
+.tf-cap__arrow { font-size: 0.9em; line-height: 1; }
+.tf-cap__count { font-size: 0.75em; opacity: 0.7; }
+.tf-cap__x {
+  font-size: 1.05em;
+  line-height: 1;
+  margin-left: 2px;
+  opacity: 0.7;
 }
 .tf-filters {
   display: flex;
