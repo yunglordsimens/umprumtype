@@ -1,11 +1,7 @@
 import { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
 import TypefaceCard from './TypefaceCard.jsx';
-
-const CloseIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
+import TagsPill from './TagsPill.jsx';
+import { useSiteSearch, matchesQuery } from '../lib/siteSearch.js';
 
 const SORTS = [
   { key: 'name',     label: 'Name' },
@@ -29,6 +25,7 @@ export default function TypefaceIsland({ typefaces }) {
   const [sort, setSort]             = useState('name');
   const [sortDir, setSortDir]       = useState(1);
   const [shuffleSeed, setShuffleSeed] = useState(0);
+  const searchQuery = useSiteSearch();
   const panelRef  = useRef(null);
   const listRef   = useRef(null);
   const flipSnap  = useRef(new Map());
@@ -73,6 +70,9 @@ export default function TypefaceIsland({ typefaces }) {
     if (activeTags.length > 0) {
       list = list.filter(tf => activeTags.some(tag => effectiveTags(tf).includes(tag)));
     }
+    if (searchQuery.trim()) {
+      list = list.filter(tf => matchesQuery(searchQuery, [tf.title, tf.designer, tf.year, ...(tf.tags ?? [])]));
+    }
     const out = [...list];
     if (sort === 'year') {
       out.sort((a, b) => ((a.year ?? 0) - (b.year ?? 0)) * sortDir);
@@ -87,7 +87,7 @@ export default function TypefaceIsland({ typefaces }) {
       out.sort((a, b) => a.title.localeCompare(b.title, 'cs') * sortDir);
     }
     return out;
-  }, [activeTags, sort, sortDir, shuffleSeed, typefaces]);
+  }, [activeTags, sort, sortDir, shuffleSeed, searchQuery, typefaces]);
 
   useLayoutEffect(() => {
     const ul = listRef.current;
@@ -139,13 +139,9 @@ export default function TypefaceIsland({ typefaces }) {
     else { setSort(key); setSortDir(1); }
   }
 
-  function handleTagsCapsuleClick() {
-    if (showTags) {
-      setShowTags(false);
-      if (activeTags.length > 0) { captureFlip(); setActiveTags([]); }
-    } else {
-      setShowTags(true);
-    }
+  function clearTags() {
+    setShowTags(false);
+    if (activeTags.length > 0) { captureFlip(); setActiveTags([]); }
   }
 
   return (
@@ -153,15 +149,12 @@ export default function TypefaceIsland({ typefaces }) {
       <div className="lib-main">
 
         <header className="lib-toolbar">
-          <button
-            className={`tf-cap tf-cap--tags${showTags || activeTags.length > 0 ? ' is-active' : ''}`}
-            onClick={handleTagsCapsuleClick}
-            aria-pressed={showTags}
-          >
-            <span>Tags</span>
-            {activeTags.length > 0 && <span className="tf-cap__count">{activeTags.length}</span>}
-            {(showTags || activeTags.length > 0) && <span className="tf-cap__x" aria-hidden="true">×</span>}
-          </button>
+          <TagsPill
+            open={showTags}
+            activeCount={activeTags.length}
+            onToggle={() => setShowTags(v => !v)}
+            onClear={clearTags}
+          />
 
           <div className="tf-sort">
             {SORTS.map(s => {
@@ -205,13 +198,6 @@ export default function TypefaceIsland({ typefaces }) {
                 </button>
               ))}
             </div>
-            <button
-              className="tf-tags-panel__done"
-              onClick={() => setShowTags(false)}
-              aria-label="Close tags"
-            >
-              Show results {activeTags.length > 0 ? `(${activeTags.length} tag${activeTags.length > 1 ? 's' : ''})` : ''}
-            </button>
           </div>
         </div>
 

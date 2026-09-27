@@ -4,14 +4,22 @@ function lineHeightFor(size) {
   return size > 96 ? 0.9 : size > 48 ? 1.05 : size > 24 ? 1.3 : 1.5;
 }
 
-function VariantSpecimen({ variant, fam, initialSize, baseText, showLabel }) {
+// Enough characters to fill three 450px-tall columns at the smallest size,
+// so paragraphs never come up short at the bottom.
+const SPECIMEN_MIN_CHARS = 20000;
+// Fixed gap between tester columns (it used to scale with the font size)
+const SPECIMEN_COLUMN_GAP = '24px';
+
+function VariantSpecimen({ variant, fam, initialSize, baseText }) {
   const [size, setSize] = useState(initialSize);
   const ref = useRef(null);
 
   // Set text only once on mount — never overwrite user edits
   useEffect(() => {
     if (ref.current) {
-      ref.current.textContent = (baseText + ' ').repeat(12).trim();
+      const unit = baseText.trim() + ' ';
+      const reps = Math.max(12, Math.ceil(SPECIMEN_MIN_CHARS / unit.length));
+      ref.current.textContent = unit.repeat(reps).trim();
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -21,14 +29,16 @@ function VariantSpecimen({ variant, fam, initialSize, baseText, showLabel }) {
   return (
     <div className="tfa-specimen">
       <div className="tfa-specimen__header">
-        <input
-          type="range" min="8" max="240" step="1" value={size}
-          onChange={e => setSize(+e.target.value)}
-          className="tfa-specimen__slider"
-          aria-label="Font size"
-        />
-        <span className="tfa-specimen__label">{showLabel ? (variant.variantName || 'Regular') : ''}</span>
-        <span className="tfa-specimen__value">{size}px</span>
+        <span className="tfa-specimen__label">{variant.variantName || 'Regular'}</span>
+        <span className="tfa-specimen__size">
+          <input
+            type="range" min="8" max="240" step="1" value={size}
+            onChange={e => setSize(+e.target.value)}
+            className="tfa-specimen__slider"
+            aria-label="Font size"
+          />
+          <span className="tfa-specimen__value">{size} px</span>
+        </span>
       </div>
       <div
         ref={ref}
@@ -43,7 +53,7 @@ function VariantSpecimen({ variant, fam, initialSize, baseText, showLabel }) {
           fontStyle: variant.style || 'normal',
           lineHeight: lineHeightFor(size),
           columnCount: cols,
-          columnGap: '1em',
+          columnGap: SPECIMEN_COLUMN_GAP,
           whiteSpace: multiLine ? 'normal' : 'nowrap',
           overflowX: multiLine ? 'hidden' : 'auto',
           overflowY: multiLine ? 'hidden' : 'hidden',
@@ -100,10 +110,8 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
       >
         <span className="tfa-trigger__meta-inline">
           <span className="tfa-trigger__meta-name">{tf.title}</span>
-          <span className="tfa-trigger__meta-byline">
-            {tf.designer && <span className="tfa-trigger__meta-designer">{tf.designer}</span>}
-            {tf.year && <span className="tfa-trigger__meta-year">{tf.year}</span>}
-          </span>
+          <span className="tfa-trigger__meta-designer">{tf.designer}</span>
+          <span className="tfa-trigger__meta-year">{tf.year}</span>
         </span>
         <span
           className="tfa-trigger__preview"
@@ -128,7 +136,6 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
                 fam={fam}
                 initialSize={initialSizePx}
                 baseText={tf.styleTexts[i] || tf.styleTexts[0] || tf.mainText || tf.title}
-                showLabel={tf.otfVariants.length > 1}
               />
             ))}
           </div>

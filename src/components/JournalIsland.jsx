@@ -1,16 +1,10 @@
 import { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import TagsPill from './TagsPill.jsx';
+import { useSiteSearch, matchesQuery } from '../lib/siteSearch.js';
+import { interleaveImages } from '../lib/interleave.js';
 
-const CloseIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
-const SearchIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>
-);
+// Images shown in the row's preview strip (the rest appear in the article)
+const STRIP_MAX = 8;
 
 const SORTS = [
   { key: 'name',    label: 'Name' },
@@ -40,20 +34,6 @@ const ViewGridIcon = () => (
     <rect x="0" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/>
   </svg>
 );
-
-function sizeGalleryImg(e) {
-  const img = e.currentTarget;
-  const { naturalWidth: nw, naturalHeight: nh } = img;
-  if (!nw || !nh) return;
-  const containerW = img.closest('.post-detail__gallery')?.clientWidth || img.parentElement?.clientWidth || 0;
-  if (nh > nw && containerW > 0) {
-    img.style.height = Math.round(containerW * nw / nh) + 'px';
-    img.style.width = 'auto';
-  } else {
-    img.style.width = '100%';
-    img.style.height = 'auto';
-  }
-}
 
 function GalleryCarousel({ images, captions, excerpt }) {
   const hasCaptions = captions?.some(Boolean);
@@ -116,24 +96,37 @@ function SiteEmbed({ url }) {
   );
 }
 
-function PostRow({ post, isOpen, onToggle, onTagClick, onEnter, galleryView }) {
-  const [html] = useState(() =>
-    typeof document !== 'undefined' ? (getPostHtml(post.slug) || '') : ''
+function PostRow({ post, isOpen, onToggle, onTagClick, galleryView }) {
+  // Read after mount so the server and client first render match
+  const [html, setHtml] = useState('');
+  useEffect(() => { setHtml(getPostHtml(post.slug) || ''); }, [post.slug]);
+  // Reading column: body text with the gallery images spread between paragraphs
+  const articleHtml = useMemo(
+    () => (galleryView === 'stack' ? interleaveImages(html, post.gallery, post.galleryCaptions) : ''),
+    [html, galleryView, post.gallery, post.galleryCaptions]
   );
+  const strip = post.gallery.slice(0, STRIP_MAX);
 
   return (
-    <li id={post.slug} className={`post-row${isOpen ? ' is-open' : ''}`} onMouseEnter={isOpen ? undefined : onEnter}>
-      <button className="post-row__btn" onClick={onToggle}>
-        <time className="post-row__date" dateTime={post.dateIso}>{post.date}</time>
-        <span className="post-row__title">{post.title}</span>
-        <span className="post-row__category">{post.category}</span>
+    <li id={post.slug} className={`post-row${isOpen ? ' is-open' : ''}`}>
+      <button className="post-row__btn" onClick={onToggle} aria-expanded={isOpen}>
+        <span className="post-row__head">
+          <span className="post-row__title">{post.title}</span>
+          <span className="post-row__author">{post.author}</span>
+          <time className="post-row__year" dateTime={post.dateIso}>{post.year}</time>
+        </span>
+        {strip.length > 0 && (
+          <span className="post-row__strip" aria-hidden="true">
+            {strip.map((src, i) => <img key={i} src={src} alt="" loading="lazy" />)}
+          </span>
+        )}
       </button>
       <div className="post-row__panel">
         <div className="post-row__panel-inner">
           <article className="post-detail post-detail--inline">
             <div className="post-detail__meta">
               {post.category && <span>{post.category}</span>}
-              {post.author   && <span>{post.author}</span>}
+              <time dateTime={post.dateIso}>{post.date}</time>
             </div>
             {post.tags && post.tags.length > 0 && (
               <div className="tfa-info__tags">
@@ -142,26 +135,24 @@ function PostRow({ post, isOpen, onToggle, onTagClick, onEnter, galleryView }) {
                 ))}
               </div>
             )}
-            {post.gallery.length > 0 && (
-              galleryView === 'carousel' ? (
-                <GalleryCarousel images={post.gallery} captions={post.galleryCaptions} excerpt={post.excerpt} />
-              ) : galleryView === 'grid' ? (
-                <GalleryGrid images={post.gallery} captions={post.galleryCaptions} />
-              ) : (
-                <div className="post-detail__gallery">
-                  {post.gallery.map((img, i) => (
-                    <figure key={i} className="post-detail__gallery-item">
-                      <img src={img} alt="" loading="lazy" onLoad={sizeGalleryImg} />
-                      {post.galleryCaptions?.[i] && (
-                        <figcaption className="gallery-caption">{post.galleryCaptions[i]}</figcaption>
-                      )}
-                    </figure>
-                  ))}
-                </div>
-              )
+            {galleryView === 'stack' ? (
+              <div className="post-article">
+                {post.excerpt && <p className="post-article__excerpt">{post.excerpt}</p>}
+                <div className="post__body post-article__body" dangerouslySetInnerHTML={{ __html: articleHtml }} />
+              </div>
+            ) : (
+              <>
+                {post.gallery.length > 0 && (
+                  galleryView === 'carousel' ? (
+                    <GalleryCarousel images={post.gallery} captions={post.galleryCaptions} excerpt={post.excerpt} />
+                  ) : (
+                    <GalleryGrid images={post.gallery} captions={post.galleryCaptions} />
+                  )
+                )}
+                {galleryView !== 'carousel' && post.excerpt && <p className="post-detail__excerpt">{post.excerpt}</p>}
+                <div className="post__body post-article" dangerouslySetInnerHTML={{ __html: html }} />
+              </>
             )}
-            {galleryView !== 'carousel' && post.excerpt && <p className="post-detail__excerpt">{post.excerpt}</p>}
-            <div className="post__body" dangerouslySetInnerHTML={{ __html: html }} />
             {post.siteUrl && <SiteEmbed url={post.siteUrl} />}
             {post.purchasable && post.contact && (
               <aside className="post-detail__contact">
@@ -185,11 +176,9 @@ export default function JournalIsland({ posts }) {
   const [openSlug, setOpenSlug]     = useState(null);
   const [sort, setSort]             = useState('name');
   const [shuffleSeed, setShuffleSeed] = useState(0);
-  const [previewSrc, setPreviewSrc] = useState(null);
   const [galleryView, setGalleryView] = useState('stack');
-  const [mounted, setMounted]       = useState(false);
+  const searchQuery = useSiteSearch();
   const panelRef   = useRef(null);
-  const previewRef = useRef(null);
   const listRef    = useRef(null);
   const flipSnap   = useRef(new Map());
   const prevKeys   = useRef(new Set());
@@ -201,13 +190,6 @@ export default function JournalIsland({ posts }) {
     for (const el of ul.children) {
       if (el.id) flipSnap.current.set(el.id, el.getBoundingClientRect().top);
     }
-  }
-
-  useEffect(() => setMounted(true), []);
-
-  function handleMouseMove(e) {
-    if (!previewRef.current) return;
-    previewRef.current.style.transform = `translate(${e.clientX + 24}px, ${e.clientY - 80}px)`;
   }
 
   useEffect(() => {
@@ -227,6 +209,9 @@ export default function JournalIsland({ posts }) {
   const filtered = useMemo(() => {
     let list = posts;
     if (activeTags.length > 0) list = list.filter(p => activeTags.some(t => p.tags.includes(t)));
+    if (searchQuery.trim()) {
+      list = list.filter(p => matchesQuery(searchQuery, [p.title, p.author, p.category, p.year, p.excerpt, ...p.tags]));
+    }
     const out = [...list];
     if (sort === 'author') {
       out.sort((a, b) => (a.author || '').localeCompare(b.author || '', 'cs'));
@@ -241,7 +226,7 @@ export default function JournalIsland({ posts }) {
       out.sort((a, b) => a.title.localeCompare(b.title, 'cs'));
     }
     return out;
-  }, [activeTags, sort, shuffleSeed, posts]);
+  }, [activeTags, sort, shuffleSeed, searchQuery, posts]);
 
   useLayoutEffect(() => {
     const ul = listRef.current;
@@ -286,7 +271,6 @@ export default function JournalIsland({ posts }) {
   }, [showTags]);
 
   function togglePost(slug) {
-    setPreviewSrc(null);
     setOpenSlug(prev => prev === slug ? null : slug);
   }
 
@@ -309,32 +293,22 @@ export default function JournalIsland({ posts }) {
   }, [openSlug]);
 
   return (
-    <>
-    {mounted && createPortal(
-      <div ref={previewRef} className="post-cursor-preview" aria-hidden="true"
-           style={{ opacity: previewSrc ? 1 : 0 }}>
-        <img src={previewSrc || ''} alt="" />
-      </div>,
-      document.body
-    )}
-    <div className="lib-layout" onMouseMove={handleMouseMove}>
+    <div className="lib-layout">
       <div className="lib-main">
 
         <header className="lib-toolbar">
-          <button className="lib-filter-btn" onClick={() => setShowTags(f => !f)} aria-pressed={showTags}>
-            <span className="lib-filter-btn__label">Tags</span>
-            {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
-          </button>
+          <TagsPill
+            open={showTags}
+            activeCount={activeTags.length}
+            onToggle={() => setShowTags(v => !v)}
+            onClear={() => { setShowTags(false); if (activeTags.length > 0) { captureFlip(); setActiveTags([]); } }}
+          />
           <div className="tf-sort">
             {SORTS.map(s => (
               <button key={s.key} aria-pressed={sort === s.key} onClick={() => { captureFlip(); setSort(s.key); if (s.key === 'shuffle') setShuffleSeed(n => n + 1); }}>
                 {s.label}
               </button>
             ))}
-            <span className="tf-sort__divider" />
-            <span className="lib-toolbar-count">
-              {filtered.length < posts.length ? `${filtered.length} of ${posts.length}` : filtered.length}
-            </span>
             {openSlug && (
               <>
                 <span className="tf-sort__divider" />
@@ -344,6 +318,9 @@ export default function JournalIsland({ posts }) {
               </>
             )}
           </div>
+          <span className="lib-toolbar-count">
+            {filtered.length < posts.length ? `${filtered.length} of ${posts.length}` : filtered.length}
+          </span>
         </header>
 
         <div
@@ -364,14 +341,6 @@ export default function JournalIsland({ posts }) {
                 </button>
               ))}
             </div>
-            <div className="tf-tags-panel__actions">
-              {activeTags.length > 0 && (
-                <button className="tf-tags-clear" onClick={() => { captureFlip(); setActiveTags([]); }}>Clear</button>
-              )}
-              <button className="tf-tags-close" onClick={() => setShowTags(false)} aria-label="Close tags">
-                <CloseIcon />
-              </button>
-            </div>
           </div>
         </div>
 
@@ -380,8 +349,7 @@ export default function JournalIsland({ posts }) {
             <div className="lib-empty">No entries match.</div>
           ) : (
             <>
-              <ul ref={listRef} className="post-list post-island__list"
-                  onMouseLeave={() => setPreviewSrc(null)}>
+              <ul ref={listRef} className="post-list post-island__list">
                 {filtered.map(p => (
                   <PostRow
                     key={p.slug}
@@ -389,7 +357,6 @@ export default function JournalIsland({ posts }) {
                     isOpen={openSlug === p.slug}
                     onToggle={() => togglePost(p.slug)}
                     onTagClick={onTagClick}
-                    onEnter={() => setPreviewSrc(p.gallery[0] || null)}
                     galleryView={galleryView}
                   />
                 ))}
@@ -400,6 +367,5 @@ export default function JournalIsland({ posts }) {
 
       </div>
     </div>
-    </>
   );
 }

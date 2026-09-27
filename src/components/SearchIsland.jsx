@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { scopeForPath, broadcastSiteSearch } from '../lib/siteSearch.js';
 
 const SearchIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -26,12 +27,15 @@ export default function SearchIsland() {
   const [open, setOpen]         = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
   const [placeholder, setPlaceholder] = useState('Global search');
+  // Section pages filter their own list in place; only home/info search globally
+  const [scope, setScope]       = useState(null);
   const inputRef = useRef(null);
   const dropRef  = useRef(null);
   const wrapRef  = useRef(null);
 
   useEffect(() => {
     setPlaceholder(placeholderForPath(window.location.pathname));
+    setScope(scopeForPath(window.location.pathname));
   }, []);
 
   const loadIndex = useCallback(async () => {
@@ -42,6 +46,10 @@ export default function SearchIsland() {
   }, [index]);
 
   useEffect(() => {
+    if (scope) {
+      broadcastSiteSearch(query);
+      return;
+    }
     const q = query.trim().toLowerCase();
     if (!q) { setResults([]); setOpen(false); return; }
     loadIndex().then(data => {
@@ -55,7 +63,7 @@ export default function SearchIsland() {
       setOpen(filtered.length > 0);
       setActiveIdx(-1);
     });
-  }, [query]);
+  }, [query, scope]);
 
   useEffect(() => {
     const onKey = e => {
