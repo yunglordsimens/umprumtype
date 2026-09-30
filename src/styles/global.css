@@ -538,7 +538,8 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
 }
 .tf-search:focus { outline: none; border-color: var(--text); }
 .tf-sort { display: flex; gap: var(--space-2); flex-wrap: wrap; padding: 0; margin: 0; align-items: center; }
-.tf-sort__divider { width: 1px; height: 16px; background: var(--border); margin: 0 var(--space-1); flex-shrink: 0; }
+/* Divider runs the full height of the pills next to it */
+.tf-sort__divider { width: 1px; align-self: stretch; background: var(--border); margin: 0 var(--space-1); flex-shrink: 0; }
 .tf-sort button,
 .tf-filter-row button,
 .tf-cap {
