@@ -12,10 +12,11 @@ import Base from '../layouts/Base.astro';
 
 <style>
   .info-page {
-    padding: calc(var(--nav-h) / 2) var(--space-5) var(--space-10);
+    padding: calc(var(--nav-h) / 2) var(--gutter) var(--space-10);
   }
   .info-body {
-    width: clamp(260px, 50vw, 720px);
+    width: var(--text-col);
+    max-width: 100%;
     font-size: var(--step-0);
     line-height: 1.6;
   }

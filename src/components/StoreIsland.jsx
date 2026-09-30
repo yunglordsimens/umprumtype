@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import GridCard from './GridCard.jsx';
+import TagsPill from './TagsPill.jsx';
+import { useSiteSearch, matchesQuery } from '../lib/siteSearch.js';
 
 const ExpandIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -78,6 +80,7 @@ export default function StoreIsland({ items }) {
   const [activeTags, setActiveTags]   = useState([]);
   const [showTags, setShowTags]       = useState(false);
   const [openSlug, setOpenSlug]       = useState(null);
+  const searchQuery = useSiteSearch();
   const panelRef = useRef(null);
 
   useEffect(() => {
@@ -99,8 +102,11 @@ export default function StoreIsland({ items }) {
     if (activeTags.length > 0) {
       list = list.filter(i => activeTags.some(t => (i.tags ?? []).includes(t)));
     }
+    if (searchQuery.trim()) {
+      list = list.filter(i => matchesQuery(searchQuery, [i.title, i.author, i.year, ...(i.tags ?? [])]));
+    }
     return list;
-  }, [activeTags, items]);
+  }, [activeTags, searchQuery, items]);
 
   function openItem(item) {
     setOpenSlug(item.slug);
@@ -147,13 +153,13 @@ export default function StoreIsland({ items }) {
       {/* ── Left filter panel ── */}
       <div className="lib-main">
         <header className="lib-toolbar">
-          <button className="lib-filter-btn" onClick={() => setShowTags(f => !f)} aria-pressed={showTags}>
-            <span className="lib-filter-btn__label">Tags</span>
-            {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
-          </button>
-          <div className="lib-right">
-            <span className="lib-toolbar-count">{filtered.length < items.length ? `${filtered.length} of ${items.length}` : filtered.length}</span>
-          </div>
+          <TagsPill
+            open={showTags}
+            activeCount={activeTags.length}
+            onToggle={() => setShowTags(v => !v)}
+            onClear={() => { setShowTags(false); setActiveTags([]); }}
+          />
+          <span className="lib-toolbar-count">{filtered.length < items.length ? `${filtered.length} of ${items.length}` : filtered.length}</span>
         </header>
 
         {/* Tags panel — slides down under toolbar */}
@@ -164,9 +170,6 @@ export default function StoreIsland({ items }) {
                 <button key={tag} className={`tf-tag-chip${activeTags.includes(tag) ? ' is-active' : ''}`} onClick={() => toggleTag(tag)}>{tag}</button>
               ))}
             </div>
-            {activeTags.length > 0 && (
-              <button className="tf-tag-clear" onClick={() => setActiveTags([])}>Clear</button>
-            )}
           </div>
         </div>
 

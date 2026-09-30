@@ -1,4 +1,6 @@
 import { Fragment, useState, useMemo, useEffect, useRef } from 'react';
+import TagsPill from './TagsPill.jsx';
+import { useSiteSearch, matchesQuery } from '../lib/siteSearch.js';
 
 const SHEET_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9pcn-Vt6gV9lCYZEK1Ly6ZKdEIYqN-VoIu9EkPqDqkFCAwT5R_eqaKz6priy-ixFZQWD3CtX263O_/pub?output=csv';
@@ -49,8 +51,6 @@ const FALLBACK_COVERS = [
   { bg: '#44403c', text: '#ffffff' },
 ];
 
-const ALL_TAGS = Object.keys(TAG_COVERS).sort();
-
 function getCover(book) {
   for (const tag of book.tags) {
     if (TAG_COVERS[tag]) return TAG_COVERS[tag];
@@ -83,6 +83,28 @@ function parseRow(row) {
   return cols;
 }
 
+// Column lookup by header name, so added/reordered sheet columns keep working.
+// Falls back to the original fixed order: NAME, AUTHOR, YEAR, TAGS, IMAGE.
+const COLUMN_ALIASES = {
+  title:     ['name', 'title', 'název', 'nazev'],
+  author:    ['author', 'authors', 'autor'],
+  year:      ['year', 'rok'],
+  tags:      ['tags', 'tag'],
+  image:     ['image', 'img', 'cover', 'obrázek', 'obrazek'],
+  publisher: ['publisher', 'published by', 'vydavatel', 'vydavatelství', 'vydavatelstvi', 'nakladatel', 'nakladatelství'],
+};
+const DEFAULT_COLUMNS = { title: 0, author: 1, year: 2, tags: 3, image: 4, publisher: -1 };
+
+function columnMap(headerRow) {
+  const header = parseRow(headerRow || '').map(h => h.trim().toLowerCase());
+  const map = {};
+  for (const [key, aliases] of Object.entries(COLUMN_ALIASES)) {
+    const idx = header.findIndex(h => aliases.includes(h));
+    map[key] = idx >= 0 ? idx : DEFAULT_COLUMNS[key];
+  }
+  return map;
+}
+
 function toThumb(url) {
   if (!url) return null;
   const m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
@@ -90,6 +112,8 @@ function toThumb(url) {
   return url.startsWith('http') ? url : null;
 }
 
+// Enlarged cover + metadata: tags first, then title, author, year and
+// publisher stacked, all at one text size (like the typeface detail)
 function BookDetail({ book, onTagClick, onClose }) {
   const hasImage = !!book.image;
   return (
@@ -102,27 +126,30 @@ function BookDetail({ book, onTagClick, onClose }) {
         )}
       </div>
       <div className="lib-accordion__meta">
-        <h2 className="lib-accordion__title">{book.title}</h2>
-        {book.author && <p className="lib-accordion__author">{book.author}</p>}
-        {book.year   && <p className="lib-accordion__year">{book.year}</p>}
         {book.tags.length > 0 && (
           <div className="lib-accordion__tags">
             {book.tags.map(t => (
               <button
                 key={t}
-                className="lib-accordion__tag"
+                className="tfa-info__tag"
                 onClick={(e) => { e.stopPropagation(); onTagClick?.(t); }}
               >{t}</button>
             ))}
           </div>
         )}
+        <dl className="lib-accordion__fields">
+          <dt>Title</dt><dd className="lib-accordion__title">{book.title}</dd>
+          {book.author    && <><dt>Author</dt><dd>{book.author}</dd></>}
+          {book.year      && <><dt>Year</dt><dd>{book.year}</dd></>}
+          {book.publisher && <><dt>Publisher</dt><dd>{book.publisher}</dd></>}
+        </dl>
       </div>
       <button className="lib-accordion__close" onClick={onClose} aria-label="Close">×</button>
     </div>
   );
 }
 
-// Grid card — shows cover + basic info, click to toggle
+// Grid card — cover + title only; author/year live in the detail
 function BookCard({ book, isOpen, onToggle }) {
   const hasImage = !!book.image;
   return (
@@ -144,8 +171,6 @@ function BookCard({ book, isOpen, onToggle }) {
       </div>
       <div className="lib-card__info">
         <h4 className="lib-card__title">{book.title}</h4>
-        <p className="lib-card__author">{book.author || ''}</p>
-        {book.year && <p className="lib-card__year">{book.year}</p>}
       </div>
     </div>
   );
@@ -174,14 +199,12 @@ export default function LibraryIsland() {
   const [loading, setLoading]         = useState(true);
   const [activeTags, setActiveTags]   = useState([]);
   const [showTags, setShowTags]       = useState(false);
-  const [viewMode, setViewMode]       = useState(() => {
-    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches) return 'list';
-    return 'grid';
-  });
+  // List by default so covers are only loaded when someone asks for the grid
+  const [viewMode, setViewMode]       = useState('list');
   const [openId, setOpenId]           = useState(null);
   const [sort, setSort]               = useState('title');
   const [sortDir, setSortDir]         = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
+  const searchQuery = useSiteSearch();
   const panelRef = useRef(null);
 
   useEffect(() => {
@@ -196,19 +219,21 @@ export default function LibraryIsland() {
     fetch(SHEET_URL)
       .then(r => r.text())
       .then(csv => {
-        const rows = csv.split('\n').slice(1);
+        const [headerRow, ...rows] = csv.split('\n');
+        const col = columnMap(headerRow);
         const books = rows
           .filter(row => row.trim())
           .map((row, i) => {
             const cols = parseRow(row);
-            const c = n => cols[n]?.trim() || null;
+            const c = key => (col[key] >= 0 ? cols[col[key]]?.trim() : null) || null;
             return {
               id: i + 1,
-              title: (c(0) || '').split(/\s*:\s*/)[0].trim(),
-              author: c(1),
-              year: c(2),
-              tags: (c(3) || '').split(/[,;]/).map(t => t.trim()).filter(Boolean),
-              image: toThumb(c(4)),
+              title: (c('title') || '').split(/\s*:\s*/)[0].trim(),
+              author: c('author'),
+              year: c('year'),
+              publisher: c('publisher'),
+              tags: (c('tags') || '').split(/[,;]/).map(t => t.trim()).filter(Boolean),
+              image: toThumb(c('image')),
             };
           })
           .filter(b => b.title);
@@ -218,17 +243,19 @@ export default function LibraryIsland() {
       .catch(() => setLoading(false));
   }, []);
 
+  // Tags come from the sheet itself, so edits to the table show up here too
+  const allTags = useMemo(
+    () => [...new Set(library.flatMap(b => b.tags))].sort((a, b) => a.localeCompare(b, 'cs')),
+    [library]
+  );
+
   const filtered = useMemo(() => {
     let books = library;
     if (activeTags.length > 0) {
       books = books.filter(b => b.tags.some(t => activeTags.includes(t)));
     }
     if (searchQuery.trim()) {
-      const q = searchQuery.trim().toLowerCase();
-      books = books.filter(b =>
-        b.title.toLowerCase().includes(q) ||
-        (b.author || '').toLowerCase().includes(q)
-      );
+      books = books.filter(b => matchesQuery(searchQuery, [b.title, b.author, b.year, b.publisher, ...b.tags]));
     }
     return [...books].sort((a, b) => {
       let av, bv;
@@ -272,40 +299,41 @@ export default function LibraryIsland() {
     <div className="lib-layout">
       <div className="lib-main">
 
-        <header className="lib-toolbar lib-toolbar--library">
-          <div className="lib-toolbar__row lib-toolbar__row--top">
-            <button className="lib-filter-btn" onClick={() => setShowTags(f => !f)} aria-pressed={showTags}>
-              <span className="lib-filter-btn__label">Tags</span>
-              {activeTags.length > 0 && <span className="tf-tag-count">{activeTags.length}</span>}
-            </button>
-          </div>
-          <div className="lib-toolbar__row tf-sort lib-toolbar__row--sorts">
+        <header className="lib-toolbar">
+          <TagsPill
+            open={showTags}
+            activeCount={activeTags.length}
+            onToggle={() => setShowTags(v => !v)}
+            onClear={() => { setShowTags(false); setActiveTags([]); }}
+          />
+          <div className="tf-sort">
             {[['title','Title'],['author','Author'],['year','Year']].map(([col, label]) => (
-              <button key={col} aria-pressed={sort === col} onClick={() => cycleSort(col)}>
-                {label}{sort === col ? (sortDir === 1 ? ' ↑' : ' ↓') : ''}
+              <button key={col} className="tf-cap" aria-pressed={sort === col} onClick={() => cycleSort(col)}>
+                <span>{label}</span>
+                {sort === col && <span className="tf-cap__arrow">{sortDir === 1 ? '↑' : '↓'}</span>}
               </button>
             ))}
             <span className="tf-sort__divider" />
-            <button aria-pressed={viewMode === 'grid'} onClick={() => setViewMode('grid')}>Grid</button>
             <button aria-pressed={viewMode === 'list'} onClick={() => setViewMode('list')}>List</button>
+            <button aria-pressed={viewMode === 'grid'} onClick={() => setViewMode('grid')}>Grid</button>
           </div>
+          <span className="lib-toolbar-count">
+            {filtered.length < library.length ? `${filtered.length} of ${library.length}` : filtered.length}
+          </span>
         </header>
 
         {/* Tags panel — slides down under toolbar */}
         <div ref={panelRef} className="tf-tags-panel" style={{ maxHeight: 0, opacity: 0, overflow: 'hidden', transition: 'max-height 400ms var(--ease), opacity 280ms var(--ease)' }}>
           <div className="tf-tags-panel__inner">
             <div className="tf-tags-panel__chips">
-              {ALL_TAGS.map(tag => (
+              {allTags.map(tag => (
                 <button key={tag} className={`tf-tag-chip${activeTags.includes(tag) ? ' is-active' : ''}`} onClick={() => toggleTag(tag)}>{tag}</button>
               ))}
             </div>
-            {activeTags.length > 0 && (
-              <button className="tf-tag-clear" onClick={() => setActiveTags([])}>Clear</button>
-            )}
           </div>
         </div>
 
-        <div className="lib-scroll">
+        <div className={`lib-scroll${viewMode === 'list' ? ' lib-scroll--list' : ''}`}>
           {filtered.length === 0 ? (
             <div className="lib-empty">Nothing found.</div>
           ) : viewMode === 'grid' ? (

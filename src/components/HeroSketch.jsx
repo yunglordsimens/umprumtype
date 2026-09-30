@@ -453,7 +453,6 @@ export default function HeroSketch({ fontData = [] }) {
       {['dots', 'waves'].map(e => (
         <button key={e} aria-pressed={effect === e} onClick={() => setEffect(e)}>{e}</button>
       ))}
-      <span className="tf-sort__divider" />
       <button className="hero-palette-cycle" onClick={cyclePalette} aria-label="Cycle color palette">
         {PALETTE_LABELS[palette]}
       </button>

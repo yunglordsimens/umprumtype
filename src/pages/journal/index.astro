@@ -20,6 +20,7 @@ const posts = entries.map(e => {
     title:       e.data.title,
     date:        e.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }),
     dateIso:     e.data.date.toISOString(),
+    year:        e.data.date.getFullYear(),
     author:      e.data.author    ?? null,
     category:    e.data.category,
     tags:        e.data.tags      ?? [],
