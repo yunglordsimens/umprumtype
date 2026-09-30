@@ -995,6 +995,7 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
 .tfa-trigger__meta-name { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tfa-trigger__meta-designer { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tfa-trigger__meta-year { white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* Looping preview line: runs edge to edge, spun sideways by swipe/drag */
 .tfa-trigger__preview {
   display: block;
   font-size: clamp(3rem, 15vw, 15rem);
@@ -1002,10 +1003,16 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
   color: var(--text);
   word-break: normal;
   white-space: nowrap;
-  overflow: visible;
-  padding: 0;
-  padding-block: 0.1em;
+  overflow: hidden;
+  margin-inline: calc(-1 * var(--gutter));
+  padding: 0.1em var(--gutter);
+  touch-action: pan-y;
 }
+.tfa-trigger__track {
+  display: inline-flex;
+  will-change: transform;
+}
+.tfa-trigger__copy { padding-right: 0.4em; }
 .tfa-trigger__meta {
   display: flex;
   align-items: baseline;
@@ -2248,7 +2255,7 @@ body.home-page.home-light .hero-type-hint { color: rgba(0,0,0,0.5); }
 
 /* light canvas (dark-system mono or yellow-light) */
 .hero-controls--light {
-  background: rgba(238, 237, 232, 0.72);
+  background: #ffffff;
   border-bottom-color: rgba(0,0,0,0.07);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -2333,9 +2340,9 @@ body.home-page.home-light .hero-type-hint { color: rgba(0,0,0,0.5); }
 /* Dark system → site is dark → homepage is LIGHT (always contrasting) */
 @media (prefers-color-scheme: dark) {
   body.home-page {
-    background: #f2f2ee;
+    background: #ffffff;
     color: #111111;
-    --bg: #f2f2ee;
+    --bg: #ffffff;
     --text: #111111;
     --text-muted: rgba(0,0,0,0.5);
     --text-subtle: rgba(0,0,0,0.3);
@@ -2346,7 +2353,7 @@ body.home-page.home-light .hero-type-hint { color: rgba(0,0,0,0.5); }
 
 /* Light system — dark homepage (default) */
 body.home-page .site-nav {
-  background: #111118;
+  background: #000000;
   border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 body.home-page .site-nav__logo,
@@ -2367,7 +2374,7 @@ body.home-page .site-nav[data-menu="open"] .site-nav__burger { color: #fff; }
 /* Dark system overrides (must come after light defaults to win the cascade) */
 @media (prefers-color-scheme: dark) {
   body.home-page .site-nav {
-    background: #f2f2ee;
+    background: #ffffff;
     border-bottom-color: rgba(0,0,0,0.07);
   }
   body.home-page .site-nav__logo,
@@ -2384,7 +2391,7 @@ body.home-page .site-nav[data-menu="open"] .site-nav__burger { color: #fff; }
 }
 @media (max-width: 720px) {
   body.home-page:not(.home-light) .site-nav__links {
-    background: rgba(17, 17, 24, 0.96);
+    background: #000000;
   }
   body.home-page:not(.home-light) .site-nav__links a {
     color: rgba(242, 242, 239, 0.9);

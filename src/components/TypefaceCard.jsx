@@ -68,6 +68,95 @@ function VariantSpecimen({ variant, fam, initialSize, baseText }) {
   );
 }
 
+// Preview line above the tester: an endless loop of the sample text that can be
+// spun sideways — horizontal trackpad swipe / shift+wheel, or a finger drag.
+function LoopingPreview({ text, style }) {
+  const boxRef   = useRef(null);
+  const trackRef = useRef(null);
+  const offset   = useRef(0);
+  const dragged  = useRef(false);
+  // Enough copies that the line never runs out, even for a short sample text
+  const [copies, setCopies] = useState(3);
+
+  useEffect(() => {
+    let cancelled = false;
+    const measure = () => {
+      const w = trackRef.current?.firstElementChild?.offsetWidth;
+      const boxW = boxRef.current?.offsetWidth;
+      if (!cancelled && w && boxW) setCopies(Math.max(3, Math.ceil(boxW / w) + 2));
+    };
+    (document.fonts?.ready ?? Promise.resolve()).then(measure);
+    window.addEventListener('resize', measure);
+    return () => { cancelled = true; window.removeEventListener('resize', measure); };
+  }, [text]);
+
+  useEffect(() => {
+    const box = boxRef.current;
+    const track = trackRef.current;
+    if (!box || !track) return;
+
+    const loopWidth = () => track.firstElementChild?.offsetWidth || 0;
+    const move = dx => {
+      const w = loopWidth();
+      if (!w) return;
+      offset.current = (((offset.current + dx) % w) + w) % w;
+      track.style.transform = `translateX(${-offset.current}px)`;
+    };
+
+    const onWheel = e => {
+      const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
+      // Only sideways gestures — vertical scrolling keeps scrolling the page
+      if (Math.abs(dx) <= Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
+      e.preventDefault();
+      move(dx);
+    };
+
+    let startX = 0, lastX = 0, pointerId = null;
+    const onDown = e => {
+      if (e.pointerType === 'mouse') return;
+      pointerId = e.pointerId;
+      startX = lastX = e.clientX;
+      dragged.current = false;
+    };
+    const onMove = e => {
+      if (e.pointerId !== pointerId) return;
+      if (Math.abs(e.clientX - startX) > 6) dragged.current = true;
+      move(lastX - e.clientX);
+      lastX = e.clientX;
+    };
+    const onUp = e => { if (e.pointerId === pointerId) pointerId = null; };
+    // A drag shouldn't also open/close the typeface
+    const onClick = e => {
+      if (dragged.current) { e.stopPropagation(); e.preventDefault(); dragged.current = false; }
+    };
+
+    box.addEventListener('wheel', onWheel, { passive: false });
+    box.addEventListener('pointerdown', onDown);
+    box.addEventListener('pointermove', onMove);
+    box.addEventListener('pointerup', onUp);
+    box.addEventListener('pointercancel', onUp);
+    box.addEventListener('click', onClick, true);
+    return () => {
+      box.removeEventListener('wheel', onWheel);
+      box.removeEventListener('pointerdown', onDown);
+      box.removeEventListener('pointermove', onMove);
+      box.removeEventListener('pointerup', onUp);
+      box.removeEventListener('pointercancel', onUp);
+      box.removeEventListener('click', onClick, true);
+    };
+  }, []);
+
+  return (
+    <span ref={boxRef} className="tfa-trigger__preview" style={style}>
+      <span ref={trackRef} className="tfa-trigger__track">
+        {Array.from({ length: copies }, (_, i) => (
+          <span key={i} className="tfa-trigger__copy" aria-hidden={i > 0 || undefined}>{text}</span>
+        ))}
+      </span>
+    </span>
+  );
+}
+
 export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
   const clampedIdx = Math.min(
     Math.max(0, tf.mainStyleNo),
@@ -113,17 +202,15 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
           <span className="tfa-trigger__meta-designer">{tf.designer}</span>
           <span className="tfa-trigger__meta-year">{tf.year}</span>
         </span>
-        <span
-          className="tfa-trigger__preview"
+        <LoopingPreview
+          text={tf.styleTexts[0] || tf.mainText || tf.title}
           style={{
             fontFamily: `"${fam}", var(--font-ui)`,
             fontWeight: current?.weight || 400,
             fontStyle: current?.style || 'normal',
             fontSize: tf.mainSize || '6em',
           }}
-        >
-          {tf.styleTexts[0] || tf.mainText || tf.title}
-        </span>
+        />
       </button>
 
       <div ref={panelRef} className="tfa-panel" aria-hidden={!isOpen}>
