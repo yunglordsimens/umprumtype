@@ -737,7 +737,6 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
   hyphens: auto;
   transition: height var(--dur) var(--ease);
 }
-.specimen__text:focus { outline: 1px dashed var(--border-strong); outline-offset: 4px; }
 
 .specimen__variant-window { margin-top: var(--space-5); }
 .specimen__variant-select {
@@ -983,6 +982,14 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
 .tfa-trigger.is-open .tfa-trigger__tags { display: block; }
 /* Name / Author / Year — same columns as the Library list */
 .tfa-trigger__meta-inline {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding-inline: 0;
+  padding-bottom: 0;
+  text-align: left;
+  cursor: pointer;
+  line-height: inherit;
   display: grid;
   grid-template-columns: var(--list-cols);
   gap: var(--list-gap);
@@ -996,7 +1003,8 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
 .tfa-trigger__meta-name { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tfa-trigger__meta-designer { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tfa-trigger__meta-year { white-space: nowrap; font-variant-numeric: tabular-nums; }
-/* Looping preview line: runs edge to edge, spun sideways by swipe/drag */
+/* Looping preview line: runs edge to edge; a native horizontal scroller
+   (scrollbar hidden) so trackpad / touch swipes spin it in every browser */
 .tfa-trigger__preview {
   display: block;
   font-size: clamp(3rem, 15vw, 15rem);
@@ -1004,15 +1012,17 @@ body.home-page .site-search__result:hover { background: rgba(255,255,255,0.1); }
   color: var(--text);
   word-break: normal;
   white-space: nowrap;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-behavior: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
   margin-inline: calc(-1 * var(--gutter));
   padding: 0.1em var(--gutter);
-  touch-action: pan-y;
 }
-.tfa-trigger__track {
-  display: inline-flex;
-  will-change: transform;
-}
+.tfa-trigger__preview::-webkit-scrollbar { display: none; }
+.tfa-trigger__track { display: inline-flex; }
 .tfa-trigger__copy { padding-right: 0.4em; }
 .tfa-trigger__meta {
   display: flex;
