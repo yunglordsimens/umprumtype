@@ -1,0 +1,16 @@
+/* Preview pane inside the CMS editor — same font and colours as the site */
+@font-face { font-family: 'Svar'; src: url('/fonts/Svar/3_Svar%20Regular.woff2') format('woff2'); font-weight: 400 900; font-display: swap; }
+@font-face { font-family: 'Svar'; src: url('/fonts/Svar/2_Svar%20Light.woff2') format('woff2'); font-weight: 300; font-display: swap; }
+html, body { background: #f8f8f8; }
+body {
+  font-family: 'Svar', 'Helvetica Neue', system-ui, sans-serif;
+  color: #111111;
+  font-size: 16px;
+  line-height: 1.6;
+  padding: 24px;
+  max-width: 720px;
+}
+strong, b { font-weight: 400; color: #666666; }
+h1, h2, h3, h4 { font-weight: 400; line-height: 1.2; }
+img { max-width: 100%; height: auto; }
+a { color: inherit; }

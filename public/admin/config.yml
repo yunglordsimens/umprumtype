@@ -5,6 +5,13 @@ backend:
   base_url: https://typoumprum.cz
   auth_endpoint: api/auth
 
+# UMPRUM Type wordmark (Svar outlines) on the login screen and in the header
+logo:
+  src: /admin/logo.svg
+  show_in_header: true
+site_url: https://typoumprum.cz
+display_url: https://typoumprum.cz
+
 media_folder: "public/uploads"
 public_folder: "/uploads"
 
@@ -24,6 +31,7 @@ collections:
   - name: "typefaces"
     label: "Typefaces"
     label_singular: "Typeface"
+    description: "Overrides for typefaces. Fonts and their sample texts come from public/fonts/*/info.txt — fill in here only what you want to change on the site."
     folder: "src/content/typefaces"
     create: true
     delete: true
@@ -34,106 +42,103 @@ collections:
     summary: "{{name}} — {{designer}}, {{year}}"
     sortable_fields: ["name", "designer", "year"]
     fields:
+      # — Basics: the row above the preview (Name / Author / Year) —
       - label: "Name"
         name: "name"
         widget: "string"
-        hint: "Display name of the typeface."
-
+        hint: "Typeface name as shown on the site."
       - label: "Designer"
         name: "designer"
         widget: "string"
-
+        hint: "Shown next to the name; also becomes a tag visitors can filter by."
       - label: "Year"
         name: "year"
         widget: "number"
         value_type: "int"
         min: 2000
         max: 2100
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        required: false
+        default: []
+        hint: "Separate with commas, e.g. serif, display, text. Replaces the tags from info.txt."
+      - label: "About the typeface"
+        name: "description"
+        widget: "text"
+        required: false
+        hint: "Shown under the tags when the typeface is opened."
 
+      # — How the specimen looks —
+      - label: "Preview size"
+        name: "mainSize"
+        widget: "string"
+        default: "6em"
+        required: false
+        hint: "Size of the big spinning line in the list. 3em small/dense text faces · 4em text · 6em display (default) · 8em large display · 10em poster."
+      - label: "Tester size"
+        name: "testerSize"
+        widget: "string"
+        default: "4em"
+        required: false
+        hint: "Starting size of the tester when the typeface is opened. Use 2em–3em for text faces so several styles fit on screen."
+      - label: "Fallback sample text"
+        name: "mainText"
+        widget: "string"
+        required: false
+        hint: "Only used if info.txt has no sample text (styleText0). Visitors can't edit sample texts — use only characters the font contains."
+
+      # — Designer contact (shown under the description) —
+      - label: "Designer website"
+        name: "authorUrl"
+        widget: "string"
+        required: false
+        hint: "Full address (https://…)."
+      - label: "Designer email"
+        name: "authorEmail"
+        widget: "string"
+        required: false
+      - label: "Instagram"
+        name: "authorInstagram"
+        widget: "string"
+        required: false
+        hint: "@handle — saved, but not shown on the site yet."
+
+      # — Files —
       - label: "Font files (.woff2)"
         name: "fonts"
         widget: "list"
         required: false
-        hint: "Upload each .woff2 variant. Files go to public/fonts/{slug}/."
+        hint: "One entry per style. Files go to public/fonts/{slug}/."
         fields:
           - label: "File"
             name: "file"
             widget: "file"
-            hint: "Upload .woff2 file"
+            hint: ".woff2 file"
             media_library:
               config:
                 multiple: false
-          - label: "Variant name"
+          - label: "Style name"
             name: "variant"
             widget: "string"
             default: "Regular"
-            hint: "e.g. Regular, Bold, Light Italic"
+            hint: "e.g. Regular, Bold, Light Italic — shown above the tester."
           - label: "Weight"
             name: "weight"
             widget: "number"
             default: 400
-            hint: "100 = Thin, 300 = Light, 400 = Regular, 700 = Bold, 900 = Black"
+            hint: "100 Thin · 300 Light · 400 Regular · 700 Bold · 900 Black"
           - label: "Style"
             name: "style"
             widget: "select"
             options: ["normal", "italic"]
             default: "normal"
 
-      - label: "Tags"
-        name: "tags"
-        widget: "list"
-        required: false
-        default: []
-        hint: "e.g. serif, display, experimental, text"
-
-      - label: "Description"
-        name: "description"
-        widget: "text"
-        required: false
-        hint: "About the typeface — shown on the specimen page."
-
-      - label: "Specimen headline"
-        name: "mainText"
-        widget: "string"
-        required: false
-        hint: "Text shown in the collapsed preview row AND as the starting text in the expanded specimen (editable by visitor). If empty, falls back to the typeface name."
-
-      - label: "Preview size (collapsed row)"
-        name: "mainSize"
-        widget: "string"
-        default: "6em"
-        required: false
-        hint: "Font size in the collapsed typeface row. Recommended: 3em (small/dense text fonts), 4em (text fonts), 5em (default), 6em (display), 8em (very large display), 10em (headline/poster)."
-
-      - label: "Tester size (opened detail)"
-        name: "testerSize"
-        widget: "string"
-        default: "4em"
-        required: false
-        hint: "Initial font size for the tester when the typeface detail is opened. Important for small/text typefaces — use 2em or 3em so multiple cuts are visible at once. Recommended: 2em (small text), 3em (text), 4em (default), 6em (display)."
-
-      - label: "Designer URL"
-        name: "authorUrl"
-        widget: "string"
-        required: false
-        hint: "Full URL (https://...)"
-
-      - label: "Instagram"
-        name: "authorInstagram"
-        widget: "string"
-        required: false
-        hint: "@handle"
-
-      - label: "Email"
-        name: "authorEmail"
-        widget: "string"
-        required: false
-
-      - label: "Notes (internal)"
+      - label: "Internal notes"
         name: "body"
         widget: "markdown"
         required: false
-        hint: "Internal notes. Not shown on the public site."
+        hint: "Only for the team — never shown on the site."
 
   # -------------------------------------------------------------------------
   # PROJECTS
@@ -147,32 +152,80 @@ collections:
     extension: "md"
     media_folder: "/public/uploads/projects/{{slug}}"
     public_folder: "/uploads/projects/{{slug}}"
+    summary: "{{title}} — {{date | date('YYYY')}}"
+    sortable_fields: ["title", "date", "author"]
     fields:
-      - { label: "Title",  name: "title",  widget: "string" }
-      - { label: "Author", name: "author", widget: "string", required: false }
-      - { label: "Date",   name: "date",   widget: "datetime" }
+      # — Basics: what appears in the list row (Title / Author / Year) —
+      - label: "Title"
+        name: "title"
+        widget: "string"
+        hint: "Shown in the list and as the heading of the opened article."
+      - label: "Author"
+        name: "author"
+        widget: "string"
+        required: false
+        hint: "Shown next to the title in the list."
+      - label: "Date"
+        name: "date"
+        widget: "datetime"
+        hint: "The list shows the year; the opened article shows the full date."
       - label: "Category"
         name: "category"
         widget: "select"
         options: ["exhibition", "workshop", "publication", "collaboration", "lecture"]
-      - { label: "Tags", name: "tags", widget: "list", default: [] }
+        hint: "Shown at the top of the opened article."
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        default: []
+        hint: "Separate with commas, e.g. zine, print. Visitors can filter the list by tags."
+
+      # — Content —
+      - label: "Short description"
+        name: "excerpt"
+        widget: "text"
+        required: false
+        hint: "One or two sentences. Opens the article in a lighter colour and is included in search."
       - label: "Photos"
         name: "gallery"
         widget: "gallery-upload"
         required: false
         default: []
-        hint: "Upload photos — drag to reorder."
-      - { label: "Text", name: "body", widget: "markdown", required: false }
-      - { label: "Excerpt",    name: "excerpt",    widget: "text",    required: false }
-      - { label: "Featured",   name: "featured",   widget: "boolean", default: false }
-      - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
-      - { label: "Store Image (optional)", name: "storeImage", widget: "image", required: false, hint: "Cover image for the Store card." }
-      - { label: "Contact info", name: "contact", widget: "text", required: false }
-      - label: "Website URL"
+        hint: "Drag to reorder. The first 8 form the image strip in the list; in the article all photos are placed between the paragraphs of the text."
+      - label: "Article text"
+        name: "body"
+        widget: "markdown"
+        required: false
+        hint: "Each paragraph is a separate block — photos are spread between paragraphs."
+      - label: "Website"
         name: "siteUrl"
         widget: "string"
         required: false
-        hint: "Full URL (https://...). Shows a click-to-activate iframe preview + link in the detail panel."
+        hint: "Full address (https://…). Adds a click-to-open preview of the site and a link at the end of the article."
+
+      # — Store —
+      - label: "Sell in Store"
+        name: "purchasable"
+        widget: "boolean"
+        default: false
+        hint: "Turn on to list this in the Store."
+      - label: "Store cover image"
+        name: "storeImage"
+        widget: "image"
+        required: false
+        hint: "Optional. Without it the Store card uses the first photo."
+      - label: "Contact"
+        name: "contact"
+        widget: "text"
+        required: false
+        hint: "Email or other contact. Shown in a Contact box at the end of the article (and in the Store)."
+
+      # — Not shown on the site at the moment —
+      - label: "Featured"
+        name: "featured"
+        widget: "boolean"
+        default: false
+        hint: "Saved, but not used anywhere on the site yet."
 
   # -------------------------------------------------------------------------
   # JOURNAL
@@ -186,29 +239,77 @@ collections:
     extension: "md"
     media_folder: "/public/uploads/journal/{{slug}}"
     public_folder: "/uploads/journal/{{slug}}"
+    summary: "{{title}} — {{date | date('YYYY')}}"
+    sortable_fields: ["title", "date", "author"]
     fields:
-      - { label: "Title",   name: "title",   widget: "string" }
-      - { label: "Author",  name: "author",  widget: "string",   required: false }
-      - { label: "Date",    name: "date",    widget: "datetime" }
+      # — Basics: what appears in the list row (Title / Author / Year) —
+      - label: "Title"
+        name: "title"
+        widget: "string"
+        hint: "Shown in the list and as the heading of the opened article."
+      - label: "Author"
+        name: "author"
+        widget: "string"
+        required: false
+        hint: "Shown next to the title in the list."
+      - label: "Date"
+        name: "date"
+        widget: "datetime"
+        hint: "The list shows the year; the opened article shows the full date."
       - label: "Category"
         name: "category"
         widget: "select"
         options: ["essay", "interview", "process", "review", "news"]
-      - { label: "Tags", name: "tags", widget: "list", default: [] }
+        hint: "Shown at the top of the opened article."
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        default: []
+        hint: "Separate with commas, e.g. zine, print. Visitors can filter the list by tags."
+
+      # — Content —
+      - label: "Short description"
+        name: "excerpt"
+        widget: "text"
+        required: false
+        hint: "One or two sentences. Opens the article in a lighter colour and is included in search."
       - label: "Photos"
         name: "gallery"
         widget: "gallery-upload"
         required: false
         default: []
-        hint: "Upload photos — drag to reorder."
-      - { label: "Text", name: "body", widget: "markdown", required: false }
-      - { label: "Excerpt",    name: "excerpt",    widget: "text",    required: false }
-      - { label: "Featured",   name: "featured",   widget: "boolean", default: false }
-      - { label: "Purchasable", name: "purchasable", widget: "boolean", default: false }
-      - { label: "Store Image (optional)", name: "storeImage", widget: "image", required: false, hint: "Cover image for the Store card." }
-      - { label: "Contact info", name: "contact", widget: "text", required: false }
-      - label: "Website URL"
+        hint: "Drag to reorder. The first 8 form the image strip in the list; in the article all photos are placed between the paragraphs of the text."
+      - label: "Article text"
+        name: "body"
+        widget: "markdown"
+        required: false
+        hint: "Each paragraph is a separate block — photos are spread between paragraphs."
+      - label: "Website"
         name: "siteUrl"
         widget: "string"
         required: false
-        hint: "Full URL (https://...). Shows a click-to-activate iframe preview + link in the detail panel."
+        hint: "Full address (https://…). Adds a click-to-open preview of the site and a link at the end of the article."
+
+      # — Store —
+      - label: "Sell in Store"
+        name: "purchasable"
+        widget: "boolean"
+        default: false
+        hint: "Turn on to list this in the Store."
+      - label: "Store cover image"
+        name: "storeImage"
+        widget: "image"
+        required: false
+        hint: "Optional. Without it the Store card uses the first photo."
+      - label: "Contact"
+        name: "contact"
+        widget: "text"
+        required: false
+        hint: "Email or other contact for buying. In the Journal it is shown only when Sell in Store is on."
+
+      # — Not shown on the site at the moment —
+      - label: "Featured"
+        name: "featured"
+        widget: "boolean"
+        default: false
+        hint: "Saved, but not used anywhere on the site yet."
