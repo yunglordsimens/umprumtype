@@ -2349,8 +2349,10 @@ body.home-page.home-light .hero-type-hint { color: rgba(0,0,0,0.5); }
 @media (max-width: 720px) { .hero-type-hint { display: none; } }
 
 /* Dark system → site is dark → homepage is LIGHT (always contrasting) */
+/* …unless the animation itself is dark (Y/B palette): HeroSketch then sets
+   .home-dark and the default dark home styles apply */
 @media (prefers-color-scheme: dark) {
-  body.home-page {
+  body.home-page:not(.home-dark) {
     background: #ffffff;
     color: #111111;
     --bg: #ffffff;
@@ -2384,21 +2386,21 @@ body.home-page .site-nav[data-menu="open"] .site-nav__burger { color: #fff; }
 
 /* Dark system overrides (must come after light defaults to win the cascade) */
 @media (prefers-color-scheme: dark) {
-  body.home-page .site-nav {
+  body.home-page:not(.home-dark) .site-nav {
     background: #ffffff;
     border-bottom-color: rgba(0,0,0,0.07);
   }
-  body.home-page .site-nav__logo,
-  body.home-page .site-nav__links a { color: rgba(0,0,0,0.55); }
-  body.home-page .site-nav__links a { border-color: rgba(0,0,0,0.12); }
-  body.home-page .site-nav__links a:hover { border-color: rgba(0,0,0,0.3); }
-  body.home-page .site-nav__logo:hover,
-  body.home-page .site-nav__links a:hover,
-  body.home-page .site-nav__links a[aria-current="page"] { color: #111111; }
-  body.home-page .site-nav__burger { color: rgba(0,0,0,0.55); }
-  body.home-page .site-search__input { color: #111111; }
-  body.home-page .site-search__input::placeholder { color: rgba(0,0,0,0.35); }
-  body.home-page .site-search__icon { color: rgba(0,0,0,0.4); }
+  body.home-page:not(.home-dark) .site-nav__logo,
+  body.home-page:not(.home-dark) .site-nav__links a { color: rgba(0,0,0,0.55); }
+  body.home-page:not(.home-dark) .site-nav__links a { border-color: rgba(0,0,0,0.12); }
+  body.home-page:not(.home-dark) .site-nav__links a:hover { border-color: rgba(0,0,0,0.3); }
+  body.home-page:not(.home-dark) .site-nav__logo:hover,
+  body.home-page:not(.home-dark) .site-nav__links a:hover,
+  body.home-page:not(.home-dark) .site-nav__links a[aria-current="page"] { color: #111111; }
+  body.home-page:not(.home-dark) .site-nav__burger { color: rgba(0,0,0,0.55); }
+  body.home-page:not(.home-dark) .site-search__input { color: #111111; border-color: rgba(0,0,0,0.15); }
+  body.home-page:not(.home-dark) .site-search__input::placeholder { color: rgba(0,0,0,0.35); }
+  body.home-page:not(.home-dark) .site-search__icon { color: rgba(0,0,0,0.4); }
 }
 @media (max-width: 720px) {
   body.home-page:not(.home-light) .site-nav__links {

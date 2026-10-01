@@ -76,8 +76,11 @@ export default function HeroSketch({ fontData = [] }) {
       colorsRef.current = isDark ? { bg: 255, fg: 0 } : { bg: 0, fg: 255 };
     }
     const isLightVisual = (palette === 'mono' && isDark) || palette === 'yellow-light';
+    // The page chrome follows the canvas, not the system theme: a dark canvas
+    // (e.g. Y/B in dark mode) gets dark bars, a light canvas light ones
     document.body.classList.toggle('home-light', isLightVisual);
-    return () => { document.body.classList.remove('home-light'); };
+    document.body.classList.toggle('home-dark', !isLightVisual);
+    return () => { document.body.classList.remove('home-light', 'home-dark'); };
   }, [palette, isDark]);
 
   // Load a random subset of typefaces via FontFace API
