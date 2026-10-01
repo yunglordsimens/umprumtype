@@ -34,7 +34,7 @@
     /* Login */
     body [class*="-StyledAuthenticationPage"] img { width: 300px !important; height: auto !important; max-width: 80vw !important; }
     body [class*="-LoginButtonIcon"] { color: #fff !important; }
-    body [class*="-LoginButtonIcon"] svg { fill: #fff !important; width: 20px !important; height: 20px !important; }
+    body [class*="-LoginButtonIcon"] svg { fill: #fff !important; }
     body button[class*="-LoginButton"] {
       background: var(--u-text) !important; color: #fff !important;
       border-radius: 9999px !important; box-shadow: none !important;
@@ -47,7 +47,7 @@
     body [class*="-AppHeaderLink"] { color: var(--u-muted) !important; }
     body [class*="-AppHeaderLink"]:hover { color: var(--u-text) !important; }
     body [class*="-AppHeaderButton"],
-    body [class*="-AppHeaderNavLink"] { color: var(--u-muted) !important; font-size: 15px !important; font-weight: 400 !important; }
+    body [class*="-AppHeaderNavLink"] { color: var(--u-muted) !important; font-weight: 400 !important; }
     body [class*="-AppHeaderButton"]:hover,
     body .header-link-active,
     body .header-link-active * { color: var(--u-text) !important; }
@@ -57,11 +57,11 @@
     /* Sidebar & collection lists */
     body [class*="-SidebarContainer"],
     body [class*="-CollectionTopContainer"],
-    body [class*="-ListCard "], body [class$="-ListCard"],
-    body [class*="-GridCard "], body [class$="-GridCard"] { box-shadow: none !important; border: 1px solid var(--u-border) !important; border-radius: 10px !important; }
+    body [class*="-ListCard "], body [class*="-ListCard-"], body [class$="-ListCard"],
+    body [class*="-GridCard "], body [class*="-GridCard-"], body [class$="-GridCard"] { box-shadow: none !important; border: 1px solid var(--u-border) !important; border-radius: 10px !important; }
     body [class*="-SidebarHeading"],
     body [class*="-CollectionTopHeading"] { font-weight: 400 !important; letter-spacing: -0.01em !important; }
-    body [class*="-SidebarNavLink"] { color: var(--u-muted) !important; border-left-width: 0 !important; font-size: 15px !important; }
+    body [class*="-SidebarNavLink"] { color: var(--u-muted) !important; border-left-width: 0 !important; }
     body [class*="-SidebarNavLink"]:hover { color: var(--u-text) !important; background: rgba(0,0,0,0.03) !important; }
     body .sidebar-active { color: var(--u-text) !important; background: rgba(0,0,0,0.05) !important; }
     body .sidebar-active * { color: var(--u-text) !important; }
@@ -78,6 +78,9 @@
     body [class*="-BackStatus"][class*="textBadgeDanger"] { color: #b42318 !important; }
     body [class*="-PublishButton"],
     body [class*="-SaveButton"] { background: var(--u-text) !important; color: #fff !important; border-radius: 9999px !important; }
+    body [class*="-PublishedToolbarButton"],
+    body [class*="-PublishedButton"],
+    body [class*="-StatusButton"] { background: rgba(0,0,0,0.06) !important; color: var(--u-text) !important; border-radius: 9999px !important; }
     body [class*="-DeleteButton"] { background: transparent !important; color: #b42318 !important; border: 1px solid currentColor !important; border-radius: 9999px !important; }
     body [class*="-EditorToggle"] { color: var(--u-text) !important; box-shadow: none !important; border: 1px solid var(--u-border) !important; }
 
@@ -85,7 +88,7 @@
     body [class*="-FieldLabel"] {
       background: transparent !important; color: var(--u-muted) !important;
       text-transform: none !important; letter-spacing: 0 !important;
-      font-size: 14px !important; font-weight: 400 !important;
+      font-weight: 400 !important;
       border: 0 !important; padding: 0 0 6px !important; margin: 0 !important;
     }
     body [class*="-ControlContainer"]:focus-within > [class*="-FieldLabel"] { color: var(--u-text) !important; }
@@ -98,7 +101,7 @@
     body [class*="-ControlContainer"]:focus-within > :not([class*="-ControlTopbar"]):not([class*="-ControlHint"]):not([class*="-ControlErrorsList"]) {
       border-color: var(--u-text) !important;
     }
-    body [class*="-ControlHint"] { color: var(--u-subtle) !important; font-size: 13px !important; line-height: 1.45 !important; margin-top: 6px !important; }
+    body [class*="-ControlHint"] { color: var(--u-subtle) !important; line-height: 1.45 !important; margin-top: 6px !important; }
     body [class*="-ControlErrorsList"] li { color: #b42318 !important; }
     body [class*="-ToolbarToggleLabel"] { color: var(--u-subtle) !important; }
     body [class*="-ToolbarToggleLabel"][class*="Active"],
@@ -108,7 +111,7 @@
     body [role="switch"][aria-checked="false"] > [class*="-ToggleBackground"] { background: #d4d4d4 !important; }
     body [class*="-FileWidgetButton"] {
       background: rgba(0,0,0,0.06) !important; border-radius: 9999px !important;
-      padding: 4px 14px !important; font-size: 14px !important; font-weight: 400 !important;
+      font-weight: 400 !important;
     }
     body [class*="-FileWidgetButton"],
     body [class*="-AddButton"],
@@ -120,6 +123,73 @@
     body [class*="-Toolbar"] [class*="-ToolbarButton"] { color: var(--u-muted) !important; }
     body .Resizer,
     body .Resizer::before { background: var(--u-border) !important; border-color: var(--u-border) !important; }
+
+    /* ── Size scale ─────────────────────────────────────────────────────
+       Decap mixes 12–22px text, 20–32px icons and 18–40px buttons.
+       Everything is normalised to: 15px text, 13px secondary text,
+       22px headings · 18px icons · 32px buttons (28px small ones). */
+    body, body *:not(svg):not(path):not(code):not(pre) { font-size: 15px !important; }
+    body [class*="-ControlHint"],
+    body [class*="-BackStatus"],
+    body [class*="-CollectionTopDescription"],
+    body [class*="-ListCardDate"], body [class*="-CardDate"],
+    body [class*="-DateTimeControl"] button,
+    body [class*="-ViewControlsText"],
+    body [class*="-PaginationMessage"],
+    body .gw__drop, body .gw__count, body .gw__error { font-size: 13px !important; }
+    body [class*="-CollectionTopHeading"],
+    body [class*="-SidebarHeading"] { font-size: 22px !important; line-height: 1.2 !important; }
+
+    body [class*="-IconWrapper"] { width: 18px !important; height: 18px !important; }
+    body [class*="-IconWrapper"] svg { width: 18px !important; height: 18px !important; }
+    body [class*="-BackArrow"] { font-size: 18px !important; }
+    body [class*="-EditorToggle"] { width: 36px !important; height: 36px !important; }
+
+    body [class*="-PublishButton"],
+    body [class*="-PublishedToolbarButton"],
+    body [class*="-SaveButton"],
+    body [class*="-DeleteButton"],
+    body [class*="-CollectionTopNewButton"],
+    body [class*="-AppHeaderQuickNewButton"] {
+      height: 32px !important; line-height: 32px !important; min-height: 0 !important;
+      padding: 0 16px !important; display: inline-flex !important; align-items: center !important; gap: 6px;
+    }
+    body [class*="-PublishButton"]::after,
+    body [class*="-PublishedToolbarButton"]::after,
+    body [class*="-AppHeaderQuickNewButton"]::after { position: static !important; margin-left: 8px !important; }
+    /* Markdown editor toolbar: same light grey as the other neutral surfaces */
+    body [class*="-ControlContainer"] [class*="-ToolbarContainer"] { background: #f2f2f2 !important; border-radius: 8px 8px 0 0 !important; }
+    body [class*="-FileWidgetButton"],
+    body [class*="-DateTimeControl"] button { height: 28px !important; line-height: 28px !important; padding: 0 14px !important; border-radius: 9999px !important; }
+    body [class*="-DateTimeControl"] button { background: rgba(0,0,0,0.06) !important; color: var(--u-text) !important; font-weight: 400 !important; }
+
+    body [class*="-AvatarDropdownButton"] [class*="-IconWrapper"],
+    body [class*="-AvatarDropdownButton"] [class*="-IconWrapper"] svg { width: 28px !important; height: 28px !important; }
+    body [class*="-AvatarImage"] { width: 28px !important; height: 28px !important; }
+
+    /* Dropdown menus (Publish, Quick add, Sort by): no teal icons */
+    body [class*="-StyledMenuItem"],
+    body [class*="-MenuItemIconContainer"],
+    body [class*="-MenuItemIconContainer"] [class*="-IconWrapper"] { color: var(--u-text) !important; }
+    body [class*="-DropdownList"] { border-radius: 10px !important; box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important; }
+    /* Validation errors in sentence case, not shouting */
+    body [class*="-ControlErrorsList"] li { text-transform: none !important; font-size: 13px !important; font-weight: 400 !important; }
+
+    body [class*="-SearchContainer"] [class*="-IconWrapper"] { top: 50% !important; transform: translateY(-50%) !important; left: 12px !important; }
+    body [class*="-SearchInput"] { padding-left: 38px !important; }
+
+    /* Notifications: black for success/info, dark red for errors */
+    body .Toastify__toast { border-radius: 10px !important; box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important; }
+    body .Toastify__toast--success,
+    body .Toastify__toast--info,
+    body .Toastify__toast--default { background: var(--u-text) !important; color: #fff !important; }
+    body .Toastify__toast--warning,
+    body .Toastify__toast--error { background: #b42318 !important; color: #fff !important; }
+    body .Toastify__progress-bar { background: rgba(255,255,255,0.35) !important; }
+
+    /* No global Media tab — photos are uploaded per project/entry
+       (Choose an image / Add photos inside each form) */
+    body [class*="-AppHeaderNavList"] button[class*="-AppHeaderButton"] { display: none !important; }
 
     /* Media library */
     body [class*="-CardImageWrapper"] { border-radius: 8px !important; }
