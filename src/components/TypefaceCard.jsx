@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect, useMemo } from 'react';
 
 function lineHeightFor(size) {
   return size > 96 ? 0.9 : size > 48 ? 1.05 : size > 24 ? 1.3 : 1.5;
@@ -12,16 +12,13 @@ const SPECIMEN_COLUMN_GAP = '24px';
 
 function VariantSpecimen({ variant, fam, initialSize, baseText }) {
   const [size, setSize] = useState(initialSize);
-  const ref = useRef(null);
-
-  // Set text only once on mount — never overwrite user edits
-  useEffect(() => {
-    if (ref.current) {
-      const unit = baseText.trim() + ' ';
-      const reps = Math.max(12, Math.ceil(SPECIMEN_MIN_CHARS / unit.length));
-      ref.current.textContent = unit.repeat(reps).trim();
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Read-only: only the font's own sample text is shown, never visitor input
+  // (fonts have limited character sets)
+  const text = useMemo(() => {
+    const unit = baseText.trim() + ' ';
+    const reps = Math.max(12, Math.ceil(SPECIMEN_MIN_CHARS / unit.length));
+    return unit.repeat(reps).trim();
+  }, [baseText]);
 
   const cols = size > 80 ? 1 : size > 40 ? 2 : 3;
   const multiLine = cols > 1;
@@ -41,11 +38,7 @@ function VariantSpecimen({ variant, fam, initialSize, baseText }) {
         </span>
       </div>
       <div
-        ref={ref}
         className="specimen__text"
-        contentEditable
-        suppressContentEditableWarning
-        spellCheck="false"
         style={{
           fontFamily: `"${fam}", var(--font-ui)`,
           fontSize: `${size}px`,
@@ -56,104 +49,86 @@ function VariantSpecimen({ variant, fam, initialSize, baseText }) {
           columnGap: SPECIMEN_COLUMN_GAP,
           whiteSpace: multiLine ? 'normal' : 'nowrap',
           overflowX: multiLine ? 'hidden' : 'auto',
-          overflowY: multiLine ? 'hidden' : 'hidden',
+          overflowY: 'hidden',
           height: multiLine ? '450px' : undefined,
           display: 'block',
-          outline: 'none',
           WebkitOverflowScrolling: 'touch',
-          touchAction: 'pan-x pan-y',
         }}
-      />
+      >
+        {text}
+      </div>
     </div>
   );
 }
 
 // Preview line above the tester: an endless loop of the sample text that can be
-// spun sideways — horizontal trackpad swipe / shift+wheel, or a finger drag.
-function LoopingPreview({ text, style }) {
-  const boxRef   = useRef(null);
-  const trackRef = useRef(null);
-  const offset   = useRef(0);
-  const dragged  = useRef(false);
-  // Enough copies that the line never runs out, even for a short sample text
-  const [copies, setCopies] = useState(3);
+// spun sideways. It is a plain native horizontal scroller (trackpad swipe,
+// shift+wheel, finger drag) so every browser — Safari included — handles the
+// gesture itself; there is no wheel interception. The line holds enough copies
+// of the text for LOOP_REACH screens either way, and once scrolling stops it is
+// silently re-parked on the middle copy, so it never reaches an end.
+const LOOP_REACH = 10;
+const LOOP_MAX_COPIES = 201;
 
+function LoopingPreview({ text, style }) {
+  const boxRef = useRef(null);
+  const [copies, setCopies] = useState(3);
+  const home = Math.floor(copies / 2);
+
+  const copyWidth = () => boxRef.current?.querySelector('.tfa-trigger__copy')?.offsetWidth || 0;
+
+  // Same visual position, but on the middle copy
+  const park = () => {
+    const box = boxRef.current;
+    const w = copyWidth();
+    if (!box || !w) return;
+    const phase = ((box.scrollLeft % w) + w) % w;
+    const target = home * w + phase;
+    if (Math.abs(box.scrollLeft - target) >= 1) box.scrollLeft = target;
+  };
+
+  // How many copies are needed, once the font has loaded and on resize
   useEffect(() => {
     let cancelled = false;
     const measure = () => {
-      const w = trackRef.current?.firstElementChild?.offsetWidth;
-      const boxW = boxRef.current?.offsetWidth;
-      if (!cancelled && w && boxW) setCopies(Math.max(3, Math.ceil(boxW / w) + 2));
+      const w = copyWidth();
+      const boxW = boxRef.current?.clientWidth || 0;
+      if (cancelled || !w || !boxW) return;
+      const reach = Math.ceil((LOOP_REACH * boxW) / w);
+      setCopies(Math.min(LOOP_MAX_COPIES, Math.max(3, 2 * reach + 1)));
     };
+    measure();
     (document.fonts?.ready ?? Promise.resolve()).then(measure);
     window.addEventListener('resize', measure);
     return () => { cancelled = true; window.removeEventListener('resize', measure); };
-  }, [text]);
+  }, [text]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useLayoutEffect(park, [copies]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Re-park after each gesture (debounced — never during momentum scrolling)
   useEffect(() => {
     const box = boxRef.current;
-    const track = trackRef.current;
-    if (!box || !track) return;
-
-    const loopWidth = () => track.firstElementChild?.offsetWidth || 0;
-    const move = dx => {
-      const w = loopWidth();
-      if (!w) return;
-      offset.current = (((offset.current + dx) % w) + w) % w;
-      track.style.transform = `translateX(${-offset.current}px)`;
+    if (!box) return;
+    let timer = null;
+    const onScroll = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        const w = copyWidth();
+        if (w && Math.abs(box.scrollLeft - home * w) > w) park();
+      }, 200);
     };
-
-    const onWheel = e => {
-      const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
-      // Only sideways gestures — vertical scrolling keeps scrolling the page
-      if (Math.abs(dx) <= Math.abs(e.shiftKey ? 0 : e.deltaY)) return;
-      e.preventDefault();
-      move(dx);
-    };
-
-    let startX = 0, lastX = 0, pointerId = null;
-    const onDown = e => {
-      if (e.pointerType === 'mouse') return;
-      pointerId = e.pointerId;
-      startX = lastX = e.clientX;
-      dragged.current = false;
-    };
-    const onMove = e => {
-      if (e.pointerId !== pointerId) return;
-      if (Math.abs(e.clientX - startX) > 6) dragged.current = true;
-      move(lastX - e.clientX);
-      lastX = e.clientX;
-    };
-    const onUp = e => { if (e.pointerId === pointerId) pointerId = null; };
-    // A drag shouldn't also open/close the typeface
-    const onClick = e => {
-      if (dragged.current) { e.stopPropagation(); e.preventDefault(); dragged.current = false; }
-    };
-
-    box.addEventListener('wheel', onWheel, { passive: false });
-    box.addEventListener('pointerdown', onDown);
-    box.addEventListener('pointermove', onMove);
-    box.addEventListener('pointerup', onUp);
-    box.addEventListener('pointercancel', onUp);
-    box.addEventListener('click', onClick, true);
-    return () => {
-      box.removeEventListener('wheel', onWheel);
-      box.removeEventListener('pointerdown', onDown);
-      box.removeEventListener('pointermove', onMove);
-      box.removeEventListener('pointerup', onUp);
-      box.removeEventListener('pointercancel', onUp);
-      box.removeEventListener('click', onClick, true);
-    };
-  }, []);
+    box.addEventListener('scroll', onScroll, { passive: true });
+    return () => { clearTimeout(timer); box.removeEventListener('scroll', onScroll); };
+  }, [home]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <span ref={boxRef} className="tfa-trigger__preview" style={style}>
-      <span ref={trackRef} className="tfa-trigger__track">
+    <div ref={boxRef} className="tfa-trigger__preview" style={style}>
+      <div className="tfa-trigger__track">
         {Array.from({ length: copies }, (_, i) => (
-          <span key={i} className="tfa-trigger__copy" aria-hidden={i > 0 || undefined}>{text}</span>
+          <span key={i} className="tfa-trigger__copy" aria-hidden={i !== home || undefined}>{text}</span>
         ))}
-      </span>
-    </span>
+      </div>
+    </div>
   );
 }
 
@@ -192,16 +167,14 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
 
   return (
     <li className="tfa-item" id={tf.slug}>
-      <button
-        className={`tfa-trigger${isOpen ? ' is-open' : ''}`}
-        onClick={onOpen}
-        aria-expanded={isOpen}
-      >
-        <span className="tfa-trigger__meta-inline">
+      {/* Whole head toggles the panel; the scrollable preview can't live inside
+          a <button> (Safari won't scroll it there), so only the meta row is one */}
+      <div className={`tfa-trigger${isOpen ? ' is-open' : ''}`} onClick={onOpen}>
+        <button type="button" className="tfa-trigger__meta-inline" aria-expanded={isOpen}>
           <span className="tfa-trigger__meta-name">{tf.title}</span>
           <span className="tfa-trigger__meta-designer">{tf.designer}</span>
           <span className="tfa-trigger__meta-year">{tf.year}</span>
-        </span>
+        </button>
         <LoopingPreview
           text={tf.styleTexts[0] || tf.mainText || tf.title}
           style={{
@@ -211,7 +184,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
             fontSize: tf.mainSize || '6em',
           }}
         />
-      </button>
+      </div>
 
       <div ref={panelRef} className="tfa-panel" aria-hidden={!isOpen}>
         <div className="tfa-panel__inner">
