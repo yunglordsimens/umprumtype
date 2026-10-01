@@ -32,7 +32,8 @@
     body [class*="-CollectionContainer"] { background: var(--u-bg) !important; }
 
     /* Login */
-    body [class*="-StyledAuthenticationPage"] img { width: 300px !important; height: auto !important; max-width: 80vw !important; }
+    body [class*="-CustomIconWrapper"] { width: auto !important; height: auto !important; display: flex !important; justify-content: center !important; }
+    body [class*="-StyledAuthenticationPage"] img { width: 432px !important; height: auto !important; max-width: 90vw !important; }
     body [class*="-LoginButtonIcon"] { color: #fff !important; }
     body [class*="-LoginButtonIcon"] svg { fill: #fff !important; }
     body button[class*="-LoginButton"] {
@@ -43,7 +44,7 @@
 
     /* Header */
     body header[class*="-AppHeader"] { background: var(--u-surface) !important; box-shadow: none !important; border-bottom: 1px solid var(--u-border) !important; }
-    body [class*="-AppHeaderLogo"] img { width: 112px !important; height: auto !important; max-height: none !important; padding: 0 20px 0 24px !important; box-sizing: content-box !important; }
+    body [class*="-AppHeaderLogo"] img { width: 161px !important; height: auto !important; max-height: none !important; padding: 0 20px 0 24px !important; box-sizing: content-box !important; }
     body [class*="-AppHeaderLink"] { color: var(--u-muted) !important; }
     body [class*="-AppHeaderLink"]:hover { color: var(--u-text) !important; }
     body [class*="-AppHeaderButton"],
@@ -140,8 +141,8 @@
     body [class*="-CollectionTopHeading"],
     body [class*="-SidebarHeading"] { font-size: 22px !important; line-height: 1.2 !important; }
 
-    body [class*="-IconWrapper"] { width: 18px !important; height: 18px !important; }
-    body [class*="-IconWrapper"] svg { width: 18px !important; height: 18px !important; }
+    body [class*="-IconWrapper"]:not([class*="-NetlifyCreditIcon"]) { width: 18px !important; height: 18px !important; }
+    body [class*="-IconWrapper"]:not([class*="-NetlifyCreditIcon"]) svg { width: 18px !important; height: 18px !important; }
     body [class*="-BackArrow"] { font-size: 18px !important; }
     body [class*="-EditorToggle"] { width: 36px !important; height: 36px !important; }
 
