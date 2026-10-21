@@ -121,15 +121,15 @@ void main(){ o = vec4(uColor, uAlpha); }`;
 // text mask. The pointer (and clicks) shake cells loose again.
 const VS_GLYPHS = `#version 300 es
 precision highp float;
+layout(location = 0) in vec2 aCorner; // quad corner, per vertex (Safari wants one non-instanced attribute)
 in vec2 aCell; in float aSeed;
 uniform vec2 uRes; uniform float uCell; uniform sampler2D uText; uniform float uTiles;
 uniform float uWaveT; uniform vec2 uOrigin; uniform float uSpeed; uniform float uJitter; uniform float uMotion;
 ${GLSL_FORCES}
-out vec2 vUV; flat out float vTile; out float vAlpha;
+out vec2 vUV; out float vTile; out float vAlpha;
 float hash(float n){ return fract(sin(n) * 43758.5453); }
 void main(){
-  int v = gl_VertexID;
-  vec2 corner = vec2(float(v == 1 || v == 2 || v == 4), float(v == 2 || v == 4 || v == 5));
+  vec2 corner = aCorner;
   vec2 c = (aCell + 0.5) * uCell;
   float b = texture(uText, c / uRes).r;
   float dist = length(c - uOrigin);
@@ -174,12 +174,13 @@ void main(){
 }`;
 
 const FS_GLYPHS = `#version 300 es
-precision mediump float;
-in vec2 vUV; flat in float vTile; in float vAlpha;
+precision highp float;
+in vec2 vUV; in float vTile; in float vAlpha;
 uniform sampler2D uAtlas; uniform vec2 uAtlasGrid; uniform vec3 uColor; out vec4 o;
 void main(){
   if(vAlpha <= 0.) discard;
-  vec2 cr = vec2(mod(vTile, uAtlasGrid.x), floor(vTile / uAtlasGrid.x));
+  float t = floor(vTile + 0.5);
+  vec2 cr = vec2(mod(t, uAtlasGrid.x), floor((t + 0.5) / uAtlasGrid.x));
   float a = texture(uAtlas, (cr + vUV) / uAtlasGrid).r * vAlpha;
   if(a < 0.01) discard;
   o = vec4(uColor, a);
@@ -318,12 +319,12 @@ export default function HeroSketch({ fontData = [] }) {
     if (!container) return;
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const canvas = document.createElement('canvas');
+    let canvas = document.createElement('canvas');
     canvas.style.cssText = 'display:block;width:100%;height:100%;touch-action:none;';
     container.appendChild(canvas);
 
-    const gl = canvas.getContext('webgl2', { alpha: false, antialias: true, powerPreference: 'high-performance' });
-    const ctx2d = gl ? null : canvas.getContext('2d', { alpha: false });
+    let gl = null, ctx2d = null;
+    try { gl = canvas.getContext('webgl2', { alpha: false, antialias: true }); } catch (_) { gl = null; }
 
     let W = 0, H = 0, dpr = 1, mobile = false;
     let typed = '';
@@ -465,7 +466,7 @@ export default function HeroSketch({ fontData = [] }) {
     let wave = { t0: 0, origin: [0, 0], speed: 1100, jitter: 0.6 };
     const STRETCH = 0.88;
 
-    if (gl) {
+    if (gl) try {
       dots = compile(gl, VS_DOTS, FS_DOTS);
       waves = compile(gl, VS_WAVES, FS_WAVES);
       tex = gl.createTexture();
@@ -492,6 +493,9 @@ export default function HeroSketch({ fontData = [] }) {
       glyphs = compile(gl, VS_GLYPHS, FS_GLYPHS);
       vaoGlyphs = gl.createVertexArray();
       gl.bindVertexArray(vaoGlyphs);
+      const bufCorner = attr(glyphs, 'aCorner', 2);
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufCorner);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0, 1,0, 1,1, 0,0, 1,1, 0,1]), gl.STATIC_DRAW);
       bufCell = attr(glyphs, 'aCell', 2);
       bufCellSeed = attr(glyphs, 'aSeed', 1);
       gl.vertexAttribDivisor(gl.getAttribLocation(glyphs.p, 'aCell'), 1);
@@ -507,7 +511,17 @@ export default function HeroSketch({ fontData = [] }) {
 
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    } catch (err) {
+      // never leave a blank page: drop to the static 2D fallback
+      console.error('[hero] WebGL init failed, using static fallback', err);
+      try { gl.getExtension('WEBGL_lose_context')?.loseContext(); } catch (_) {}
+      gl = null;
+      const fresh = document.createElement('canvas');
+      fresh.style.cssText = canvas.style.cssText;
+      canvas.replaceWith(fresh);
+      canvas = fresh;
     }
+    if (!gl) ctx2d = canvas.getContext('2d', { alpha: false });
 
     function buildWaveGrid() {
       const s = STRETCH;

@@ -97,8 +97,23 @@ function LoopingPreview({ text, style }) {
       const reach = Math.ceil((LOOP_REACH * boxW) / w);
       setCopies(Math.min(LOOP_MAX_COPIES, Math.max(3, 2 * reach + 1)));
     };
+    // Once this row's own font has arrived the copy width changes, so snap
+    // back to the start of the middle copy (the old offset would look shifted)
+    const settle = () => {
+      if (cancelled) return;
+      const box = boxRef.current, w = copyWidth();
+      if (box && w) box.scrollLeft = home * w;
+      measure();
+    };
     measure();
-    (document.fonts?.ready ?? Promise.resolve()).then(measure);
+    const fam = (style.fontFamily || '').split(',')[0].trim();
+    if (document.fonts && fam && !fam.startsWith('var(')) {
+      document.fonts
+        .load(`${style.fontStyle || 'normal'} ${style.fontWeight || 400} 16px ${fam}`)
+        .then(settle, settle);
+    } else {
+      (document.fonts?.ready ?? Promise.resolve()).then(measure);
+    }
     window.addEventListener('resize', measure);
     return () => { cancelled = true; window.removeEventListener('resize', measure); };
   }, [text, style.fontFamily]); // eslint-disable-line react-hooks/exhaustive-deps
