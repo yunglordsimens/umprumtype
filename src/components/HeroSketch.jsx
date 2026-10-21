@@ -4,7 +4,13 @@ import { createPortal } from 'react-dom';
 // Homepage hero — WebGL2. All per-frame motion runs on the GPU; the CPU only
 // rasterises the text once per change. No quality slider needed.
 
-const DEFAULT_WORD = 'typoumprum\nden otevřených dveří\n22.10.2026';
+// dots/waves keep the exhibition text; glyphs carries the open day
+const OLD_TEXT = 'typoumprum.doc\n4-9/6/2026\nKasárny Karlín\nC12.02';
+const OPEN_DAY_TEXT = 'den\notevřených\ndveří 22/10';
+const OPEN_DAY_CAPTION = '22/10/2026 · 10–18 · Kasárny Karlín, C12.02';
+const SCRAMBLE = 'abcdefghijklmnopqrstuvwxyz0123456789&@#%*+=/';
+const EFFECTS = ['glyphs', 'dots', 'waves'];
+const textFor = e => (e === 'glyphs' ? OPEN_DAY_TEXT : OLD_TEXT);
 
 const PALETTE_CYCLE = ['mono', 'yellow-dark'];
 const PALETTE_LABELS = { mono: 'B/W', 'yellow-dark': 'Y/B' };
@@ -13,6 +19,9 @@ const FONT_COUNT = 10;        // random typefaces loaded per visit (was: all)
 const FONT_WAIT_MS = 1400;    // morph to real fonts once they arrive, or give up
 const DUR = 1.2;              // seconds a dot takes to reach its target
 const TRAIL = 16;             // mouse wake points
+const TILE = 48;              // glyph atlas tile, px
+const ATLAS_COLS = 32;
+const GLYPH_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&@#%*+=:.-/?!';
 
 function toRGB(c) { return Array.isArray(c) ? c.map(v => v / 255) : [c / 255, c / 255, c / 255]; }
 function toCSS(c) { return Array.isArray(c) ? `rgb(${c[0]},${c[1]},${c[2]})` : `rgb(${c},${c},${c})`; }
@@ -99,6 +108,110 @@ precision mediump float;
 uniform vec3 uColor; uniform float uAlpha; out vec4 o;
 void main(){ o = vec4(uColor, uAlpha); }`;
 
+// glyphs: a grid of characters cut from the school's typefaces. Cells flicker
+// through random glyphs as a wave passes, then lock into a density ramp of the
+// text mask. The pointer (and clicks) shake cells loose again.
+const VS_GLYPHS = `#version 300 es
+precision highp float;
+in vec2 aCell; in float aSeed;
+uniform vec2 uRes; uniform float uCell; uniform sampler2D uText; uniform float uTiles;
+uniform float uWaveT; uniform vec2 uOrigin; uniform float uSpeed; uniform float uJitter; uniform float uMotion;
+${GLSL_FORCES}
+out vec2 vUV; flat out float vTile; out float vAlpha;
+float hash(float n){ return fract(sin(n) * 43758.5453); }
+void main(){
+  int v = gl_VertexID;
+  vec2 corner = vec2(float(v == 1 || v == 2 || v == 4), float(v == 2 || v == 4 || v == 5));
+  vec2 c = (aCell + 0.5) * uCell;
+  float b = texture(uText, c / uRes).r;
+  float dist = length(c - uOrigin);
+  float showAt = dist / (uSpeed * 1.8) + aSeed * 0.12;
+  float lockAt = dist / uSpeed + aSeed * uJitter + 0.15;
+
+  float m = 0.;
+  for(int i = 0; i < ${TRAIL}; i++){
+    vec4 tr = uTrail[i];
+    if(tr.z <= 0.002) continue;
+    float d = length(c - tr.xy);
+    if(d < 110.) m = max(m, (1. - d / 110.) * tr.z);
+  }
+  if(uShock.z >= 0.){
+    float age = uTime - uShock.z;
+    if(age < 1.2){
+      float band = 1. - clamp(abs(length(c - uShock.xy) - age * 800.) / 50., 0., 1.);
+      m = max(m, band * (1. - age / 1.2));
+    }
+  }
+  m *= uMotion;
+
+  bool ink = b > 0.5;     // letter body
+  bool halo = b > 0.12;   // blurred glow around it
+  float tile = 0., alpha = 0.;
+  if(uWaveT >= showAt){
+    if(uWaveT < lockAt || m > 0.25){
+      tile = floor(hash(floor(uTime * 16. + aSeed * 91.) + aSeed * 7.) * uTiles);
+      alpha = ink ? 1. : 0.28 + 0.5 * m;
+    } else if(ink){
+      float k = 0.5 + 0.5 * smoothstep(0.5, 1., b) + (aSeed - 0.5) * 0.15;
+      tile = clamp(floor(k * (uTiles - 1.)), 0., uTiles - 1.);
+      alpha = 1.;
+    } else if(halo){
+      tile = floor((0.05 + 0.25 * b) * (uTiles - 1.));
+      alpha = 0.35;
+    }
+  }
+  vec2 p = c + (corner - 0.5) * uCell * (1. + 0.6 * m);
+  gl_Position = toClip(p, uRes);
+  vUV = corner; vTile = tile; vAlpha = alpha;
+}`;
+
+const FS_GLYPHS = `#version 300 es
+precision mediump float;
+in vec2 vUV; flat in float vTile; in float vAlpha;
+uniform sampler2D uAtlas; uniform vec2 uAtlasGrid; uniform vec3 uColor; out vec4 o;
+void main(){
+  if(vAlpha <= 0.) discard;
+  vec2 cr = vec2(mod(vTile, uAtlasGrid.x), floor(vTile / uAtlasGrid.x));
+  float a = texture(uAtlas, (cr + vUV) / uAtlasGrid).r * vAlpha;
+  if(a < 0.01) discard;
+  o = vec4(uColor, a);
+}`;
+
+// atlas of (char × typeface) tiles, sorted by ink coverage → density ramp
+function buildAtlas(families) {
+  const fams = [...families, null];
+  const n = fams.length * GLYPH_CHARS.length;
+  const rows = Math.ceil(n / ATLAS_COLS);
+  const make = () => { const c = document.createElement('canvas'); c.width = ATLAS_COLS * TILE; c.height = rows * TILE; return c; };
+  const raw = make(), rc = raw.getContext('2d', { willReadFrequently: true });
+  rc.fillStyle = '#000'; rc.fillRect(0, 0, raw.width, raw.height);
+  rc.fillStyle = '#fff'; rc.textAlign = 'center'; rc.textBaseline = 'middle';
+  let i = 0;
+  for (const fam of fams) {
+    rc.font = `${Math.round(TILE * 0.72)}px ${fam ? `"${fam}", ` : ''}"Helvetica Neue", Helvetica, Arial, sans-serif`;
+    for (const ch of GLYPH_CHARS) {
+      rc.fillText(ch, (i % ATLAS_COLS + 0.5) * TILE, (Math.floor(i / ATLAS_COLS) + 0.55) * TILE);
+      i++;
+    }
+  }
+  const px = rc.getImageData(0, 0, raw.width, raw.height).data;
+  const cov = [];
+  for (let t = 0; t < n; t++) {
+    const x0 = (t % ATLAS_COLS) * TILE, y0 = Math.floor(t / ATLAS_COLS) * TILE;
+    let sum = 0;
+    for (let y = 0; y < TILE; y += 2) for (let x = 0; x < TILE; x += 2) sum += px[((y0 + y) * raw.width + x0 + x) * 4];
+    if (sum > 0) cov.push([sum, t]);
+  }
+  cov.sort((a, b) => a[0] - b[0]);
+  const out = make(), oc = out.getContext('2d');
+  oc.fillStyle = '#000'; oc.fillRect(0, 0, out.width, out.height);
+  cov.forEach(([, t], k) => {
+    oc.drawImage(raw, (t % ATLAS_COLS) * TILE, Math.floor(t / ATLAS_COLS) * TILE, TILE, TILE,
+      (k % ATLAS_COLS) * TILE, Math.floor(k / ATLAS_COLS) * TILE, TILE, TILE);
+  });
+  return { canvas: out, tiles: cov.length, rows };
+}
+
 function compile(gl, vs, fs) {
   const mk = (type, src) => {
     const s = gl.createShader(type);
@@ -122,7 +235,7 @@ function compile(gl, vs, fs) {
 
 export default function HeroSketch({ fontData = [] }) {
   const containerRef = useRef(null);
-  const [effect, setEffect] = useState('dots');
+  const [effect, setEffect] = useState('glyphs');
   const [palette, setPalette] = useState('mono');
   // start false (matches SSR), sync in effect — avoids hydration mismatch
   const [isDark, setIsDark] = useState(false);
@@ -130,9 +243,15 @@ export default function HeroSketch({ fontData = [] }) {
 
   const effectRef = useRef(effect);
   const colorsRef = useRef({ bg: 0, fg: 255 });
-  const fontsReadyRef = useRef(null); // set by the GL effect: (families) => void
+  const [caption, setCaption] = useState('');
+  const fontsReadyRef = useRef(null);   // set by the GL effect: (families) => void
+  const effectSwitchRef = useRef(null); // set by the GL effect: () => void
 
-  useEffect(() => { effectRef.current = effect; }, [effect]);
+  useEffect(() => {
+    const changed = effectRef.current !== effect;
+    effectRef.current = effect;
+    if (changed) effectSwitchRef.current?.();
+  }, [effect]);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
@@ -142,6 +261,22 @@ export default function HeroSketch({ fontData = [] }) {
     mq.addEventListener('change', h);
     return () => mq.removeEventListener('change', h);
   }, []);
+
+  // caption decodes left→right through random glyphs
+  useEffect(() => {
+    if (effect !== 'glyphs') { setCaption(''); return; }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setCaption(OPEN_DAY_CAPTION); return; }
+    const t0 = performance.now();
+    const id = setInterval(() => {
+      const k = (performance.now() - t0 - 500) / 1400;
+      const lock = Math.floor(k * OPEN_DAY_CAPTION.length);
+      setCaption([...OPEN_DAY_CAPTION].map((ch, i) =>
+        i < lock || ch === ' ' ? ch : i < lock + 12 ? SCRAMBLE[(Math.random() * SCRAMBLE.length) | 0] : ' '
+      ).join(''));
+      if (k >= 1.2) { setCaption(OPEN_DAY_CAPTION); clearInterval(id); }
+    }, 45);
+    return () => clearInterval(id);
+  }, [effect]);
 
   // homepage is ALWAYS contrasting with the system theme
   useEffect(() => {
@@ -195,7 +330,7 @@ export default function HeroSketch({ fontData = [] }) {
     let bufScale = 1, pixels = null;
 
     function layoutLines() {
-      let lines = (typed || DEFAULT_WORD).split('\n');
+      let lines = (typed || textFor(effectRef.current)).split('\n');
       if (W < 600) {
         lines = lines.flatMap(l => l.split(' ')).flatMap(w => {
           if (w.length <= 7) return [w];
@@ -221,7 +356,7 @@ export default function HeroSketch({ fontData = [] }) {
       const build = size => lines.map((line, li) => {
         let total = 0;
         const items = [...line].map((ch, ci) => {
-          const fam = charFont[`${li}_${ci}`];
+          const fam = effectRef.current === 'glyphs' && !typed ? null : charFont[`${li}_${ci}`];
           const font = `900 ${size}px ${fam ? `"${fam}", ` : ''}"Helvetica Neue", Helvetica, Arial, sans-serif`;
           offCtx.font = font;
           const cw = offCtx.measureText(ch).width;
@@ -234,7 +369,11 @@ export default function HeroSketch({ fontData = [] }) {
       let data = build(size);
       const maxW = data.reduce((m, d) => Math.max(m, d.total), 0);
       const limit = W < 600 ? 0.97 : 0.9;
-      if (maxW > 0 && (W < 600 || maxW > w * limit)) { size *= (w * limit) / maxW; data = build(size); }
+      if (maxW > 0 && (W < 600 || maxW > w * limit)) {
+        // fit width, but never taller than the screen
+        size = Math.min(size * (w * limit) / maxW, (h * 0.9) / (lines.length * 0.85));
+        data = build(size);
+      }
 
       offCtx.fillStyle = '#000'; offCtx.fillRect(0, 0, w, h);
       offCtx.fillStyle = '#fff'; offCtx.textAlign = 'left'; offCtx.textBaseline = 'middle';
@@ -315,6 +454,9 @@ export default function HeroSketch({ fontData = [] }) {
     // ── GL setup ──
     let dots, waves, vaoDots, vaoWaves, bufStart, bufTarget, bufSeed, bufGrid, bufIdx, tex;
     let waveCount = 0, waveOff = [0, 0];
+    let glyphs, vaoGlyphs, bufCell, bufCellSeed, atlasTex, atlas = { tiles: 1, rows: 1 };
+    let cellSize = 12, cellCount = 0;
+    let wave = { t0: 0, origin: [0, 0], speed: 1100, jitter: 0.6 };
     const STRETCH = 0.88;
 
     if (gl) {
@@ -340,6 +482,15 @@ export default function HeroSketch({ fontData = [] }) {
       bufStart = attr(dots, 'aStart', 2);
       bufTarget = attr(dots, 'aTarget', 2);
       bufSeed = attr(dots, 'aSeed', 1);
+
+      glyphs = compile(gl, VS_GLYPHS, FS_GLYPHS);
+      vaoGlyphs = gl.createVertexArray();
+      gl.bindVertexArray(vaoGlyphs);
+      bufCell = attr(glyphs, 'aCell', 2);
+      bufCellSeed = attr(glyphs, 'aSeed', 1);
+      gl.vertexAttribDivisor(gl.getAttribLocation(glyphs.p, 'aCell'), 1);
+      gl.vertexAttribDivisor(gl.getAttribLocation(glyphs.p, 'aSeed'), 1);
+      atlasTex = gl.createTexture();
 
       vaoWaves = gl.createVertexArray();
       gl.bindVertexArray(vaoWaves);
@@ -376,13 +527,41 @@ export default function HeroSketch({ fontData = [] }) {
       gl.bindVertexArray(null);
     }
 
+    function uploadAtlas(families) {
+      if (!gl) return;
+      atlas = buildAtlas(families);
+      gl.bindTexture(gl.TEXTURE_2D, atlasTex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, atlas.canvas);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    }
+
+    function buildCells() {
+      cellSize = mobile ? 8 : 10;
+      const cols = Math.ceil(W / cellSize), rows = Math.ceil(H / cellSize);
+      cellCount = cols * rows;
+      const cells = new Float32Array(cellCount * 2), seeds = new Float32Array(cellCount);
+      for (let r = 0, k = 0; r < rows; r++) for (let c = 0; c < cols; c++, k++) {
+        cells[2 * k] = c; cells[2 * k + 1] = r; seeds[k] = Math.random();
+      }
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufCell); gl.bufferData(gl.ARRAY_BUFFER, cells, gl.STATIC_DRAW);
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufCellSeed); gl.bufferData(gl.ARRAY_BUFFER, seeds, gl.STATIC_DRAW);
+    }
+
+    // a scramble wave rolling out from a point; cells lock behind it
+    function startWave(origin, speed, jitter) {
+      wave = { t0: reduced ? -100 : now(), origin, speed, jitter };
+    }
+
     function measure() {
       W = container.offsetWidth || window.innerWidth;
       H = container.offsetHeight || window.innerHeight;
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       mobile = W < 720;
       canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-      if (gl) { gl.viewport(0, 0, canvas.width, canvas.height); buildWaveGrid(); }
+      if (gl) { gl.viewport(0, 0, canvas.width, canvas.height); buildWaveGrid(); buildCells(); }
     }
 
     // ── input ──
@@ -416,7 +595,10 @@ export default function HeroSketch({ fontData = [] }) {
       else return;
       charFont = null;
       clearTimeout(textTimer);
-      textTimer = setTimeout(() => { renderText(); retarget(false); drawFallback(); }, 80);
+      textTimer = setTimeout(() => {
+        renderText(); retarget(false); drawFallback();
+        if (effectRef.current === 'glyphs') startWave([W / 2, H / 2], 3000, 0.2);
+      }, 80);
     };
     let resizeTimer;
     const onResize = () => {
@@ -438,6 +620,15 @@ export default function HeroSketch({ fontData = [] }) {
     fontsReadyRef.current = families => {
       fonts = families; charFont = null;
       renderText(); retarget(false); drawFallback();
+      uploadAtlas(families);
+      startWave([W / 2, H / 2], 2600, 0.25);
+    };
+
+    effectSwitchRef.current = () => {
+      if (typed) return;
+      charFont = null;
+      renderText(); retarget(false); drawFallback();
+      if (effectRef.current === 'glyphs') startWave(hover ? [px, py] : [W / 2, H / 2], 1600, 0.4);
     };
 
     // ── no-WebGL fallback: static dots ──
@@ -479,7 +670,30 @@ export default function HeroSketch({ fontData = [] }) {
       const motion = reduced ? 0 : 1;
       const shockT = shock[2] >= 0 ? [shock[0], shock[1], shock[2] - t0] : [0, 0, -1];
 
-      if (effectRef.current === 'waves') {
+      if (effectRef.current === 'glyphs') {
+        const { u } = glyphs;
+        gl.useProgram(glyphs.p);
+        gl.uniform2f(u.uRes, W, H);
+        gl.uniform1f(u.uCell, cellSize);
+        gl.uniform1f(u.uTiles, atlas.tiles);
+        gl.uniform2f(u.uAtlasGrid, ATLAS_COLS, atlas.rows);
+        gl.uniform1f(u.uWaveT, t - wave.t0);
+        gl.uniform2f(u.uOrigin, wave.origin[0], wave.origin[1]);
+        gl.uniform1f(u.uSpeed, wave.speed);
+        gl.uniform1f(u.uJitter, wave.jitter);
+        gl.uniform1f(u.uTime, time);
+        gl.uniform1f(u.uMotion, motion);
+        gl.uniform4fv(u.uTrail, trail);
+        gl.uniform3fv(u.uShock, shockT);
+        gl.uniform3fv(u.uColor, toRGB(fg));
+        gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.uniform1i(u.uText, 0);
+        gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, atlasTex);
+        gl.uniform1i(u.uAtlas, 1);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindVertexArray(vaoGlyphs);
+        gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, cellCount);
+      } else if (effectRef.current === 'waves') {
         const { u } = waves;
         gl.useProgram(waves.p);
         gl.uniform2f(u.uRes, W, H);
@@ -518,6 +732,8 @@ export default function HeroSketch({ fontData = [] }) {
     measure();
     renderText();
     retarget(true);
+    uploadAtlas([]);
+    startWave([W / 2, H / 2], 1100, 0.6);
     drawFallback();
     raf = requestAnimationFrame(frame);
 
@@ -525,6 +741,7 @@ export default function HeroSketch({ fontData = [] }) {
       cancelAnimationFrame(raf);
       clearTimeout(textTimer); clearTimeout(resizeTimer);
       fontsReadyRef.current = null;
+      effectSwitchRef.current = null;
       window.removeEventListener('mousemove', onMouse);
       document.documentElement.removeEventListener('mouseleave', onLeave);
       window.removeEventListener('keydown', onKey);
@@ -536,7 +753,7 @@ export default function HeroSketch({ fontData = [] }) {
 
   const controls = (
     <div className="tf-sort">
-      {['dots', 'waves'].map(e => (
+      {EFFECTS.map(e => (
         <button key={e} aria-pressed={effect === e} onClick={() => setEffect(e)}>{e}</button>
       ))}
       <button
@@ -555,6 +772,7 @@ export default function HeroSketch({ fontData = [] }) {
         {controls}
       </div>
       <div ref={containerRef} style={{ flex: 1, width: '100%', overflow: 'hidden', position: 'relative' }} />
+      {effect === 'glyphs' && <p className="hero-caption" aria-label={OPEN_DAY_CAPTION}>{caption}</p>}
       <p className="hero-type-hint">Try to type · click</p>
       {mobileSlot && createPortal(<div className="hero-controls-mobile">{controls}</div>, mobileSlot)}
     </div>
