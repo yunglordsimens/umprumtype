@@ -13,12 +13,20 @@ const fontFaces = all
     })
   )
   .join('\n');
+
+// First rows of the default Name ↑ sort — fetch their fonts right away
+const firstFonts = [...all]
+  .sort((a, b) => a.title.localeCompare(b.title, 'cs'))
+  .slice(0, 4)
+  .map(t => t.otfVariants[Math.min(Math.max(0, t.mainStyleNo), t.otfVariants.length - 1)]?.webPath)
+  .filter(Boolean);
 ---
 <Base
   title="Typefaces — Umprum Type"
   description="Archive of typefaces designed at the type class of UMPRUM, Prague."
   bodyClass="lib-page"
 >
+  {firstFonts.map(href => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
   <style set:html={fontFaces}></style>
   <TypefaceIsland client:load typefaces={all} />
 </Base>

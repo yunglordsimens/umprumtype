@@ -12,8 +12,16 @@ const SCRAMBLE = 'abcdefghijklmnopqrstuvwxyz0123456789&@#%*+=/';
 const EFFECTS = ['glyphs', 'dots', 'waves'];
 const textFor = e => (e === 'glyphs' ? OPEN_DAY_TEXT : OLD_TEXT);
 
-const PALETTE_CYCLE = ['mono', 'yellow-dark'];
-const PALETTE_LABELS = { mono: 'B/W', 'yellow-dark': 'Y/B' };
+// colour button: each effect flips black/white to its own accent on black
+const ACCENTS = {
+  dots:  { fg: [245, 196, 18], label: 'Y/B' },
+  waves: { fg: [230, 38, 28],  label: 'R/B' },
+};
+const readTheme = () => (typeof document !== 'undefined' && document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+function colorsFor(effect, accent, theme) {
+  if (accent && ACCENTS[effect]) return { bg: [0, 0, 0], fg: ACCENTS[effect].fg, light: false };
+  return theme === 'dark' ? { bg: 0, fg: 255, light: false } : { bg: 255, fg: 0, light: true };
+}
 
 const FONT_COUNT = 10;        // random typefaces loaded per visit (was: all)
 const FONT_WAIT_MS = 1400;    // morph to real fonts once they arrive, or give up
@@ -236,13 +244,13 @@ function compile(gl, vs, fs) {
 export default function HeroSketch({ fontData = [] }) {
   const containerRef = useRef(null);
   const [effect, setEffect] = useState('glyphs');
-  const [palette, setPalette] = useState('mono');
-  // start false (matches SSR), sync in effect — avoids hydration mismatch
-  const [isDark, setIsDark] = useState(false);
+  const [accent, setAccent] = useState(false);
+  // 'light' matches SSR; synced from <html data-theme> after mount
+  const [theme, setTheme] = useState('light');
   const [mobileSlot, setMobileSlot] = useState(null);
 
   const effectRef = useRef(effect);
-  const colorsRef = useRef({ bg: 0, fg: 255 });
+  const colorsRef = useRef(colorsFor('glyphs', false, readTheme()));
   const [caption, setCaption] = useState('');
   const fontsReadyRef = useRef(null);   // set by the GL effect: (families) => void
   const effectSwitchRef = useRef(null); // set by the GL effect: () => void
@@ -253,13 +261,13 @@ export default function HeroSketch({ fontData = [] }) {
     if (changed) effectSwitchRef.current?.();
   }, [effect]);
 
+  // follow the site theme (system or the nav toggle)
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const h = e => setIsDark(e.matches);
-    setIsDark(mq.matches);
+    setTheme(readTheme());
     setMobileSlot(document.getElementById('anim-controls-slot'));
-    mq.addEventListener('change', h);
-    return () => mq.removeEventListener('change', h);
+    const mo = new MutationObserver(() => setTheme(readTheme()));
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => mo.disconnect();
   }, []);
 
   // caption decodes left→right through random glyphs
@@ -278,16 +286,14 @@ export default function HeroSketch({ fontData = [] }) {
     return () => clearInterval(id);
   }, [effect]);
 
-  // homepage is ALWAYS contrasting with the system theme
+  // light theme → light page, dark → dark; accent palettes are always on black
+  const colors = colorsFor(effect, accent, theme);
   useEffect(() => {
-    colorsRef.current = palette === 'yellow-dark'
-      ? { bg: [0, 0, 0], fg: [245, 196, 18] }
-      : isDark ? { bg: 255, fg: 0 } : { bg: 0, fg: 255 };
-    const isLightVisual = palette === 'mono' && isDark;
-    document.body.classList.toggle('home-light', isLightVisual);
-    document.body.classList.toggle('home-dark', !isLightVisual);
-    return () => { document.body.classList.remove('home-light', 'home-dark'); };
-  }, [palette, isDark]);
+    const c = colorsFor(effect, accent, readTheme());
+    colorsRef.current = c;
+    document.body.classList.toggle('home-light', c.light);
+    document.body.classList.toggle('home-dark', !c.light);
+  }, [effect, accent, theme]);
 
   // Load only a few random typefaces, never block first paint on them
   useEffect(() => {
@@ -756,19 +762,17 @@ export default function HeroSketch({ fontData = [] }) {
       {EFFECTS.map(e => (
         <button key={e} aria-pressed={effect === e} onClick={() => setEffect(e)}>{e}</button>
       ))}
-      <button
-        className="hero-palette-cycle"
-        onClick={() => setPalette(c => PALETTE_CYCLE[(PALETTE_CYCLE.indexOf(c) + 1) % PALETTE_CYCLE.length])}
-        aria-label="Cycle color palette"
-      >
-        {PALETTE_LABELS[palette]}
-      </button>
+      {ACCENTS[effect] && (
+        <button className="hero-palette-cycle" onClick={() => setAccent(a => !a)} aria-label="Switch colours">
+          {accent ? ACCENTS[effect].label : 'B/W'}
+        </button>
+      )}
     </div>
   );
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
-      <div className={['hero-controls', palette === 'mono' && isDark ? 'hero-controls--light' : ''].filter(Boolean).join(' ')}>
+      <div className={['hero-controls', colors.light ? 'hero-controls--light' : ''].filter(Boolean).join(' ')}>
         {controls}
       </div>
       <div ref={containerRef} style={{ flex: 1, width: '100%', overflow: 'hidden', position: 'relative' }} />

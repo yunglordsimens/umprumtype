@@ -35,16 +35,33 @@ const isActive = (prefix: string) =>
     <meta property="og:type" content="website" />
     {image && <meta property="og:image" content={image} />}
     <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline>
+      // Theme before first paint: saved choice, else system
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.dataset.theme = t;
+          document.documentElement.style.colorScheme = t;
+        } catch (_) {}
+      })();
+    </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Svar/3_Svar%20Regular.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Svar/2_Svar%20Light.woff2" crossorigin />
   </head>
   <body class={bodyClass || undefined}>
+    <script is:inline>
+      // Home chrome matches the theme before the hero hydrates
+      if (document.body.classList.contains('home-page'))
+        document.body.classList.add(document.documentElement.dataset.theme === 'dark' ? 'home-dark' : 'home-light');
+    </script>
     <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
     <nav class="site-nav" id="siteNav" data-hidden="false" data-menu="closed">
       <div class="container site-nav__inner">
         <a href="/" class="site-nav__logo">UMPRUM Type</a>
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch light / dark"></button>
         <button class="site-nav__burger" type="button" aria-label="Menu" aria-controls="siteNavLinks" aria-expanded="false">Menu</button>
         <ul class="site-nav__links" id="siteNavLinks">
           <li><a href="/typefaces" aria-current={isActive('/typefaces') ? 'page' : undefined}>Typefaces</a></li>
@@ -96,6 +113,21 @@ const isActive = (prefix: string) =>
     </footer>
 
     <script>
+      // Theme toggle — flips and remembers; follows the system until clicked
+      {
+        const root = document.documentElement;
+        const apply = (t) => { root.dataset.theme = t; root.style.colorScheme = t; };
+        document.getElementById('themeToggle')?.addEventListener('click', () => {
+          const t = root.dataset.theme === 'dark' ? 'light' : 'dark';
+          apply(t);
+          try { localStorage.setItem('theme', t); } catch (_) {}
+        });
+        matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+          let saved = null;
+          try { saved = localStorage.getItem('theme'); } catch (_) {}
+          if (!saved) apply(e.matches ? 'dark' : 'light');
+        });
+      }
       // Scroll reveal
       const revealEls = document.querySelectorAll('[data-reveal], [data-reveal-stagger]');
       if ('IntersectionObserver' in window) {

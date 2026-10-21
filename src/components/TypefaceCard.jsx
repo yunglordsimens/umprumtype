@@ -101,7 +101,7 @@ function LoopingPreview({ text, style }) {
     (document.fonts?.ready ?? Promise.resolve()).then(measure);
     window.addEventListener('resize', measure);
     return () => { cancelled = true; window.removeEventListener('resize', measure); };
-  }, [text]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [text, style.fontFamily]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useLayoutEffect(park, [copies]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -140,6 +140,22 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
   const initialSizePx = Math.max(16, Math.round((parseFloat(tf.styleSize) || 4) * 16));
 
   const panelRef = useRef(null);
+  // Variant specimens mount on first open — a closed row only needs one font file
+  const [everOpen, setEverOpen] = useState(isOpen);
+  if (isOpen && !everOpen) setEverOpen(true);
+
+  // The row's font is requested only once the row scrolls near the viewport
+  const liRef = useRef(null);
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const el = liRef.current;
+    if (!el || !('IntersectionObserver' in window)) { setNear(true); return; }
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setNear(true); io.disconnect(); }
+    }, { root: el.closest('.lib-scroll'), rootMargin: '900px 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const fam = tf.title.replace(/"/g, '\\"');
   const current = tf.otfVariants[clampedIdx] ?? null;
 
@@ -166,7 +182,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
   }, [isOpen]);
 
   return (
-    <li className="tfa-item" id={tf.slug}>
+    <li ref={liRef} className="tfa-item" id={tf.slug}>
       {/* Whole head toggles the panel; the scrollable preview can't live inside
           a <button> (Safari won't scroll it there), so only the meta row is one */}
       <div className={`tfa-trigger${isOpen ? ' is-open' : ''}`} onClick={onOpen}>
@@ -178,7 +194,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
         <LoopingPreview
           text={tf.styleTexts[0] || tf.mainText || tf.title}
           style={{
-            fontFamily: `"${fam}", var(--font-ui)`,
+            fontFamily: near || isOpen ? `"${fam}", var(--font-ui)` : 'var(--font-ui)',
             fontWeight: current?.weight || 400,
             fontStyle: current?.style || 'normal',
             fontSize: tf.mainSize || '6em',
@@ -187,7 +203,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
       </div>
 
       <div ref={panelRef} className="tfa-panel" aria-hidden={!isOpen}>
-        <div className="tfa-panel__inner">
+        {everOpen && <div className="tfa-panel__inner">
           <div className="tfa-specimens">
             {tf.otfVariants.map((v, i) => (
               <VariantSpecimen
@@ -222,7 +238,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
               )}
             </div>
           )}
-        </div>
+        </div>}
       </div>
     </li>
   );
