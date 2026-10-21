@@ -1,453 +1,536 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-const DEFAULT_WORD = 'typoumprum.doc\n4-9/6/2026\nKasárny Karlín\nC12.02';
+// Homepage hero — WebGL2. All per-frame motion runs on the GPU; the CPU only
+// rasterises the text once per change. No quality slider needed.
 
-const PALETTE_CYCLE = [
-  { key: 'mono'        },
-  { key: 'yellow-dark' },
-];
+const DEFAULT_WORD = 'typoumprum\nden otevřených dveří\n22.10.2026';
+
+const PALETTE_CYCLE = ['mono', 'yellow-dark'];
 const PALETTE_LABELS = { mono: 'B/W', 'yellow-dark': 'Y/B' };
 
-const QUALITY_PARTICLES = [4000, 8000, 22000, 40000, 60000];
-const QUALITY_WAVE_STEP = [18, 14, 10, 7, 5];
+const FONT_COUNT = 10;        // random typefaces loaded per visit (was: all)
+const FONT_WAIT_MS = 1400;    // morph to real fonts once they arrive, or give up
+const DUR = 1.2;              // seconds a dot takes to reach its target
+const TRAIL = 16;             // mouse wake points
 
-function detectQuality() {
-  if (typeof window === 'undefined') return 3;
-  const isMobile = 'ontouchstart' in window && window.innerWidth < 1024;
-  if (isMobile) return 2;
-  const cores = navigator.hardwareConcurrency ?? 4;
-  const mem = navigator.deviceMemory ?? 4;
-  if (cores >= 8 && mem >= 8) return 4;
-  if (cores >= 4) return 3;
-  return 2;
+function toRGB(c) { return Array.isArray(c) ? c.map(v => v / 255) : [c / 255, c / 255, c / 255]; }
+function toCSS(c) { return Array.isArray(c) ? `rgb(${c[0]},${c[1]},${c[2]})` : `rgb(${c},${c},${c})`; }
+function ease(t) { t = t < 0 ? 0 : t > 1 ? 1 : t; return 1 - Math.pow(1 - t, 4); }
+
+// shared GLSL: mouse wake + click shockwave
+const GLSL_FORCES = `
+uniform vec4 uTrail[${TRAIL}];
+uniform vec3 uShock;
+uniform float uTime;
+vec2 forces(vec2 p, float push, float swirl, float shock){
+  vec2 disp = vec2(0.);
+  for(int i = 0; i < ${TRAIL}; i++){
+    vec4 m = uTrail[i];
+    if(m.z <= 0.002) continue;
+    vec2 d = p - m.xy; float dist = length(d);
+    if(dist < 120.){
+      float f = 1. - dist / 120.; f = f * f * m.z;
+      vec2 dir = d / (dist + 0.0001);
+      disp += dir * f * push + vec2(-dir.y, dir.x) * f * swirl;
+    }
+  }
+  float dl = length(disp); if(dl > 90.) disp *= 90. / dl;
+  if(uShock.z >= 0.){
+    float age = uTime - uShock.z;
+    if(age < 1.4){
+      vec2 d = p - uShock.xy; float dist = length(d) + 0.0001;
+      float band = 1. - clamp(abs(dist - age * 700.) / 60., 0., 1.);
+      disp += d / dist * band * band * shock * (1. - age / 1.4);
+    }
+  }
+  return disp;
 }
+vec4 toClip(vec2 p, vec2 res){ vec2 c = p / res * 2. - 1.; return vec4(c.x, -c.y, 0., 1.); }
+`;
 
-function toCSSColor(c) { return Array.isArray(c) ? `rgb(${c[0]},${c[1]},${c[2]})` : `rgb(${c},${c},${c})`; }
+const VS_DOTS = `#version 300 es
+precision highp float;
+in vec2 aStart; in vec2 aTarget; in float aSeed;
+uniform vec2 uRes; uniform float uDpr; uniform float uMorphT; uniform float uSpread;
+uniform float uSize; uniform float uMotion;
+${GLSL_FORCES}
+void main(){
+  float t = clamp((uMorphT - aSeed * uSpread) / ${DUR.toFixed(2)}, 0., 1.);
+  vec2 p = mix(aStart, aTarget, 1. - pow(1. - t, 4.));
+  float ph = aSeed * 6.2831;
+  p += uMotion * vec2(sin(uTime * 0.9 + ph), cos(uTime * 0.7 + ph * 1.3)) * 0.6;
+  p += uMotion * forces(p, 24., 38., 28.);
+  gl_Position = toClip(p, uRes);
+  gl_PointSize = uSize * uDpr;
+}`;
 
-// deterministic font assignment per character position
-function getCharFont(fonts, li, ci) {
-  if (!fonts.length) return null;
-  return fonts[(li * 17 + ci * 13) % fonts.length];
+const FS_DOTS = `#version 300 es
+precision mediump float;
+uniform vec3 uColor; out vec4 o;
+void main(){
+  float r = length(gl_PointCoord - 0.5);
+  float a = smoothstep(0.5, 0.36, r);
+  if(a <= 0.) discard;
+  o = vec4(uColor, a);
+}`;
+
+const VS_WAVES = `#version 300 es
+precision highp float;
+in vec2 aGrid;
+uniform sampler2D uText; uniform vec2 uRes; uniform vec2 uOff; uniform float uStretch;
+uniform float uT; uniform float uMotion;
+${GLSL_FORCES}
+void main(){
+  float b = aGrid.x, a = aGrid.y;
+  float c = 0.;
+  if(b >= 0. && a >= 0. && b < uRes.x && a < uRes.y) c = texture(uText, vec2(b, a) / uRes).r * 255.;
+  float s = uStretch, b01s = 0.1 * s;
+  float noise = sin(b * 0.007 + a * 0.004 + uT * 0.18) * 8. + sin(b * 0.013 - a * 0.007 - uT * 0.13) * 5.;
+  float wd = sin(b * 0.02 - uT * 2.5) * 6. + cos(a * 0.02 + uT * 1.5) * 4.;
+  float disp = (noise + wd) * (c >= 150. ? 0. : 1. - c * 0.006667) * uMotion;
+  vec2 p = vec2(b * s + a * 0.4 * s, a * s - c * b01s - b * b01s + disp) + uOff;
+  p += uMotion * forces(p, 18., 0., 22.);
+  gl_Position = toClip(p, uRes);
+}`;
+
+const FS_WAVES = `#version 300 es
+precision mediump float;
+uniform vec3 uColor; uniform float uAlpha; out vec4 o;
+void main(){ o = vec4(uColor, uAlpha); }`;
+
+function compile(gl, vs, fs) {
+  const mk = (type, src) => {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  };
+  const p = gl.createProgram();
+  gl.attachShader(p, mk(gl.VERTEX_SHADER, vs));
+  gl.attachShader(p, mk(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const u = {};
+  const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+  for (let i = 0; i < n; i++) {
+    const name = gl.getActiveUniform(p, i).name.replace('[0]', '');
+    u[name] = gl.getUniformLocation(p, name);
+  }
+  return { p, u };
 }
 
 export default function HeroSketch({ fontData = [] }) {
   const containerRef = useRef(null);
-  const [effect,  setEffect]  = useState('dots');
+  const [effect, setEffect] = useState('dots');
   const [palette, setPalette] = useState('mono');
+  // start false (matches SSR), sync in effect — avoids hydration mismatch
+  const [isDark, setIsDark] = useState(false);
+  const [mobileSlot, setMobileSlot] = useState(null);
 
-  function cyclePalette() {
-    const keys = PALETTE_CYCLE.map(p => p.key);
-    setPalette(cur => keys[(keys.indexOf(cur) + 1) % keys.length]);
-  }
+  const effectRef = useRef(effect);
+  const colorsRef = useRef({ bg: 0, fg: 255 });
+  const fontsReadyRef = useRef(null); // set by the GL effect: (families) => void
 
-  // system dark-mode — homepage is ALWAYS contrasting
-  const [isDark, setIsDark] = useState(() =>
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-color-scheme: dark)').matches
-      : false
-  );
+  useEffect(() => { effectRef.current = effect; }, [effect]);
+
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const h = e => setIsDark(e.matches);
+    setIsDark(mq.matches);
+    setMobileSlot(document.getElementById('anim-controls-slot'));
     mq.addEventListener('change', h);
     return () => mq.removeEventListener('change', h);
   }, []);
 
-  const [quality, setQuality] = useState(() => detectQuality());
-
-  const colorsRef          = useRef({ bg: 28, fg: 235 });
-  const effectRef          = useRef(effect);
-  const qualityRef         = useRef(quality);
-  const loadedFontsRef     = useRef([]);
-  const charFontMapRef     = useRef(null);
-  const needsFontRedrawRef = useRef(false);
-
-  useEffect(() => { effectRef.current = effect; }, [effect]);
-  useEffect(() => { qualityRef.current = quality; }, [quality]);
-
+  // homepage is ALWAYS contrasting with the system theme
   useEffect(() => {
-    if (palette === 'yellow-dark') {
-      colorsRef.current = { bg: [0, 0, 0], fg: [245, 196, 18] };
-    } else if (palette === 'yellow-light') {
-      colorsRef.current = { bg: [245, 196, 18], fg: [10, 10, 10] };
-    } else {
-      // mono: always contrasting with system
-      colorsRef.current = isDark ? { bg: 255, fg: 0 } : { bg: 0, fg: 255 };
-    }
-    const isLightVisual = (palette === 'mono' && isDark) || palette === 'yellow-light';
-    // The page chrome follows the canvas, not the system theme: a dark canvas
-    // (e.g. Y/B in dark mode) gets dark bars, a light canvas light ones
+    colorsRef.current = palette === 'yellow-dark'
+      ? { bg: [0, 0, 0], fg: [245, 196, 18] }
+      : isDark ? { bg: 255, fg: 0 } : { bg: 0, fg: 255 };
+    const isLightVisual = palette === 'mono' && isDark;
     document.body.classList.toggle('home-light', isLightVisual);
     document.body.classList.toggle('home-dark', !isLightVisual);
     return () => { document.body.classList.remove('home-light', 'home-dark'); };
   }, [palette, isDark]);
 
-  // Load a random subset of typefaces via FontFace API
+  // Load only a few random typefaces, never block first paint on them
   useEffect(() => {
     if (!fontData.length) return;
-    const shuffled = [...fontData].sort(() => Math.random() - 0.5);
-    Promise.all(
-      shuffled.map(({ family, path, weight }) => {
-        try {
-          const font = new FontFace(family, `url(${path})`, { weight: String(weight || 400) });
-          return font.load()
-            .then(f => { document.fonts.add(f); return family; })
-            .catch(() => null);
-        } catch { return Promise.resolve(null); }
-      })
-    ).then(results => {
-      const loaded = results.filter(Boolean);
-      if (loaded.length > 0) {
-        loadedFontsRef.current = loaded;
-        charFontMapRef.current = null;
-        needsFontRedrawRef.current = true;
-      }
-    });
+    const pick = [...fontData].sort(() => Math.random() - 0.5).slice(0, FONT_COUNT);
+    const loaded = [];
+    let done = false;
+    const finish = () => {
+      if (done) return; done = true;
+      if (loaded.length) fontsReadyRef.current?.(loaded.slice());
+    };
+    const timer = setTimeout(finish, FONT_WAIT_MS);
+    Promise.allSettled(pick.map(({ family, path, weight }) =>
+      new FontFace(family, `url(${path})`, { weight: String(weight || 400) }).load()
+        .then(f => { document.fonts.add(f); loaded.push(family); })
+    )).then(() => { clearTimeout(timer); finish(); });
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // ── off-screen text buffer ──
-    let offCanvas = document.createElement('canvas');
-    let offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
-    let pixelData = null;
-    let typed = '';
-    let needsRedraw = true;
-    let textTimer = null;
-    let typewriterTimer = null;
-
-    let nDots = 0;
-    let dotsX = null, dotsY = null, dotsBX = null, dotsBY = null;
-    let dotsDirty = false, prevEffect = '', prevPerfMode = qualityRef.current;
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const HALF_PI = Math.PI / 2;
-    const TWO_PI  = Math.PI * 2;
-
-    // ── main canvas (no p5 — raw RAF) ──
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const canvas = document.createElement('canvas');
-    canvas.style.cssText = 'display:block;width:100%;height:100%;';
-    const ctx = canvas.getContext('2d', { alpha: false });
-    ctx.imageSmoothingEnabled = false;
+    canvas.style.cssText = 'display:block;width:100%;height:100%;touch-action:none;';
     container.appendChild(canvas);
 
-    let W = container.offsetWidth || window.innerWidth;
-    let H = container.offsetHeight || window.innerHeight;
-    canvas.width = W; canvas.height = H;
+    const gl = canvas.getContext('webgl2', { alpha: false, antialias: true, powerPreference: 'high-performance' });
+    const ctx2d = gl ? null : canvas.getContext('2d', { alpha: false });
 
-    // ── cached wave geometry — recomputed only on resize ──
-    let wc = {};
-    function updateWaveCache() {
-      const stretch = 0.88;
-      wc = {
-        stretch,
-        b01s: 0.1 * stretch,
-        offX: W / 2 - (W / 2 + H / 2 * 0.4) * stretch,
-        offY: H / 2 - (H / 2 - W / 2 * 0.1) * stretch + H * 0.06,
-        extX: Math.floor(H * 0.4),
-        extY: Math.floor(W * 0.15),
-      };
-    }
-    updateWaveCache();
+    let W = 0, H = 0, dpr = 1, mobile = false;
+    let typed = '';
+    let fonts = [];
+    let charFont = null;
 
-    const BUFFER_MAX = 900;
-    let bufScale = 1;
-    function resizeBuffer(w, h) {
-      bufScale = Math.min(1, BUFFER_MAX / Math.max(w, h));
-      offCanvas.width  = Math.max(1, Math.round(w * bufScale));
-      offCanvas.height = Math.max(1, Math.round(h * bufScale));
-    }
-    resizeBuffer(W, H);
+    // ── text raster (CPU, once per change) ──
+    const off = document.createElement('canvas');
+    const offCtx = off.getContext('2d', { willReadFrequently: true });
+    let bufScale = 1, pixels = null;
 
-    // ── keyboard ──
-    const onKey = e => {
-      if (e.key === 'Backspace') typed = typed.slice(0, -1);
-      else if (e.key === 'Enter') typed += '\n';
-      else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey)
-        typed += e.key.toUpperCase();
-      else return;
-      charFontMapRef.current = null;
-      clearTimeout(textTimer);
-      textTimer = setTimeout(() => { needsRedraw = true; }, 80);
-    };
-    window.addEventListener('keydown', onKey);
-
-    // ── mouse / touch ──
-    let mouseX = -1, mouseY = -1;
-    const onMouseMove = e => { mouseX = e.clientX; mouseY = e.clientY; };
-    const onMouseLeave = () => { mouseX = -1; mouseY = -1; };
-    const onTouch = e => {
-      if (e.touches && e.touches.length > 0) {
-        mouseX = e.touches[0].clientX;
-        mouseY = e.touches[0].clientY;
-      }
-      e.preventDefault();
-    };
-    const onTouchEnd = () => { mouseX = -1; mouseY = -1; };
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseleave', onMouseLeave);
-    canvas.addEventListener('touchstart', onTouch, { passive: false });
-    canvas.addEventListener('touchmove', onTouch, { passive: false });
-    canvas.addEventListener('touchend', onTouchEnd);
-    canvas.addEventListener('touchcancel', onTouchEnd);
-
-    // ── resize ──
-    const onResize = () => {
-      W = container.offsetWidth || window.innerWidth;
-      H = container.offsetHeight || window.innerHeight;
-      canvas.width = W; canvas.height = H;
-      resizeBuffer(W, H);
-      updateWaveCache();
-      needsRedraw = true; dotsDirty = true;
-    };
-    window.addEventListener('resize', onResize);
-
-    function buildLineData(lines, fontSize) {
-      return lines.map((line, li) => {
-        const chars = [...line];
-        let totalW = 0;
-        const items = chars.map((ch, ci) => {
-          const fam = charFontMapRef.current?.[`${li}_${ci}`] ?? null;
-          const fontStr = fam
-            ? `900 ${fontSize}px "${fam}", "Helvetica Neue", Helvetica, sans-serif`
-            : `900 ${fontSize}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
-          offCtx.font = fontStr;
-          const cw = offCtx.measureText(ch).width;
-          totalW += cw;
-          return { ch, cw, fontStr };
-        });
-        return { items, totalW };
-      });
-    }
-
-    function renderTextToBuffer() {
-      if (needsFontRedrawRef.current) {
-        charFontMapRef.current = null;
-        needsFontRedrawRef.current = false;
-      }
-      const w = offCanvas.width, h = offCanvas.height;
+    function layoutLines() {
       let lines = (typed || DEFAULT_WORD).split('\n');
       if (W < 600) {
-        lines = lines.flatMap(line => {
-          if (line.length <= 4) return [line];
-          const chunks = [];
-          for (let i = 0; i < line.length; i += 4) chunks.push(line.slice(i, i + 4));
-          return chunks;
-        });
+        lines = lines.flatMap(l => l.split(' ')).flatMap(w => {
+          if (w.length <= 7) return [w];
+          const half = Math.ceil(w.length / 2); // long words split in two halves
+          return [w.slice(0, half), w.slice(half)];
+        }).filter(Boolean);
       }
-      const fonts = loadedFontsRef.current;
-      offCtx.clearRect(0, 0, w, h);
-      offCtx.fillStyle = '#000';
-      offCtx.fillRect(0, 0, w, h);
-      offCtx.letterSpacing = '0px';
-      let fontSize = Math.max(20, (h * 0.8) / (lines.length || 1));
-      if (!charFontMapRef.current) {
-        const map = {};
-        lines.forEach((line, li) => {
-          [...line].forEach((ch, ci) => { map[`${li}_${ci}`] = getCharFont(fonts, li, ci); });
-        });
-        charFontMapRef.current = map;
-      }
-      let lineData = buildLineData(lines, fontSize);
-      const maxLineW = lineData.reduce((m, ld) => Math.max(m, ld.totalW), 0);
-      if (W < 600 && maxLineW > 0) {
-        fontSize = fontSize * (w * 0.97) / maxLineW;
-        lineData = buildLineData(lines, fontSize);
-      } else if (maxLineW > w * 0.9) {
-        fontSize = fontSize * (w * 0.9) / maxLineW;
-        lineData = buildLineData(lines, fontSize);
-      }
-      offCtx.fillStyle = '#fff';
-      offCtx.textAlign = 'left';
-      offCtx.textBaseline = 'middle';
-      const lh = fontSize * 0.85;
-      const startY = (h - lines.length * lh) / 2 + lh / 2;
-      function drawLine(ld, li) {
-        let x = (w - ld.totalW) / 2;
-        const y = startY + li * lh;
-        ld.items.forEach(({ ch, cw, fontStr }) => { offCtx.font = fontStr; offCtx.fillText(ch, x, y); x += cw; });
-      }
-      offCtx.filter = 'blur(6px)';
-      lineData.forEach((ld, li) => drawLine(ld, li));
-      offCtx.filter = 'none';
-      lineData.forEach((ld, li) => drawLine(ld, li));
-      pixelData = offCtx.getImageData(0, 0, w, h).data;
-      needsRedraw = false;
-      dotsDirty = true;
+      return lines;
     }
 
-    function buildDots(w, h) {
-      // work in buffer space, then scale to screen
-      const bw = offCanvas.width, bh = offCanvas.height;
-      const inv = 1 / bufScale; // buffer → screen scale
-      const MAX_PARTICLES = QUALITY_PARTICLES[qualityRef.current - 1];
-      const totalPixels = bw * bh;
-      let step = qualityRef.current <= 2 ? Math.max(2, Math.round(bw / 500)) : 1;
-      while ((totalPixels / (step * step)) > MAX_PARTICLES) step++;
-      const MAX_D = MAX_PARTICLES;
-      const txs = [], tys = [];
-      for (let y = 0; y < bh; y += step)
-        for (let x = 0; x < bw; x += step)
-          if (pixelData[(y * bw + x) * 4] > 100) { txs.push(x); tys.push(y); }
-      const srcN = txs.length;
-      const skip = srcN > MAX_D ? Math.ceil(srcN / MAX_D) : 1;
-      const newN = Math.ceil(srcN / skip);
-      const prevX = dotsX, prevY = dotsY, prevN = nDots;
-      const cx = w / 2, cy = h / 2;
-      dotsX = new Float32Array(newN);
-      dotsY = new Float32Array(newN);
-      dotsBX = new Float32Array(newN);
-      dotsBY = new Float32Array(newN);
-      nDots = 0;
-      for (let si = 0; si < srcN && nDots < newN; si += skip) {
-        // scale buffer coords → screen coords
-        const bx = txs[si] * inv, by = tys[si] * inv;
-        if (prevX && nDots < prevN) {
-          const px = prevX[nDots], py = prevY[nDots];
-          const a = Math.atan2(py - cy, px - cx);
-          dotsX[nDots] = px + Math.cos(a) * 60;
-          dotsY[nDots] = py + Math.sin(a) * 60;
-        } else {
-          dotsX[nDots] = cx; dotsY[nDots] = cy;
-        }
-        dotsBX[nDots] = bx; dotsBY[nDots] = by;
-        nDots++;
+    function renderText() {
+      const BUF_MAX = 1200;
+      bufScale = Math.min(1, BUF_MAX / Math.max(W, H));
+      const w = off.width = Math.max(1, Math.round(W * bufScale));
+      const h = off.height = Math.max(1, Math.round(H * bufScale));
+      const lines = layoutLines();
+      if (!charFont) {
+        charFont = {};
+        lines.forEach((line, li) => [...line].forEach((_, ci) => {
+          charFont[`${li}_${ci}`] = fonts.length ? fonts[(li * 17 + ci * 13) % fonts.length] : null;
+        }));
       }
-      dotsDirty = false;
+      const build = size => lines.map((line, li) => {
+        let total = 0;
+        const items = [...line].map((ch, ci) => {
+          const fam = charFont[`${li}_${ci}`];
+          const font = `900 ${size}px ${fam ? `"${fam}", ` : ''}"Helvetica Neue", Helvetica, Arial, sans-serif`;
+          offCtx.font = font;
+          const cw = offCtx.measureText(ch).width;
+          total += cw;
+          return { ch, cw, font };
+        });
+        return { items, total };
+      });
+      let size = Math.max(20, (h * 0.8) / (lines.length || 1));
+      let data = build(size);
+      const maxW = data.reduce((m, d) => Math.max(m, d.total), 0);
+      const limit = W < 600 ? 0.97 : 0.9;
+      if (maxW > 0 && (W < 600 || maxW > w * limit)) { size *= (w * limit) / maxW; data = build(size); }
+
+      offCtx.fillStyle = '#000'; offCtx.fillRect(0, 0, w, h);
+      offCtx.fillStyle = '#fff'; offCtx.textAlign = 'left'; offCtx.textBaseline = 'middle';
+      const lh = size * 0.85;
+      const y0 = (h - lines.length * lh) / 2 + lh / 2;
+      const draw = () => data.forEach((d, li) => {
+        let x = (w - d.total) / 2;
+        d.items.forEach(({ ch, cw, font }) => { offCtx.font = font; offCtx.fillText(ch, x, y0 + li * lh); x += cw; });
+      });
+      offCtx.filter = 'blur(6px)'; draw();
+      offCtx.filter = 'none'; draw();
+      pixels = offCtx.getImageData(0, 0, w, h).data;
+      if (gl) {
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, off);
+      }
+    }
+
+    // ── dot targets ──
+    let N = 0, start = new Float32Array(0), target = new Float32Array(0), seed = new Float32Array(0);
+    let morphAt = 0, spread = 0.7, pointSize = 2.5;
+
+    function sampleTargets() {
+      const bw = off.width, bh = off.height;
+      let spacing = mobile ? 2.6 : 3.2;
+      const cap = mobile ? 45000 : 90000;
+      for (let attempt = 0; attempt < 6; attempt++) {
+        const pts = [];
+        for (let y = spacing / 2; y < H; y += spacing) {
+          const by = Math.min(bh - 1, Math.round(y * bufScale));
+          for (let x = spacing / 2; x < W; x += spacing) {
+            const bx = Math.min(bw - 1, Math.round(x * bufScale));
+            if (pixels[(by * bw + bx) * 4] > 110) {
+              pts.push(x + (Math.random() - 0.5) * spacing * 0.35, y + (Math.random() - 0.5) * spacing * 0.35);
+            }
+          }
+        }
+        if (pts.length / 2 <= cap) { pointSize = spacing * 0.78; return new Float32Array(pts); }
+        spacing *= Math.sqrt(pts.length / 2 / cap) * 1.02;
+      }
+      return new Float32Array(0);
+    }
+
+    function now() { return performance.now() / 1000; }
+
+    function currentPos(i, t) {
+      const k = ease((t - morphAt - seed[i] * spread) / DUR);
+      return [start[2 * i] + (target[2 * i] - start[2 * i]) * k, start[2 * i + 1] + (target[2 * i + 1] - start[2 * i + 1]) * k];
+    }
+
+    function retarget(intro) {
+      const next = sampleTargets();
+      const n = next.length / 2;
+      const t = now();
+      const s = new Float32Array(n * 2), sd = new Float32Array(n);
+      const cx = W / 2, cy = H / 2;
+      for (let i = 0; i < n; i++) {
+        if (intro || !N) {
+          s[2 * i] = Math.random() * W; s[2 * i + 1] = Math.random() * H;
+          sd[i] = 0.6 * (next[2 * i] / W) + 0.4 * Math.random();
+        } else {
+          const [px, py] = currentPos(Math.floor(i * N / n), t);
+          const a = Math.atan2(py - cy, px - cx);
+          s[2 * i] = px + Math.cos(a) * 30; s[2 * i + 1] = py + Math.sin(a) * 30;
+          sd[i] = Math.random();
+        }
+      }
+      start = s; target = next; seed = sd; N = n;
+      morphAt = reduced ? -100 : t;
+      spread = intro ? 0.7 : 0.25;
+      if (gl) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, bufStart); gl.bufferData(gl.ARRAY_BUFFER, start, gl.DYNAMIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, bufTarget); gl.bufferData(gl.ARRAY_BUFFER, target, gl.DYNAMIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, bufSeed); gl.bufferData(gl.ARRAY_BUFFER, seed, gl.DYNAMIC_DRAW);
+      }
+    }
+
+    // ── GL setup ──
+    let dots, waves, vaoDots, vaoWaves, bufStart, bufTarget, bufSeed, bufGrid, bufIdx, tex;
+    let waveCount = 0, waveOff = [0, 0];
+    const STRETCH = 0.88;
+
+    if (gl) {
+      dots = compile(gl, VS_DOTS, FS_DOTS);
+      waves = compile(gl, VS_WAVES, FS_WAVES);
+      tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+      vaoDots = gl.createVertexArray();
+      gl.bindVertexArray(vaoDots);
+      const attr = (prog, name, size) => {
+        const b = gl.createBuffer();
+        const loc = gl.getAttribLocation(prog.p, name);
+        gl.bindBuffer(gl.ARRAY_BUFFER, b);
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
+        return b;
+      };
+      bufStart = attr(dots, 'aStart', 2);
+      bufTarget = attr(dots, 'aTarget', 2);
+      bufSeed = attr(dots, 'aSeed', 1);
+
+      vaoWaves = gl.createVertexArray();
+      gl.bindVertexArray(vaoWaves);
+      bufGrid = attr(waves, 'aGrid', 2);
+      bufIdx = gl.createBuffer();
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufIdx);
+      gl.bindVertexArray(null);
+
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    }
+
+    function buildWaveGrid() {
+      const s = STRETCH;
+      waveOff = [W / 2 - (W / 2 + H / 2 * 0.4) * s, H / 2 - (H / 2 - W / 2 * 0.1) * s + H * 0.06];
+      const extX = Math.floor(H * 0.4), extY = Math.floor(W * 0.15);
+      const rowStep = mobile ? 9 : 7, colStep = 6;
+      const cols = Math.ceil((W + 2 * extX) / colStep);
+      const rows = Math.ceil((H + 2 * extY) / rowStep);
+      const grid = new Float32Array(rows * cols * 2);
+      const idx = new Uint32Array(rows * (cols - 1) * 2);
+      let g = 0, k = 0;
+      for (let r = 0; r < rows; r++) {
+        const a = -extY + r * rowStep;
+        for (let c = 0; c < cols; c++) {
+          grid[g++] = -extX + c * colStep; grid[g++] = a;
+          if (c > 0) { const v = r * cols + c; idx[k++] = v - 1; idx[k++] = v; }
+        }
+      }
+      waveCount = k;
+      gl.bindVertexArray(vaoWaves);
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufGrid); gl.bufferData(gl.ARRAY_BUFFER, grid, gl.STATIC_DRAW);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufIdx); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, idx, gl.STATIC_DRAW);
+      gl.bindVertexArray(null);
+    }
+
+    function measure() {
+      W = container.offsetWidth || window.innerWidth;
+      H = container.offsetHeight || window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      mobile = W < 720;
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      if (gl) { gl.viewport(0, 0, canvas.width, canvas.height); buildWaveGrid(); }
+    }
+
+    // ── input ──
+    const trail = new Float32Array(TRAIL * 4); // [0] = live pointer, rest = wake ring
+    let ring = 1, lastX = -1e4, lastY = -1e4, hover = false, px = -1, py = -1;
+    let shock = [0, 0, -1];
+
+    const onMove = (x, y) => {
+      const r = canvas.getBoundingClientRect();
+      px = x - r.left; py = y - r.top;
+      hover = px >= 0 && py >= 0 && px < W && py < H;
+      if (hover && Math.hypot(px - lastX, py - lastY) > 10) {
+        trail[ring * 4] = px; trail[ring * 4 + 1] = py; trail[ring * 4 + 2] = 1;
+        ring = ring + 1 >= TRAIL ? 1 : ring + 1;
+        lastX = px; lastY = py;
+      }
+    };
+    const onMouse = e => onMove(e.clientX, e.clientY);
+    const onLeave = () => { hover = false; };
+    const onTouch = e => { if (e.touches[0]) onMove(e.touches[0].clientX, e.touches[0].clientY); };
+    const onDown = e => {
+      const r = canvas.getBoundingClientRect();
+      shock = [e.clientX - r.left, e.clientY - r.top, now()];
+    };
+    let textTimer;
+    const onKey = e => {
+      if (e.target.closest && e.target.closest('input, textarea, [contenteditable]')) return;
+      if (e.key === 'Backspace') typed = typed.slice(0, -1);
+      else if (e.key === 'Enter') typed += '\n';
+      else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) typed += e.key.toUpperCase();
+      else return;
+      charFont = null;
+      clearTimeout(textTimer);
+      textTimer = setTimeout(() => { renderText(); retarget(false); drawFallback(); }, 80);
+    };
+    let resizeTimer;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => { measure(); charFont = null; renderText(); retarget(false); drawFallback(); }, 150);
+    };
+
+    if (!reduced) {
+      window.addEventListener('mousemove', onMouse);
+      document.documentElement.addEventListener('mouseleave', onLeave);
+      canvas.addEventListener('touchstart', onTouch, { passive: true });
+      canvas.addEventListener('touchmove', onTouch, { passive: true });
+      canvas.addEventListener('touchend', onLeave);
+      canvas.addEventListener('pointerdown', onDown);
+    }
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('resize', onResize);
+
+    fontsReadyRef.current = families => {
+      fonts = families; charFont = null;
+      renderText(); retarget(false); drawFallback();
+    };
+
+    // ── no-WebGL fallback: static dots ──
+    function drawFallback() {
+      if (gl) return;
+      const { bg, fg } = colorsRef.current;
+      ctx2d.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx2d.fillStyle = toCSS(bg); ctx2d.fillRect(0, 0, W, H);
+      ctx2d.fillStyle = toCSS(fg);
+      const p = new Path2D(), r = pointSize / 2;
+      for (let i = 0; i < N; i++) { p.moveTo(target[2 * i] + r, target[2 * i + 1]); p.arc(target[2 * i], target[2 * i + 1], r, 0, 6.2832); }
+      ctx2d.fill(p);
     }
 
     // ── frame loop ──
-    const FRAME_MS = reducedMotion ? 125 : 1000 / 60;
-    let lastTs = 0, frameCount = 0, rafId;
+    let raf, prev = now(), fallbackColors = '';
+    const t0 = now();
 
-    function loop(ts) {
-      rafId = requestAnimationFrame(loop);
-      const dt = ts - lastTs;
-      if (dt < FRAME_MS) return;
-      lastTs = ts - (dt % FRAME_MS);
-      frameCount++;
-
-      if (qualityRef.current !== prevPerfMode) { prevPerfMode = qualityRef.current; dotsDirty = true; }
-      if (needsRedraw || needsFontRedrawRef.current) renderTextToBuffer();
-
-      const cur = effectRef.current;
-      const { bg, fg } = colorsRef.current;
-      ctx.fillStyle = toCSSColor(bg);
-      ctx.fillRect(0, 0, W, H);
-      if (!pixelData) return;
-
-      const time = frameCount * 0.022;
-      const fgCSS = toCSSColor(fg);
-
-      if (cur === 'dots') {
-        if (dotsDirty || prevEffect !== 'dots') buildDots(W, H);
-        prevEffect = 'dots';
-
-        const hasMouse = !reducedMotion && mouseX >= 0 && mouseX < W && mouseY >= 0 && mouseY < H;
-        ctx.fillStyle = fgCSS;
-        const dotPath = new Path2D();
-        for (let i = 0; i < nDots; i++) {
-          let x = dotsX[i], y = dotsY[i];
-          const bx = dotsBX[i], by = dotsBY[i];
-          if (hasMouse) {
-            const dx = mouseX - x, dy = mouseY - y;
-            const dSq = dx * dx + dy * dy;
-            if (dSq < 10000) {
-              const dist = Math.sqrt(dSq);
-              const force = (100 - dist) / 100;
-              const angle = Math.atan2(dy, dx);
-              x -= Math.cos(angle) * force * 5 - Math.cos(angle + HALF_PI) * force * 15;
-              y -= Math.sin(angle) * force * 5 - Math.sin(angle + HALF_PI) * force * 15;
-            } else {
-              x += (bx - x) * 0.014; y += (by - y) * 0.014;
-            }
-          } else {
-            const ex = bx - x, ey = by - y;
-            if (ex * ex + ey * ey > 0.04) { x += ex * 0.014; y += ey * 0.014; }
-          }
-          dotsX[i] = x; dotsY[i] = y;
-          dotPath.moveTo(x + 1.5, y);
-          dotPath.arc(x, y, 1.5, 0, TWO_PI);
-        }
-        ctx.fill(dotPath);
-
-        if (hasMouse) {
-          ctx.save();
-          ctx.strokeStyle = fgCSS;
-          ctx.globalAlpha = 12 / 255;
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.arc(mouseX, mouseY, 100, 0, TWO_PI);
-          ctx.stroke();
-          ctx.restore();
-        }
-
-      } else if (cur === 'waves') {
-        prevEffect = 'waves';
-        const { stretch, b01s, offX, offY, extX, extY } = wc;
-
-        // precompute time factors (constant for every vertex this frame)
-        const t_b  = -time * 2.5;
-        const t_a  =  time * 1.5;
-        const t_n1 =  time * 0.18;
-        const t_n2 = -time * 0.13;
-
-        ctx.save();
-        ctx.strokeStyle = fgCSS;
-        ctx.lineWidth = 0.6;
-        ctx.translate(offX, offY);
-        ctx.beginPath(); // single path — single GPU flush for ALL rows
-
-        const waveStep = QUALITY_WAVE_STEP[qualityRef.current - 1];
-        for (let a = -extY; a < H + extY; a += waveStep) {
-          // hoist a-dependent terms outside inner loop
-          const a04s  = a * 0.4 * stretch;
-          const a_s   = a * stretch;
-          const wdCos = Math.cos(a * 0.02 + t_a) * 4;
-          const na1   =  a * 0.004 + t_n1;
-          const na2   = -a * 0.007 + t_n2;
-          let first = true;
-
-          for (let b = -extX; b < W + extX; b += 8) {
-            let c = 0;
-            const ba = Math.round(a * bufScale), bb = Math.round(b * bufScale);
-            const bw = offCanvas.width, bh = offCanvas.height;
-            if (ba >= 0 && ba < bh && bb >= 0 && bb < bw) c = pixelData[(ba * bw + bb) * 4];
-            const vx    = b * stretch + a04s;
-            const noise = Math.sin(b * 0.007 + na1) * 8 + Math.sin(b * 0.013 + na2) * 5;
-            const wd    = Math.sin(b * 0.02 + t_b) * 6 + wdCos;
-            const disp  = (noise + wd) * (c >= 150 ? 0 : 1 - c * 0.006667);
-            const vy    = a_s - c * b01s - b * b01s + disp;
-            if (first) { ctx.moveTo(vx, vy); first = false; }
-            else ctx.lineTo(vx, vy);
-          }
-        }
-        ctx.stroke(); // one call instead of ~130
-
-        ctx.restore();
+    function frame() {
+      raf = requestAnimationFrame(frame);
+      const t = now(), dt = Math.min(0.1, t - prev); prev = t;
+      if (!gl) {
+        const key = JSON.stringify(colorsRef.current);
+        if (key !== fallbackColors) { fallbackColors = key; drawFallback(); }
+        return;
       }
+      // wake decays, live pointer eases in/out
+      const decay = Math.exp(-dt / 0.45);
+      for (let i = 1; i < TRAIL; i++) trail[i * 4 + 2] *= decay;
+      trail[0] = px; trail[1] = py;
+      trail[2] += ((hover ? 1 : 0) - trail[2]) * Math.min(1, dt * 8);
+
+      const { bg, fg } = colorsRef.current;
+      const [br, bgG, bb] = toRGB(bg);
+      gl.clearColor(br, bgG, bb, 1);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
+      const time = t - t0;
+      const motion = reduced ? 0 : 1;
+      const shockT = shock[2] >= 0 ? [shock[0], shock[1], shock[2] - t0] : [0, 0, -1];
+
+      if (effectRef.current === 'waves') {
+        const { u } = waves;
+        gl.useProgram(waves.p);
+        gl.uniform2f(u.uRes, W, H);
+        gl.uniform2f(u.uOff, waveOff[0], waveOff[1]);
+        gl.uniform1f(u.uStretch, STRETCH);
+        gl.uniform1f(u.uT, time * 1.32);
+        gl.uniform1f(u.uTime, time);
+        gl.uniform1f(u.uMotion, motion);
+        gl.uniform4fv(u.uTrail, trail);
+        gl.uniform3fv(u.uShock, shockT);
+        gl.uniform3fv(u.uColor, toRGB(fg));
+        gl.uniform1f(u.uAlpha, dpr < 1.5 ? 0.7 : 1);
+        gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.uniform1i(u.uText, 0);
+        gl.bindVertexArray(vaoWaves);
+        gl.drawElements(gl.LINES, waveCount, gl.UNSIGNED_INT, 0);
+      } else if (N) {
+        const { u } = dots;
+        gl.useProgram(dots.p);
+        gl.uniform2f(u.uRes, W, H);
+        gl.uniform1f(u.uDpr, dpr);
+        gl.uniform1f(u.uTime, time);
+        gl.uniform1f(u.uMorphT, t - morphAt);
+        gl.uniform1f(u.uSpread, spread);
+        gl.uniform1f(u.uSize, pointSize);
+        gl.uniform1f(u.uMotion, motion);
+        gl.uniform4fv(u.uTrail, trail);
+        gl.uniform3fv(u.uShock, shockT);
+        gl.uniform3fv(u.uColor, toRGB(fg));
+        gl.bindVertexArray(vaoDots);
+        gl.drawArrays(gl.POINTS, 0, N);
+      }
+      gl.bindVertexArray(null);
     }
 
-    renderTextToBuffer();
-    rafId = requestAnimationFrame(loop);
+    measure();
+    renderText();
+    retarget(true);
+    drawFallback();
+    raf = requestAnimationFrame(frame);
 
     return () => {
-      cancelAnimationFrame(rafId);
-      clearTimeout(textTimer);
-      clearTimeout(typewriterTimer);
+      cancelAnimationFrame(raf);
+      clearTimeout(textTimer); clearTimeout(resizeTimer);
+      fontsReadyRef.current = null;
+      window.removeEventListener('mousemove', onMouse);
+      document.documentElement.removeEventListener('mouseleave', onLeave);
       window.removeEventListener('keydown', onKey);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseleave', onMouseLeave);
       window.removeEventListener('resize', onResize);
-      canvas.removeEventListener('touchstart', onTouch);
-      canvas.removeEventListener('touchmove', onTouch);
-      canvas.removeEventListener('touchend', onTouchEnd);
-      canvas.removeEventListener('touchcancel', onTouchEnd);
+      gl?.getExtension('WEBGL_lose_context')?.loseContext();
       canvas.remove();
-      offCanvas = null; offCtx = null; pixelData = null;
-      dotsX = dotsY = dotsBX = dotsBY = null; nDots = 0;
     };
   }, []);
 
@@ -456,41 +539,24 @@ export default function HeroSketch({ fontData = [] }) {
       {['dots', 'waves'].map(e => (
         <button key={e} aria-pressed={effect === e} onClick={() => setEffect(e)}>{e}</button>
       ))}
-      <button className="hero-palette-cycle" onClick={cyclePalette} aria-label="Cycle color palette">
+      <button
+        className="hero-palette-cycle"
+        onClick={() => setPalette(c => PALETTE_CYCLE[(PALETTE_CYCLE.indexOf(c) + 1) % PALETTE_CYCLE.length])}
+        aria-label="Cycle color palette"
+      >
         {PALETTE_LABELS[palette]}
       </button>
-      <span className="tf-sort__divider" />
-      <span className="hero-quality-label">
-        <span className="hero-quality-label__full">Animation performance</span>
-        <span className="hero-quality-label__short">AP</span>
-      </span>
-      <input
-        type="range" min="1" max="5" step="1"
-        value={quality}
-        onChange={e => setQuality(+e.target.value)}
-        className="hero-quality-slider"
-        aria-label="Performance quality"
-      />
     </div>
   );
 
-  const mobileSlot = typeof document !== 'undefined' && document.getElementById('anim-controls-slot');
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
-      <div className={[
-        'hero-controls',
-        (palette === 'yellow-light' || (palette === 'mono' && isDark)) ? 'hero-controls--light' : '',
-        palette === 'yellow-light' ? 'hero-controls--yellow' : '',
-      ].filter(Boolean).join(' ')}>
+      <div className={['hero-controls', palette === 'mono' && isDark ? 'hero-controls--light' : ''].filter(Boolean).join(' ')}>
         {controls}
       </div>
       <div ref={containerRef} style={{ flex: 1, width: '100%', overflow: 'hidden', position: 'relative' }} />
-      <p className="hero-type-hint">Try to type</p>
-      {mobileSlot && createPortal(
-        <div className="hero-controls-mobile">{controls}</div>,
-        mobileSlot
-      )}
+      <p className="hero-type-hint">Try to type · click</p>
+      {mobileSlot && createPortal(<div className="hero-controls-mobile">{controls}</div>, mobileSlot)}
     </div>
   );
 }
