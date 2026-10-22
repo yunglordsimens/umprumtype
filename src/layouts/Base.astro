@@ -36,14 +36,20 @@ const isActive = (prefix: string) =>
     {image && <meta property="og:image" content={image} />}
     <meta name="twitter:card" content="summary_large_image" />
     <script is:inline>
-      // Theme before first paint: saved choice, else system
+      // Theme before first paint. The system decides; the nav circle is an
+      // override that lasts only until the system theme changes (day ↔ night)
       (function () {
+        var sys = 'light', t;
+        try { sys = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; } catch (_) {}
+        t = sys;
         try {
-          var t = localStorage.getItem('theme');
-          if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-          document.documentElement.dataset.theme = t;
-          document.documentElement.style.colorScheme = t;
+          localStorage.removeItem('theme'); // old permanent setting
+          var o = JSON.parse(localStorage.getItem('themeOverride') || 'null');
+          if (o && o.sys === sys && (o.t === 'light' || o.t === 'dark')) t = o.t;
+          else localStorage.removeItem('themeOverride');
         } catch (_) {}
+        document.documentElement.dataset.theme = t;
+        document.documentElement.style.colorScheme = t;
       })();
     </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -113,19 +119,31 @@ const isActive = (prefix: string) =>
     </footer>
 
     <script>
-      // Theme toggle — flips and remembers; follows the system until clicked
+      // Theme toggle — temporary override of the system theme
       {
         const root = document.documentElement;
-        const apply = (t) => { root.dataset.theme = t; root.style.colorScheme = t; };
+        const mq = matchMedia('(prefers-color-scheme: dark)');
+        const sys = () => (mq.matches ? 'dark' : 'light');
+        const apply = (t) => {
+          root.dataset.theme = t;
+          root.style.colorScheme = t;
+          if (document.body.classList.contains('home-page')) {
+            document.body.classList.toggle('home-dark', t === 'dark');
+            document.body.classList.toggle('home-light', t !== 'dark');
+          }
+        };
         document.getElementById('themeToggle')?.addEventListener('click', () => {
           const t = root.dataset.theme === 'dark' ? 'light' : 'dark';
           apply(t);
-          try { localStorage.setItem('theme', t); } catch (_) {}
+          try {
+            if (t === sys()) localStorage.removeItem('themeOverride');
+            else localStorage.setItem('themeOverride', JSON.stringify({ t, sys: sys() }));
+          } catch (_) {}
         });
-        matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-          let saved = null;
-          try { saved = localStorage.getItem('theme'); } catch (_) {}
-          if (!saved) apply(e.matches ? 'dark' : 'light');
+        // system flipped (e.g. night mode) → drop the override, follow it
+        mq.addEventListener('change', () => {
+          try { localStorage.removeItem('themeOverride'); } catch (_) {}
+          apply(sys());
         });
       }
       // Scroll reveal

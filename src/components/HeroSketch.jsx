@@ -288,7 +288,6 @@ export default function HeroSketch({ fontData = [] }) {
   }, [effect]);
 
   // light theme → light page, dark → dark; accent palettes are always on black
-  const colors = colorsFor(effect, accent, theme);
   useEffect(() => {
     const c = colorsFor(effect, accent, readTheme());
     colorsRef.current = c;
@@ -372,20 +371,23 @@ export default function HeroSketch({ fontData = [] }) {
         });
         return { items, total };
       });
-      let size = Math.max(20, (h * 0.8) / (lines.length || 1));
+      // glyphs keeps the bottom free for the date caption
+      const reserve = effectRef.current === 'glyphs' && !typed ? Math.round(120 * bufScale) : 0;
+      const hAvail = h - reserve;
+      let size = Math.max(20, (hAvail * 0.8) / (lines.length || 1));
       let data = build(size);
       const maxW = data.reduce((m, d) => Math.max(m, d.total), 0);
       const limit = W < 600 ? 0.97 : 0.9;
       if (maxW > 0 && (W < 600 || maxW > w * limit)) {
         // fit width, but never taller than the screen
-        size = Math.min(size * (w * limit) / maxW, (h * 0.9) / (lines.length * 0.85));
+        size = Math.min(size * (w * limit) / maxW, (hAvail * 0.9) / (lines.length * 0.85));
         data = build(size);
       }
 
       offCtx.fillStyle = '#000'; offCtx.fillRect(0, 0, w, h);
       offCtx.fillStyle = '#fff'; offCtx.textAlign = 'left'; offCtx.textBaseline = 'middle';
       const lh = size * 0.85;
-      const y0 = (h - lines.length * lh) / 2 + lh / 2;
+      const y0 = (hAvail - lines.length * lh) / 2 + lh / 2;
       const draw = () => data.forEach((d, li) => {
         let x = (w - d.total) / 2;
         d.items.forEach(({ ch, cw, font }) => { offCtx.font = font; offCtx.fillText(ch, x, y0 + li * lh); x += cw; });
@@ -786,7 +788,7 @@ export default function HeroSketch({ fontData = [] }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
-      <div className={['hero-controls', colors.light ? 'hero-controls--light' : ''].filter(Boolean).join(' ')}>
+      <div className="hero-controls">
         {controls}
       </div>
       <div ref={containerRef} style={{ flex: 1, width: '100%', overflow: 'hidden', position: 'relative' }} />

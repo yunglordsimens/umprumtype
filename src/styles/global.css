@@ -2131,21 +2131,14 @@ body.home-page.home-light .hero-caption { color: rgba(0,0,0,0.85); }
 }
 .hero-controls .tf-sort__divider { background: rgba(255,255,255,0.18); }
 
-/* light canvas (dark-system mono or yellow-light) */
-.hero-controls--light {
-  background: #ffffff;
-  border-bottom-color: rgba(0,0,0,0.07);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  color: rgba(0,0,0,0.75);
-}
-.hero-controls--light .tf-sort button { color: rgba(0,0,0,0.55); }
-.hero-controls--light .tf-sort button[aria-pressed="true"] {
+/* light home — body class is set before first paint (Base inline script) */
+body.home-page.home-light .hero-controls .tf-sort button { color: rgba(0,0,0,0.55); }
+body.home-page.home-light .hero-controls .tf-sort button[aria-pressed="true"] {
   background: #000;
   color: #fff;
   border-color: #000;
 }
-.hero-controls--light .tf-sort__divider { background: rgba(0,0,0,0.15); }
+body.home-page.home-light .hero-controls .tf-sort__divider { background: rgba(0,0,0,0.15); }
 
 /* ── Palette cycle button ── */
 .hero-palette-cycle {
@@ -2872,4 +2865,85 @@ body.lib-page #main {
   .site-nav, .site-footer, .bottom-bar, .specimen__controls { display: none !important; }
   body { background: white; color: black; }
   .tf-page__title, .post__title { page-break-after: avoid; }
+}
+
+/* ================================================================
+   Typographic controls — no pills. Links, filters, sorts and tags are
+   plain text; the active one is underlined. One block: delete it to
+   bring the outlined pills back.
+   ================================================================ */
+.site-nav__links,
+.tf-sort,
+.lib-toolbar { gap: var(--space-4); }
+.tf-sort__divider { align-self: center; height: 1em; margin: 0; }
+
+.site-nav__links a,
+.tf-sort button,
+.tf-filter-row button,
+.tf-cap,
+.tf-tag-chip,
+.tfa-info__tag,
+.lib-row__tag-chip,
+.book-detail__tag {
+  padding: 2px 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  text-decoration: none;
+  text-underline-offset: 0.28em;
+  text-decoration-thickness: 1px;
+  transform: none !important;
+}
+.site-nav__links a:hover,
+.tf-sort button:hover,
+.tf-cap:hover,
+.tf-tag-chip:hover,
+.tfa-info__tag:hover,
+.lib-row__tag-chip:hover,
+.book-detail__tag:hover { color: var(--text) !important; }
+
+.site-nav__links a[aria-current="page"],
+.tf-sort button[aria-pressed="true"],
+.tf-filter-row button[aria-pressed="true"],
+.tf-cap.is-active,
+.tf-tag-chip.is-active {
+  color: var(--text) !important;
+  text-decoration: underline;
+}
+.tf-tags-panel__chips { column-gap: var(--space-4); row-gap: var(--space-1); }
+.lib-accordion__tags,
+.tfa-info__tags { column-gap: var(--space-4); }
+
+/* search: a single hairline under the text */
+.site-search__input,
+.lib-search__input,
+.search-bar__input,
+.site-nav__search-mobile .site-search__input {
+  border: 0 !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding-left: 20px !important;
+}
+.site-search__icon { left: 0; }
+.site-search__input:focus { border-bottom-color: var(--text) !important; }
+
+/* Mobile menu: one top row (logo · theme · Menu) with a full-width rule
+   under it; the menu slides out from under that rule. No stray lines. */
+@media (max-width: 720px) {
+  .site-nav__inner { padding-block: 0; }
+  .site-nav__logo,
+  .site-nav__burger,
+  .site-nav__inner .theme-toggle { margin-block: 16px; }
+  .site-nav[data-menu="open"] .site-nav__links {
+    flex-basis: calc(100% + 2 * var(--gutter));
+    max-width: none;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: var(--space-3) var(--gutter) var(--space-4);
+    border-top: 1px solid var(--border);
+  }
+  .site-nav__anim-slot { border-top: 0; margin-top: 0; padding-top: var(--space-2); }
+  .site-nav__anim-slot:empty { display: none; }
 }
