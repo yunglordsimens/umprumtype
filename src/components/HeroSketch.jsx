@@ -5,12 +5,15 @@ import { createPortal } from 'react-dom';
 // rasterises the text once per change. No quality slider needed.
 
 // dots/waves keep the exhibition text; glyphs carries the open day
-const OLD_TEXT = 'typoumprum.doc\n4-9/6/2026\nKasárny Karlín\nC12.02';
-const OPEN_DAY_TEXT = 'den\notevřených\ndveří 22/10';
-const OPEN_DAY_CAPTION = '22/10/2026 · 10–18 · Kasárny Karlín, C12.02';
+// Each effect = one event: big text, caption under it, button label (a date)
+const SCENES = {
+  glyphs: { label: '22/10', text: 'den\notevřených\ndveří 22/10', caption: 'Den otevřených dveří · 22/10/2026 · 10–18 · Kasárny Karlín, C12.02' },
+  dots:   { label: '4–9/6', text: 'typoumprum.doc\n4-9/6/2026\nKasárny Karlín\nC12.02', caption: 'Exhibition typoumprum.doc · 4–9/6/2026 · Kasárny Karlín, C12.02' },
+  waves:  { label: 'test',  text: 'test', caption: '' },
+};
 const SCRAMBLE = 'abcdefghijklmnopqrstuvwxyz0123456789&@#%*+=/';
 const EFFECTS = ['glyphs', 'dots', 'waves'];
-const textFor = e => (e === 'glyphs' ? OPEN_DAY_TEXT : OLD_TEXT);
+const textFor = e => SCENES[e].text;
 
 // colour button: each effect flips black/white to its own accent on black
 const ACCENTS = {
@@ -273,16 +276,17 @@ export default function HeroSketch({ fontData = [] }) {
 
   // caption decodes left→right through random glyphs
   useEffect(() => {
-    if (effect !== 'glyphs') { setCaption(''); return; }
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setCaption(OPEN_DAY_CAPTION); return; }
+    const CAP = SCENES[effect].caption;
+    if (!CAP) { setCaption(''); return; }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setCaption(CAP); return; }
     const t0 = performance.now();
     const id = setInterval(() => {
       const k = (performance.now() - t0 - 500) / 1400;
-      const lock = Math.floor(k * OPEN_DAY_CAPTION.length);
-      setCaption([...OPEN_DAY_CAPTION].map((ch, i) =>
+      const lock = Math.floor(k * CAP.length);
+      setCaption([...CAP].map((ch, i) =>
         i < lock || ch === ' ' ? ch : i < lock + 12 ? SCRAMBLE[(Math.random() * SCRAMBLE.length) | 0] : ' '
       ).join(''));
-      if (k >= 1.2) { setCaption(OPEN_DAY_CAPTION); clearInterval(id); }
+      if (k >= 1.2) { setCaption(CAP); clearInterval(id); }
     }, 45);
     return () => clearInterval(id);
   }, [effect]);
@@ -372,7 +376,7 @@ export default function HeroSketch({ fontData = [] }) {
         return { items, total };
       });
       // glyphs keeps the bottom free for the date caption
-      const reserve = effectRef.current === 'glyphs' && !typed ? Math.round(120 * bufScale) : 0;
+      const reserve = SCENES[effectRef.current].caption && !typed ? Math.round(120 * bufScale) : 0;
       const hAvail = h - reserve;
       let size = Math.max(20, (hAvail * 0.8) / (lines.length || 1));
       let data = build(size);
@@ -776,7 +780,7 @@ export default function HeroSketch({ fontData = [] }) {
   const controls = (
     <div className="tf-sort">
       {EFFECTS.map(e => (
-        <button key={e} aria-pressed={effect === e} onClick={() => setEffect(e)}>{e}</button>
+        <button key={e} aria-pressed={effect === e} onClick={() => setEffect(e)} aria-label={SCENES[e].caption || e}>{SCENES[e].label}</button>
       ))}
       {ACCENTS[effect] && (
         <button className="hero-palette-cycle" onClick={() => setAccent(a => !a)} aria-label="Switch colours">
@@ -792,7 +796,7 @@ export default function HeroSketch({ fontData = [] }) {
         {controls}
       </div>
       <div ref={containerRef} style={{ flex: 1, width: '100%', overflow: 'hidden', position: 'relative' }} />
-      {effect === 'glyphs' && <p className="hero-caption" aria-label={OPEN_DAY_CAPTION}>{caption}</p>}
+      {SCENES[effect].caption && <p className="hero-caption" aria-label={SCENES[effect].caption}>{caption}</p>}
       <p className="hero-type-hint">Try to type · click</p>
       {mobileSlot && createPortal(<div className="hero-controls-mobile">{controls}</div>, mobileSlot)}
     </div>

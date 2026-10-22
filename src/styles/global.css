@@ -2107,7 +2107,7 @@ body.home-page.home-light .hero-type-hint { color: rgba(0,0,0,0.5); }
   z-index: 10;
 }
 body.home-page.home-light .hero-caption { color: rgba(0,0,0,0.85); }
-@media (max-width: 720px) { .hero-caption { bottom: 24px; font-size: var(--step--1); } }
+@media (max-width: 720px) { .hero-caption { bottom: 24px; font-size: var(--step--1); white-space: pre-wrap; text-align: center; width: calc(100% - 2 * var(--gutter)); } }
 
 .hero-controls {
   flex-shrink: 0;
