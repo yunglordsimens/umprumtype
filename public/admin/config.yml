@@ -35,6 +35,7 @@ collections:
     folder: "src/content/typefaces"
     create: true
     delete: true
+    identifier_field: "name"
     slug: "{{slug}}"
     extension: "md"
     media_folder: "/public/fonts/{{slug}}"
@@ -46,7 +47,7 @@ collections:
       - label: "Name"
         name: "name"
         widget: "string"
-        hint: "Typeface name as shown on the site."
+        hint: "Typeface name as shown on the site. Fill this in FIRST: the page address and the font folder are named after it."
       - label: "Designer"
         name: "designer"
         widget: "string"

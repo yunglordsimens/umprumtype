@@ -90,13 +90,13 @@ fonts:
   - variant: Regular
     weight: 400
     style: normal
-    file: /fonts/map-testersize-4em-fonts-list-map-variant-regular-weight-400-style-normal-public_folder-uploads-authorinstagram-cawcawke-name-cutscene-designer-anna-sherlupenkova-authoremail-sherlupenkova-g/cutscene-regular.woff2
+    file: /fonts/cutscene/0_cutscene-regular.woff2
   - variant: Bold
     weight: 700
     style: normal
-    file: /fonts/map-testersize-4em-fonts-list-map-variant-regular-weight-400-style-normal-file-fonts-map-testersize-4em-fonts-list-map-variant-regular-weight-400-style-normal-public_folder-uploads-authorinstagram-cawcawke-name-cutscene/cutscene-bold.woff2
+    file: /fonts/cutscene/1_cutscene-bold.woff2
   - variant: Italic
     weight: 400
     style: italic
-    file: /fonts/map-testersize-4em-fonts-list-map-variant-regular-weight-400-style-normal-file-fonts-map-testersize-4em-fonts-list-map-variant-regular-weight-400-style-normal-public_folder-uploads-authorinstagram-cawcawke-name-cutscene/cutscene-italic.woff2
+    file: /fonts/cutscene/2_cutscene-italic.woff2
 ---

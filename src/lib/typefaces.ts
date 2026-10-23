@@ -141,6 +141,20 @@ export function getAllTypefaces(): TypefaceData[] {
       // Markdown frontmatter overrides info.txt
       const md = readMarkdownMeta(slug);
 
+      // Fonts added in the CMS carry their own style name / weight / style
+      if (Array.isArray(md.fonts) && md.fonts.length) {
+        const byFile = new Map(md.fonts.map((f: any, i: number) => [basename(String(f.file || '')), { ...f, i }]));
+        otfVariants.forEach(v => {
+          const f: any = byFile.get(v.filename);
+          if (!f) return;
+          if (f.variant) v.variantName = String(f.variant);
+          if (f.weight) v.weight = Number(f.weight) || v.weight;
+          if (f.style === 'italic' || f.style === 'normal') v.style = f.style;
+          v.index = f.i;
+        });
+        otfVariants.sort((a, b) => a.index - b.index);
+      }
+
       const styleTexts: string[] = [];
       for (let i = 0; info[`styleText${i}`] !== undefined; i++) {
         styleTexts.push(info[`styleText${i}`].trim());
@@ -166,7 +180,7 @@ export function getAllTypefaces(): TypefaceData[] {
         slug,
         folderName,
         title: (md.name as string) || info['name']?.trim() || folderName,
-        designer: (md.author as string) || (md.designer as string) || info['designer']?.trim() || 'Unknown',
+        designer: (md.designer as string) || (md.author as string) || info['designer']?.trim() || 'Unknown',
         year: (md.year as number) || (info['date'] ? parseInt(info['date'].trim(), 10) || null : null),
         mainText: (md.mainText as string) || info['mainText']?.trim() || '',
         mainSize: md.mainSize ? String(md.mainSize) : info['mainSize']?.trim() || '6em',
@@ -180,6 +194,8 @@ export function getAllTypefaces(): TypefaceData[] {
         defaultVariant,
       };
     })
+    // a folder without font files (e.g. a half-finished CMS upload) is not a typeface
+    .filter(tf => tf.otfVariants.length > 0)
     .sort((a, b) => a.title.localeCompare(b.title, 'cs'));
 
   return _cache;
