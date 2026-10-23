@@ -18,6 +18,7 @@ export interface TypefaceData {
   designer: string;
   year: number | null;
   mainText: string;
+  previewText: string;
   mainSize: string;
   styleTexts: string[];
   styleSize: string;
@@ -160,6 +161,13 @@ export function getAllTypefaces(): TypefaceData[] {
         styleTexts.push(info[`styleText${i}`].trim());
       }
 
+      // info.txt typefaces preview their first style text; CMS typefaces
+      // have a separate short Preview line (mainText) and a long Tester text
+      const fromInfo = styleTexts.length > 0;
+      if (!fromInfo && typeof md.testerText === 'string' && md.testerText.trim()) {
+        styleTexts.push(md.testerText.trim());
+      }
+
       const mainStyleNo = Math.max(0, parseInt(info['mainStyleNo'] ?? '0', 10) || 0);
       const defaultVariant = otfVariants[mainStyleNo] ?? otfVariants[0] ?? null;
 
@@ -183,6 +191,9 @@ export function getAllTypefaces(): TypefaceData[] {
         designer: (md.designer as string) || (md.author as string) || info['designer']?.trim() || 'Unknown',
         year: (md.year as number) || (info['date'] ? parseInt(info['date'].trim(), 10) || null : null),
         mainText: (md.mainText as string) || info['mainText']?.trim() || '',
+        previewText: fromInfo
+          ? styleTexts[0]
+          : (md.mainText as string) || info['mainText']?.trim() || styleTexts[0] || '',
         mainSize: md.mainSize ? String(md.mainSize) : info['mainSize']?.trim() || '6em',
         styleTexts,
         styleSize: md.testerSize ? String(md.testerSize) : info['styleSize']?.trim() || '4em',

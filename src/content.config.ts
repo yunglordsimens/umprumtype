@@ -16,6 +16,7 @@ const typefaces = defineCollection({
     mainSize: z.string().optional(),
     testerSize: z.string().optional(),
     mainText: z.string().optional(),
+    testerText: z.string().optional(),
     mode: z.enum(["text", "display", "mono", "script"]).default("text"),
     classification: z.string().default("sans"),
     scripts: z.array(z.string()).default(["latin"]),

@@ -21,17 +21,16 @@ slug:
 
 # ---------------------------------------------------------------------------
 # TYPEFACES
-# Each entry becomes src/content/typefaces/{slug}.md.
-# The site builds typeface pages directly from public/fonts/*/info.txt,
-# so this CMS is for manual metadata overrides and editorial control only.
-# OTF files stay in public/fonts/ — never upload fonts here.
+# One entry = one typeface on /typefaces. Entry: src/content/typefaces/{name}.md,
+# fonts: public/fonts/{name}/. Older typefaces also read public/fonts/*/info.txt;
+# anything filled in here wins over info.txt.
 # ---------------------------------------------------------------------------
 collections:
 
   - name: "typefaces"
     label: "Typefaces"
     label_singular: "Typeface"
-    description: "Overrides for typefaces. Fonts and their sample texts come from public/fonts/*/info.txt — fill in here only what you want to change on the site."
+    description: "How to add a typeface: 1) type the Name first, 2) fill in Designer and Year, 3) add a Preview line and a Tester text, 4) at the bottom add one Font file per style (Regular, Bold, Italic…), 5) Publish. The site rebuilds in about a minute."
     folder: "src/content/typefaces"
     create: true
     delete: true
@@ -43,15 +42,15 @@ collections:
     summary: "{{name}} — {{designer}}, {{year}}"
     sortable_fields: ["name", "designer", "year"]
     fields:
-      # — Basics: the row above the preview (Name / Author / Year) —
+      # — Basics: the row above the preview (Name / Designer / Year) —
       - label: "Name"
         name: "name"
         widget: "string"
-        hint: "Typeface name as shown on the site. Fill this in FIRST: the page address and the font folder are named after it."
+        hint: "Fill this in FIRST, before uploading fonts. The page address and the font folder are made from it. Example: Cutscene"
       - label: "Designer"
         name: "designer"
         widget: "string"
-        hint: "Shown next to the name; also becomes a tag visitors can filter by."
+        hint: "Full name. Several people: Name Surname, Name Surname"
       - label: "Year"
         name: "year"
         widget: "number"
@@ -63,31 +62,38 @@ collections:
         widget: "list"
         required: false
         default: []
-        hint: "Separate with commas, e.g. serif, display, text. Replaces the tags from info.txt."
+        hint: "Comma separated, lowercase: serif, display, text…"
       - label: "About the typeface"
         name: "description"
         widget: "text"
         required: false
-        hint: "Shown under the tags when the typeface is opened."
+        hint: "A paragraph about the typeface. Shown when the typeface is opened."
 
-      # — How the specimen looks —
+      # — The two texts set in the font —
+      - label: "Preview line"
+        name: "mainText"
+        widget: "string"
+        required: false
+        hint: "ONE SHORT LINE (5–10 words) shown huge in the list, scrolling sideways. Example: Born 2 be mysterious, forced to have LinkedIn. Use only characters the font has."
+      - label: "Tester text"
+        name: "testerText"
+        widget: "text"
+        required: false
+        hint: "The LONGER text (a paragraph or more) shown in every style when the typeface is opened. Leave empty to repeat the Preview line."
+
+      # — Sizes (can stay as they are) —
       - label: "Preview size"
         name: "mainSize"
         widget: "string"
         default: "6em"
         required: false
-        hint: "Size of the big spinning line in the list. 3em small/dense text faces · 4em text · 6em display (default) · 8em large display · 10em poster."
+        hint: "Size of the Preview line. 4em text faces · 6em display (default) · 8em large · 10em poster."
       - label: "Tester size"
         name: "testerSize"
         widget: "string"
         default: "4em"
         required: false
-        hint: "Starting size of the tester when the typeface is opened. Use 2em–3em for text faces so several styles fit on screen."
-      - label: "Fallback sample text"
-        name: "mainText"
-        widget: "string"
-        required: false
-        hint: "Only used if info.txt has no sample text (styleText0). Visitors can't edit sample texts — use only characters the font contains."
+        hint: "Starting size of the Tester text. 2em–3em for text faces, 4em display (default)."
 
       # — Designer contact (shown under the description) —
       - label: "Designer website"
@@ -110,12 +116,12 @@ collections:
         name: "fonts"
         widget: "list"
         required: false
-        hint: "One entry per style. Files go to public/fonts/{slug}/."
+        hint: "One entry per style, in the order they should appear. Only .woff2 files."
         fields:
           - label: "File"
             name: "file"
             widget: "file"
-            hint: ".woff2 file"
+            hint: "Upload the .woff2 for this style."
             media_library:
               config:
                 multiple: false
@@ -123,7 +129,7 @@ collections:
             name: "variant"
             widget: "string"
             default: "Regular"
-            hint: "e.g. Regular, Bold, Light Italic — shown above the tester."
+            hint: "Shown above the tester: Regular, Bold, Italic, Light Italic…"
           - label: "Weight"
             name: "weight"
             widget: "number"
@@ -134,6 +140,7 @@ collections:
             widget: "select"
             options: ["normal", "italic"]
             default: "normal"
+            hint: "italic for italic styles, otherwise normal."
 
       - label: "Internal notes"
         name: "body"

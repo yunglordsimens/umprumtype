@@ -207,7 +207,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
           <span className="tfa-trigger__meta-year">{tf.year}</span>
         </button>
         <LoopingPreview
-          text={tf.styleTexts[0] || tf.mainText || tf.title}
+          text={tf.previewText || tf.styleTexts[0] || tf.mainText || tf.title}
           style={{
             fontFamily: near || isOpen ? `"${fam}", var(--font-ui)` : 'var(--font-ui)',
             fontWeight: current?.weight || 400,
