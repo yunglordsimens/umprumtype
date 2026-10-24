@@ -11,8 +11,8 @@ const SORTS = [
 ];
 
 function effectiveTags(tf) {
-  if (tf.tags && tf.tags.length > 0) return tf.tags;
-  const out = [];
+  // style tags + author + year, so every chip in the panel can match
+  const out = [...(tf.tags ?? [])];
   if (tf.year) out.push(String(tf.year));
   if (tf.designer && tf.designer !== 'Unknown') out.push(tf.designer);
   return out;

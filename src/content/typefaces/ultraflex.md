@@ -30,15 +30,14 @@ year: 2025
 tags:
   - display
   - experimental
-description: ULTRAFLEX grew out of combining traditional letterpress typefaces
-  with AI. I built a tool that generates and updates a database of scanned
-  fonts, then produces new variations or entirely new typefaces from it. The
-  result blends chaotic yet familiar elements that recall the original type,
-  with some letters deliberately out of place. Four glyph sets come out of one
-  source — Original (the traced font), Closest copy, Experimental and Chaotic,
-  the last one partly unreadable. Best for short phrases and headlines;
-  individual glyphs can also be used on their own. Planned chaos as a homage to
-  letterpress heritage.
+description: My font project arose from combining traditional letterpress
+  typefaces with modern AI technologies. I created an AI tool that builds a
+  database of scanned fonts and produces new variations or entirely new fonts.
+  The result blends chaotic yet familiar elements, reminiscent of the original
+  typeface; some letters appear out of place, adding a sense of disorder. Four
+  sets of glyphs: the original traced font, a closest copy, a more experimental
+  version and a chaotic, partially unreadable one. Best for short phrases and
+  headlines.
 testerText: Řeřicha roste na okně tiskárny. Sazeč skládá písmena z olověné kasy,
   ale stroj si je pamatuje jinak — každé třetí se vrátí cizí, povědomé a trochu
   rozbité.
