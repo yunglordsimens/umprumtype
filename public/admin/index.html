@@ -13,194 +13,188 @@
   <style>
     @font-face { font-family: 'Svar'; src: url('/fonts/Svar/3_Svar%20Regular.woff2') format('woff2'); font-weight: 400 900; font-display: swap; }
     @font-face { font-family: 'Svar'; src: url('/fonts/Svar/2_Svar%20Light.woff2') format('woff2'); font-weight: 300; font-display: swap; }
+    /* Same language as the site: no pills, no rounded boxes, no shadows.
+       Text controls, hairline rules, the active thing is underlined.
+       Only the main action (New / Publish / Login) is a solid black block. */
     :root {
       --u-bg: #f8f8f8;
-      --u-surface: #ffffff;
       --u-text: #111111;
       --u-muted: #666666;
       --u-subtle: #999999;
-      --u-border: rgba(0,0,0,0.12);
-      --u-border-strong: rgba(0,0,0,0.3);
+      --u-border: rgba(0,0,0,0.1);
+      --u-border-strong: rgba(0,0,0,0.25);
+      --u-danger: #b42318;
       --u-font: 'Svar', 'Helvetica Neue', system-ui, sans-serif;
     }
 
-    /* Type & base */
+    /* ── Base ── */
     body { background: var(--u-bg) !important; color: var(--u-text); }
     body *:not(code):not(pre):not(kbd):not(samp) { font-family: var(--u-font) !important; }
+    body *, body *::before, body *::after { border-radius: 0 !important; box-shadow: none !important; }
     body [class*="-StyledAuthenticationPage"],
     body [class*="-AppMainContainer"],
-    body [class*="-CollectionContainer"] { background: var(--u-bg) !important; }
+    body [class*="-CollectionContainer"],
+    body [class*="-EditorContainer"],
+    body [class*="-ControlPaneContainer"],
+    body [class*="-PreviewPaneContainer"] { background: var(--u-bg) !important; }
+    body a { text-underline-offset: 0.28em; text-decoration-thickness: 1px; }
 
-    /* Login */
+    /* Shared: plain-text controls (underline when active/hovered) */
+    body [class*="-AppHeaderButton"], body [class*="-AppHeaderNavLink"], body [class*="-AppHeaderLink"],
+    body [class*="-SidebarNavLink"], body [class*="-ViewControlsButton"],
+    body [class*="-PublishedToolbarButton"], body [class*="-PublishedButton"], body [class*="-StatusButton"],
+    body [class*="-DeleteButton"], body [class*="-FileWidgetButton"], body [class*="-AddButton"],
+    body [class*="-DateTimeControl"] button, body [class*="-MediaLibraryButton"], body [class*="-UploadButton"] {
+      background: transparent !important; border: 0 !important; padding-left: 0 !important; padding-right: 0 !important;
+      color: var(--u-muted) !important; font-weight: 400 !important; text-transform: none !important;
+      text-decoration: none; text-underline-offset: 0.28em; text-decoration-thickness: 1px;
+    }
+    body [class*="-AppHeaderButton"]:hover, body [class*="-AppHeaderNavLink"]:hover, body [class*="-AppHeaderLink"]:hover,
+    body [class*="-SidebarNavLink"]:hover, body [class*="-ViewControlsButton"]:hover,
+    body [class*="-PublishedToolbarButton"]:hover, body [class*="-StatusButton"]:hover,
+    body [class*="-FileWidgetButton"]:hover, body [class*="-AddButton"]:hover,
+    body [class*="-DateTimeControl"] button:hover, body [class*="-MediaLibraryButton"]:hover, body [class*="-UploadButton"]:hover {
+      color: var(--u-text) !important; text-decoration: underline;
+    }
+    body .header-link-active, body .header-link-active *,
+    body .sidebar-active, body .sidebar-active *,
+    body [class*="-ViewControlsButton"][class*="-buttonActive"] {
+      color: var(--u-text) !important; background: transparent !important; text-decoration: underline;
+    }
+    body [class*="-DeleteButton"] { color: var(--u-danger) !important; }
+    body [class*="-DeleteButton"]:hover { text-decoration: underline; }
+
+    /* Shared: the one solid action */
+    body button[class*="-LoginButton"],
+    body [class*="-PublishButton"], body [class*="-SaveButton"],
+    body [class*="-CollectionTopNewButton"], body [class*="-AppHeaderQuickNewButton"] {
+      background: var(--u-text) !important; color: #fff !important; border: 0 !important;
+      font-weight: 400 !important; text-transform: none !important;
+    }
+    body button[class*="-LoginButton"]:hover,
+    body [class*="-PublishButton"]:hover, body [class*="-SaveButton"]:hover,
+    body [class*="-CollectionTopNewButton"]:hover, body [class*="-AppHeaderQuickNewButton"]:hover { background: #333 !important; }
+    body [class*="-PublishButton"][disabled], body [class*="-SaveButton"][disabled] { background: #c8c8c8 !important; }
+
+    /* ── Login ── */
     body [class*="-CustomIconWrapper"] { width: auto !important; height: auto !important; display: flex !important; justify-content: center !important; }
     body [class*="-StyledAuthenticationPage"] img { width: 432px !important; height: auto !important; max-width: 90vw !important; }
-    body [class*="-LoginButtonIcon"] { color: #fff !important; }
-    body [class*="-LoginButtonIcon"] svg { fill: #fff !important; }
-    body button[class*="-LoginButton"] {
-      background: var(--u-text) !important; color: #fff !important;
-      border-radius: 9999px !important; box-shadow: none !important;
-      padding: 0 28px !important; font-size: 15px !important;
-    }
+    body [class*="-LoginButtonIcon"], body [class*="-LoginButtonIcon"] svg { color: #fff !important; fill: #fff !important; }
+    body button[class*="-LoginButton"] { padding: 0 28px !important; height: 40px !important; }
 
-    /* Header */
-    body header[class*="-AppHeader"] { background: var(--u-surface) !important; box-shadow: none !important; border-bottom: 1px solid var(--u-border) !important; }
+    /* ── Header ── */
+    body header[class*="-AppHeader"] { background: var(--u-bg) !important; border-bottom: 1px solid var(--u-border) !important; }
     body [class*="-AppHeaderLogo"] img { width: 161px !important; height: auto !important; max-height: none !important; padding: 0 20px 0 24px !important; box-sizing: content-box !important; }
-    body [class*="-AppHeaderLink"] { color: var(--u-muted) !important; }
-    body [class*="-AppHeaderLink"]:hover { color: var(--u-text) !important; }
-    body [class*="-AppHeaderButton"],
-    body [class*="-AppHeaderNavLink"] { color: var(--u-muted) !important; font-weight: 400 !important; }
-    body [class*="-AppHeaderButton"]:hover,
-    body .header-link-active,
-    body .header-link-active * { color: var(--u-text) !important; }
-    body [class*="-AppHeaderQuickNewButton"],
-    body [class*="-AppHeaderQuickNewButton"]:hover { background: var(--u-text) !important; color: #fff !important; border-radius: 9999px !important; box-shadow: none !important; }
+    body [class*="-AppHeaderNavList"] [class*="-IconWrapper"] { display: none !important; }
+    body [class*="-AppHeaderLink"], body [class*="-AppHeaderNavLink"] { margin-left: 24px !important; }
+    body [class*="-AppHeaderQuickNewButton"] { margin-right: 8px !important; }
+    body [class*="-PreviewLink"], body [class*="-PreviewLink"] * { color: var(--u-muted) !important; fill: currentColor !important; }
+    body [class*="-PreviewLink"]:hover { color: var(--u-text) !important; text-decoration: underline; }
+    body [class*="-FieldLabel"] { position: static !important; }
+    /* No global Media tab — photos are uploaded inside each entry */
+    body [class*="-AppHeaderNavList"] button[class*="-AppHeaderButton"] { display: none !important; }
 
-    /* Sidebar & collection lists */
+    /* ── Sidebar & collection lists: a column of text, hairline rows ── */
     body [class*="-SidebarContainer"],
-    body [class*="-CollectionTopContainer"],
-    body [class*="-ListCard "], body [class*="-ListCard-"], body [class$="-ListCard"],
-    body [class*="-GridCard "], body [class*="-GridCard-"], body [class$="-GridCard"] { box-shadow: none !important; border: 1px solid var(--u-border) !important; border-radius: 10px !important; }
+    body [class*="-CollectionTopContainer"] { background: transparent !important; border: 0 !important; }
     body [class*="-SidebarHeading"],
     body [class*="-CollectionTopHeading"] { font-weight: 400 !important; letter-spacing: -0.01em !important; }
-    body [class*="-SidebarNavLink"] { color: var(--u-muted) !important; border-left-width: 0 !important; }
-    body [class*="-SidebarNavLink"]:hover { color: var(--u-text) !important; background: rgba(0,0,0,0.03) !important; }
-    body .sidebar-active { color: var(--u-text) !important; background: rgba(0,0,0,0.05) !important; }
-    body .sidebar-active * { color: var(--u-text) !important; }
-    body [class*="-CollectionTopNewButton"] { background: var(--u-text) !important; color: #fff !important; border-radius: 9999px !important; box-shadow: none !important; }
-    body [class*="-ViewControlsButton"] { color: var(--u-subtle) !important; }
-    body [class*="-ViewControlsButton"][class*="-buttonActive"],
-    body [class*="-ViewControlsButton"]:hover { color: var(--u-text) !important; }
-    body [class*="-ListCardTitle"],
-    body [class*="-CardHeading"] { font-weight: 400 !important; }
+    body [class*="-SidebarNavLink"] { border-left-width: 0 !important; padding-left: 20px !important; }
+    body [class*="-SidebarNavLink"] [class*="-IconWrapper"],
+    body [class*="-CollectionTopHeading"] [class*="-IconWrapper"] { display: none !important; }
+    body [class*="-CollectionTopDescription"] { color: var(--u-muted) !important; max-width: 60ch; }
+    body [class*="-SearchContainer"] { background: transparent !important; border: 0 !important; border-bottom: 1px solid var(--u-border) !important; margin-left: 20px !important; margin-right: 20px !important; }
+    body [class*="-SearchContainer"]:focus-within { border-bottom-color: var(--u-text) !important; }
+    body [class*="-SearchInput"] { background: transparent !important; padding-left: 26px !important; }
+    body [class*="-SearchContainer"] [class*="-IconWrapper"] { top: 50% !important; transform: translateY(-50%) !important; left: 0 !important; color: var(--u-subtle) !important; }
 
-    /* Editor top bar */
-    body [class*="-ToolbarContainer"] { box-shadow: none !important; border-bottom: 1px solid var(--u-border) !important; }
+    body [class*="-ListCard "], body [class*="-ListCard-"], body [class$="-ListCard"] {
+      background: transparent !important; border: 0 !important; border-bottom: 1px solid var(--u-border) !important; margin: 0 !important;
+    }
+    body [class*="-ListCard "]:hover, body [class*="-ListCard-"]:hover, body [class$="-ListCard"]:hover { background: rgba(0,0,0,0.02) !important; }
+    body [class*="-GridCard "], body [class*="-GridCard-"], body [class$="-GridCard"] { background: transparent !important; border: 1px solid var(--u-border) !important; }
+    body [class*="-ListCardTitle"], body [class*="-CardHeading"] { font-weight: 400 !important; color: var(--u-text) !important; }
+
+    /* ── Editor top bar ── */
+    body [class*="-ToolbarContainer"] { background: var(--u-bg) !important; border-bottom: 1px solid var(--u-border) !important; }
+    body [class*="-ToolbarSectionBackLink"], body [class*="-ToolbarSectionMeta"] { border-color: var(--u-border) !important; }
     body [class*="-BackStatus"] { color: var(--u-subtle) !important; text-transform: none !important; font-weight: 400 !important; }
-    body [class*="-BackStatus"][class*="textBadgeDanger"] { color: #b42318 !important; }
-    body [class*="-PublishButton"],
-    body [class*="-SaveButton"] { background: var(--u-text) !important; color: #fff !important; border-radius: 9999px !important; }
-    body [class*="-PublishedToolbarButton"],
-    body [class*="-PublishedButton"],
-    body [class*="-StatusButton"] { background: rgba(0,0,0,0.06) !important; color: var(--u-text) !important; border-radius: 9999px !important; }
-    body [class*="-DeleteButton"] { background: transparent !important; color: #b42318 !important; border: 1px solid currentColor !important; border-radius: 9999px !important; }
-    body [class*="-EditorToggle"] { color: var(--u-text) !important; box-shadow: none !important; border: 1px solid var(--u-border) !important; }
+    body [class*="-BackStatus"][class*="textBadgeDanger"] { color: var(--u-danger) !important; }
+    body [class*="-BackCollection"] { font-weight: 400 !important; }
+    body [class*="-EditorToggle"] { background: transparent !important; color: var(--u-muted) !important; border: 1px solid var(--u-border) !important; }
+    body [class*="-EditorToggle"]:hover { color: var(--u-text) !important; border-color: var(--u-text) !important; }
+    body a[class*="-ToolbarSectionMeta"], body [class*="-ToolbarSectionMeta"] a { color: var(--u-muted) !important; }
 
-    /* Fields */
+    /* ── Fields: hairline boxes, transparent, black on focus ── */
     body [class*="-FieldLabel"] {
       background: transparent !important; color: var(--u-muted) !important;
-      text-transform: none !important; letter-spacing: 0 !important;
-      font-weight: 400 !important;
+      text-transform: none !important; letter-spacing: 0 !important; font-weight: 400 !important;
       border: 0 !important; padding: 0 0 6px !important; margin: 0 !important;
     }
     body [class*="-ControlContainer"]:focus-within > [class*="-FieldLabel"] { color: var(--u-text) !important; }
-    /* Decap draws each field's box on the widget element right under the
-       label (input, textarea, date/select wrapper, editor…) */
-    body [class*="-ControlContainer"] > :not([class*="-ControlTopbar"]):not([class*="-ControlHint"]):not([class*="-ControlErrorsList"]) {
-      border-width: 1px !important; border-color: var(--u-border) !important;
-      border-radius: 8px !important; box-shadow: none !important;
+    body [class*="-ControlContainer"] > :not([class*="-ControlTopbar"]):not([class*="-ControlHint"]):not([class*="-ControlErrorsList"]):not([class*="-FieldLabel"]) {
+      border: 1px solid var(--u-border) !important; background: transparent !important;
     }
-    body [class*="-ControlContainer"]:focus-within > :not([class*="-ControlTopbar"]):not([class*="-ControlHint"]):not([class*="-ControlErrorsList"]) {
+    body [class*="-ControlContainer"] input,
+    body [class*="-ControlContainer"] textarea,
+    body [class*="-ControlContainer"] [class*="-control"] { background: transparent !important; }
+    body [class*="-ControlContainer"]:focus-within > :not([class*="-ControlTopbar"]):not([class*="-ControlHint"]):not([class*="-ControlErrorsList"]):not([class*="-FieldLabel"]) {
       border-color: var(--u-text) !important;
     }
     body [class*="-ControlHint"] { color: var(--u-subtle) !important; line-height: 1.45 !important; margin-top: 6px !important; }
-    body [class*="-ControlErrorsList"] li { color: #b42318 !important; }
+    body [class*="-ControlErrorsList"] li { color: var(--u-danger) !important; text-transform: none !important; font-weight: 400 !important; }
+    body [class*="-ControlContainer"] [class*="-ToolbarContainer"] { background: transparent !important; border-bottom: 1px solid var(--u-border) !important; }
     body [class*="-ToolbarToggleLabel"] { color: var(--u-subtle) !important; }
-    body [class*="-ToolbarToggleLabel"][class*="Active"],
-    body [class*="-ToolbarToggleLabel"]:hover { color: var(--u-text) !important; }
-    /* Switches: grey when off, black when on (Decap keeps them blue either way) */
+    body [class*="-ToolbarToggleLabel"][class*="Active"], body [class*="-ToolbarToggleLabel"]:hover { color: var(--u-text) !important; }
+    body [class*="-Toolbar"] [class*="-ToolbarButton"] { color: var(--u-muted) !important; }
+    /* switches: square, grey off / black on */
     body [class*="-ToggleBackground"] { background: var(--u-text) !important; }
     body [role="switch"][aria-checked="false"] > [class*="-ToggleBackground"] { background: #d4d4d4 !important; }
-    body [class*="-FileWidgetButton"] {
-      background: rgba(0,0,0,0.06) !important; border-radius: 9999px !important;
-      font-weight: 400 !important;
-    }
-    body [class*="-FileWidgetButton"],
-    body [class*="-AddButton"],
-    body [class*="-ListItemTopBar"] button { color: var(--u-text) !important; }
-    body [class*="-ObjectControl"],
-    body [class*="-ListControl"],
-    body [class*="-ListItemTopBar"],
-    body [class*="-ToolbarContainer"][class*="Editor"] { border-color: var(--u-border) !important; }
-    body [class*="-Toolbar"] [class*="-ToolbarButton"] { color: var(--u-muted) !important; }
-    body .Resizer,
-    body .Resizer::before { background: var(--u-border) !important; border-color: var(--u-border) !important; }
+    /* list widget (font files): hairline rows, "+ Add" as text */
+    body [class*="-ObjectControl"], body [class*="-ListControl"], body [class*="-ListItemTopBar"] { border-color: var(--u-border) !important; background: transparent !important; }
+    body [class*="-ListItemTopBar"] { border-bottom: 1px solid var(--u-border) !important; }
+    body [class*="-ListItemTopBar"] button, body [class*="-AddButton"] { color: var(--u-text) !important; }
+    body [class*="-AddButton"] [class*="-IconWrapper"] { margin-left: 0 !important; }
+    body .Resizer, body .Resizer::before { background: var(--u-border) !important; border-color: var(--u-border) !important; }
 
-    /* ── Size scale ─────────────────────────────────────────────────────
-       Decap mixes 12–22px text, 20–32px icons and 18–40px buttons.
-       Everything is normalised to: 15px text, 13px secondary text,
-       22px headings · 18px icons · 32px buttons (28px small ones). */
+    /* ── Sizes: 15px text, 13px secondary, 22px headings, 18px icons ── */
     body, body *:not(svg):not(path):not(code):not(pre) { font-size: 15px !important; }
-    body [class*="-ControlHint"],
-    body [class*="-BackStatus"],
-    body [class*="-CollectionTopDescription"],
-    body [class*="-ListCardDate"], body [class*="-CardDate"],
-    body [class*="-DateTimeControl"] button,
-    body [class*="-ViewControlsText"],
-    body [class*="-PaginationMessage"],
+    body [class*="-ControlHint"], body [class*="-BackStatus"], body [class*="-CollectionTopDescription"],
+    body [class*="-ListCardDate"], body [class*="-CardDate"], body [class*="-ViewControlsText"],
+    body [class*="-PaginationMessage"], body [class*="-ControlErrorsList"] li,
     body .gw__drop, body .gw__count, body .gw__error { font-size: 13px !important; }
-    body [class*="-CollectionTopHeading"],
-    body [class*="-SidebarHeading"] { font-size: 22px !important; line-height: 1.2 !important; }
-
+    body [class*="-CollectionTopHeading"], body [class*="-SidebarHeading"] { font-size: 22px !important; line-height: 1.2 !important; }
     body [class*="-IconWrapper"]:not([class*="-NetlifyCreditIcon"]) { width: 18px !important; height: 18px !important; }
     body [class*="-IconWrapper"]:not([class*="-NetlifyCreditIcon"]) svg { width: 18px !important; height: 18px !important; }
     body [class*="-BackArrow"] { font-size: 18px !important; }
     body [class*="-EditorToggle"] { width: 36px !important; height: 36px !important; }
-
-    body [class*="-PublishButton"],
-    body [class*="-PublishedToolbarButton"],
-    body [class*="-SaveButton"],
-    body [class*="-DeleteButton"],
-    body [class*="-CollectionTopNewButton"],
-    body [class*="-AppHeaderQuickNewButton"] {
+    body [class*="-PublishButton"], body [class*="-SaveButton"],
+    body [class*="-CollectionTopNewButton"], body [class*="-AppHeaderQuickNewButton"] {
       height: 32px !important; line-height: 32px !important; min-height: 0 !important;
       padding: 0 16px !important; display: inline-flex !important; align-items: center !important; gap: 6px;
     }
-    body [class*="-PublishButton"]::after,
-    body [class*="-PublishedToolbarButton"]::after,
+    body [class*="-PublishedToolbarButton"], body [class*="-StatusButton"], body [class*="-DeleteButton"] {
+      height: 32px !important; line-height: 32px !important; min-height: 0 !important; display: inline-flex !important; align-items: center !important;
+    }
+    body [class*="-PublishButton"]::after, body [class*="-PublishedToolbarButton"]::after,
     body [class*="-AppHeaderQuickNewButton"]::after { position: static !important; margin-left: 8px !important; }
-    /* Markdown editor toolbar: same light grey as the other neutral surfaces */
-    body [class*="-ControlContainer"] [class*="-ToolbarContainer"] { background: #f2f2f2 !important; border-radius: 8px 8px 0 0 !important; }
-    body [class*="-FileWidgetButton"],
-    body [class*="-DateTimeControl"] button { height: 28px !important; line-height: 28px !important; padding: 0 14px !important; border-radius: 9999px !important; }
-    body [class*="-DateTimeControl"] button { background: rgba(0,0,0,0.06) !important; color: var(--u-text) !important; font-weight: 400 !important; }
-
     body [class*="-AvatarDropdownButton"] [class*="-IconWrapper"],
-    body [class*="-AvatarDropdownButton"] [class*="-IconWrapper"] svg { width: 28px !important; height: 28px !important; }
-    body [class*="-AvatarImage"] { width: 28px !important; height: 28px !important; }
+    body [class*="-AvatarDropdownButton"] [class*="-IconWrapper"] svg,
+    body [class*="-AvatarImage"] { width: 24px !important; height: 24px !important; }
 
-    /* Dropdown menus (Publish, Quick add, Sort by): no teal icons */
-    body [class*="-StyledMenuItem"],
-    body [class*="-MenuItemIconContainer"],
-    body [class*="-MenuItemIconContainer"] [class*="-IconWrapper"] { color: var(--u-text) !important; }
-    body [class*="-DropdownList"] { border-radius: 10px !important; box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important; }
-    /* Validation errors in sentence case, not shouting */
-    body [class*="-ControlErrorsList"] li { text-transform: none !important; font-size: 13px !important; font-weight: 400 !important; }
-
-    body [class*="-SearchContainer"] [class*="-IconWrapper"] { top: 50% !important; transform: translateY(-50%) !important; left: 12px !important; }
-    body [class*="-SearchInput"] { padding-left: 38px !important; }
-
-    /* Notifications: black for success/info, dark red for errors */
-    body .Toastify__toast { border-radius: 10px !important; box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important; }
-    body .Toastify__toast--success,
-    body .Toastify__toast--info,
-    body .Toastify__toast--default { background: var(--u-text) !important; color: #fff !important; }
-    body .Toastify__toast--warning,
-    body .Toastify__toast--error { background: #b42318 !important; color: #fff !important; }
+    /* ── Menus, toasts, media ── */
+    body [class*="-DropdownList"] { border: 1px solid var(--u-border-strong) !important; background: var(--u-bg) !important; }
+    body [class*="-StyledMenuItem"], body [class*="-MenuItemIconContainer"],
+    body [class*="-MenuItemIconContainer"] [class*="-IconWrapper"] { color: var(--u-text) !important; background: transparent !important; }
+    body [class*="-StyledMenuItem"]:hover { text-decoration: underline; }
+    body .Toastify__toast--success, body .Toastify__toast--info, body .Toastify__toast--default { background: var(--u-text) !important; color: #fff !important; }
+    body .Toastify__toast--warning, body .Toastify__toast--error { background: var(--u-danger) !important; color: #fff !important; }
     body .Toastify__progress-bar { background: rgba(255,255,255,0.35) !important; }
-
-    /* No global Media tab — photos are uploaded per project/entry
-       (Choose an image / Add photos inside each form) */
-    body [class*="-AppHeaderNavList"] button[class*="-AppHeaderButton"] { display: none !important; }
-
-    /* Media library */
-    body [class*="-CardImageWrapper"] { border-radius: 8px !important; }
-    body [class*="-MediaLibraryButton"],
-    body [class*="-UploadButton"] { border-radius: 9999px !important; }
   </style>
   <style>
     .gw__drop {
-      border: 1px dashed rgba(0,0,0,0.3);
-      border-radius: 8px;
+      border: 1px dashed rgba(0,0,0,0.25);
+      border-radius: 0;
       padding: 20px 16px;
       text-align: center;
       cursor: pointer;
@@ -212,7 +206,7 @@
     }
     .gw__drop:hover,
     .gw__drop:focus,
-    .gw__drop--over { border-color: #111; background: #f2f2f2; }
+    .gw__drop--over { border-color: #111; background: transparent; color: #111; }
     .gw__grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
@@ -222,7 +216,7 @@
     .gw__thumb {
       position: relative;
       aspect-ratio: 1 / 1;
-      border-radius: 4px;
+      border-radius: 0;
       overflow: hidden;
       cursor: grab;
       background: #f4f4f4;
@@ -244,7 +238,7 @@
       background: rgba(0,0,0,0.55);
       color: #fff;
       border: none;
-      border-radius: 50%;
+      border-radius: 0;
       font-size: 15px;
       line-height: 20px;
       text-align: center;
@@ -476,7 +470,7 @@
               style: { display: 'none' },
               onChange: function (e) { self.onFileChange(e); },
             }),
-            s.busy ? ('Uploading ' + s.progress + '...') : '+ Add photos (click or drop multiple)'
+            s.busy ? ('Uploading ' + s.progress + '...') : '+ Add photos — click or drop several at once'
           ));
 
           if (s.error) {
@@ -522,7 +516,7 @@
             imgs.map(function (src, i) {
               return h('img', {
                 key: String(i), src: src, alt: '',
-                style: { height: '72px', width: 'auto', borderRadius: '3px', objectFit: 'cover' },
+                style: { height: '72px', width: 'auto', objectFit: 'cover' },
               });
             })
           );
