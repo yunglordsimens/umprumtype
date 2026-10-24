@@ -10,7 +10,7 @@ const SPECIMEN_MIN_CHARS = 20000;
 // Fixed gap between tester columns (it used to scale with the font size)
 const SPECIMEN_COLUMN_GAP = '24px';
 
-function VariantSpecimen({ variant, fam, initialSize, baseText }) {
+function VariantSpecimen({ variant, fam, initialSize, baseText, hyphenate = true }) {
   const [size, setSize] = useState(initialSize);
   // Read-only: only the font's own sample text is shown, never visitor input
   // (fonts have limited character sets)
@@ -53,6 +53,7 @@ function VariantSpecimen({ variant, fam, initialSize, baseText }) {
           height: multiLine ? '450px' : undefined,
           display: 'block',
           WebkitOverflowScrolling: 'touch',
+          ...(hyphenate ? null : { hyphens: 'manual', WebkitHyphens: 'manual' }),
         }}
       >
         {text}
@@ -227,6 +228,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
                 fam={fam}
                 initialSize={initialSizePx}
                 baseText={tf.styleTexts[i] || tf.styleTexts[0] || tf.mainText || tf.title}
+                hyphenate={tf.hasHyphen !== false}
               />
             ))}
           </div>

@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import { join, extname, basename } from 'path';
+import { brotliDecompressSync } from 'zlib';
 import yaml from 'js-yaml';
 
 export interface OtfVariant {
@@ -27,6 +28,8 @@ export interface TypefaceData {
   aboutDesigner: string;
   tags: string[];
   otfVariants: OtfVariant[];
+  /** the font file has a hyphen, so the tester may auto-hyphenate */
+  hasHyphen: boolean;
   defaultVariant: OtfVariant | null;
 }
 
@@ -106,6 +109,66 @@ function readMarkdownMeta(slug: string): Record<string, any> {
   } catch {
     return {};
   }
+}
+
+
+// ---------------------------------------------------------------------------
+// Does a .woff2 contain a given character? Reads only the cmap table — enough
+// to switch off auto-hyphenation for fonts that have no hyphen glyph
+// (the browser would otherwise draw the "-" in a fallback font).
+// ---------------------------------------------------------------------------
+const WOFF2_TAGS = ['cmap','head','hhea','hmtx','maxp','name','OS/2','post','cvt ','fpgm','glyf','loca','prep','CFF ','VORG','EBDT','EBLC','gasp','hdmx','kern','LTSH','PCLT','VDMX','vhea','vmtx','BASE','GDEF','GPOS','GSUB','EBSC','JSTF','MATH','CBDT','CBLC','COLR','CPAL','SVG ','sbix','acnt','avar','bdat','bloc','bsln','cvar','fdsc','feat','fmtx','fvar','gvar','hsty','just','lcar','mort','morx','opbd','prop','trak','Zapf','Silf','Glat','Gloc','Feat','Sill'];
+
+function woff2Has(path: string, codepoints: number[]): boolean | null {
+  try {
+    const buf = readFileSync(path);
+    if (buf.toString('latin1', 0, 4) !== 'wOF2') return null;
+    const numTables = buf.readUInt16BE(12);
+    let off = 48;
+    const base128 = () => { let v = 0; for (let i = 0; i < 5; i++) { const b = buf[off++]; v = v * 128 + (b & 0x7f); if (!(b & 0x80)) break; } return v; };
+    let pos = 0; let cmap: { start: number; len: number } | null = null;
+    for (let t = 0; t < numTables; t++) {
+      const flags = buf[off++];
+      let tag = WOFF2_TAGS[flags & 0x3f];
+      if ((flags & 0x3f) === 63) { tag = buf.toString('latin1', off, off + 4); off += 4; }
+      const origLen = base128();
+      const xform = (flags >> 6) & 3;
+      const transformed = (tag === 'glyf' || tag === 'loca') ? xform !== 3 : xform !== 0;
+      const len = transformed ? base128() : origLen;
+      if (tag === 'cmap') cmap = { start: pos, len };
+      pos += len;
+    }
+    if (!cmap) return null;
+    const data = brotliDecompressSync(buf.subarray(off)).subarray(cmap.start, cmap.start + cmap.len);
+    const n = data.readUInt16BE(2);
+    const want = new Set(codepoints);
+    for (let i = 0; i < n; i++) {
+      const sub = data.readUInt32BE(4 + i * 8 + 4);
+      const fmt = data.readUInt16BE(sub);
+      if (fmt === 4) {
+        const segX2 = data.readUInt16BE(sub + 6);
+        const ends = sub + 14, starts = ends + segX2 + 2, deltas = starts + segX2, ranges = deltas + segX2;
+        for (let s = 0; s < segX2; s += 2) {
+          const a = data.readUInt16BE(starts + s), b = data.readUInt16BE(ends + s);
+          for (const c of want) {
+            if (c < a || c > b || c === 0xffff) continue;
+            const ro = data.readUInt16BE(ranges + s);
+            const gid = ro === 0
+              ? (c + data.readInt16BE(deltas + s)) & 0xffff
+              : data.readUInt16BE(ranges + s + ro + (c - a) * 2);
+            if (gid !== 0) return true;
+          }
+        }
+      } else if (fmt === 12) {
+        const groups = data.readUInt32BE(sub + 12);
+        for (let g = 0; g < groups; g++) {
+          const a = data.readUInt32BE(sub + 16 + g * 12), b = data.readUInt32BE(sub + 20 + g * 12);
+          for (const c of want) if (c >= a && c <= b) return true;
+        }
+      }
+    }
+    return false;
+  } catch { return null; }
 }
 
 let _cache: TypefaceData[] | null = null;
@@ -202,6 +265,8 @@ export function getAllTypefaces(): TypefaceData[] {
         aboutDesigner: info['aboutDesigner']?.trim() || mdAboutDesigner,
         tags,
         otfVariants,
+        // unknown (null) counts as "has one" — keep hyphenation as before
+        hasHyphen: otfVariants.every(v => woff2Has(join(folderPath, v.filename), [0x2d, 0x2010]) !== false),
         defaultVariant,
       };
     })
