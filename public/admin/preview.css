@@ -14,3 +14,20 @@ strong, b { font-weight: 400; color: #666666; }
 h1, h2, h3, h4 { font-weight: 400; line-height: 1.2; }
 img { max-width: 100%; height: auto; }
 a { color: inherit; }
+
+/* no scrollbars */
+* { scrollbar-width: none; }
+*::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+/* Typeface preview — like a row on /typefaces */
+:root { --ui: 'Svar', 'Helvetica Neue', system-ui, sans-serif; }
+.tfp { margin: -24px; max-width: none; }
+.tfp-meta { display: grid; grid-template-columns: 3fr 2fr 1fr; gap: 16px; padding: 16px 24px 0; font-size: 15px; color: #111; }
+.tfp-meta span + span { color: #666; }
+.tfp-line { padding: 4px 24px 18px; font-size: 64px; line-height: 1.2; white-space: nowrap; overflow: hidden; border-bottom: 1px solid rgba(0,0,0,0.1); }
+.tfp-style { padding: 16px 24px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+.tfp-label { font-size: 15px; color: #666; margin-bottom: 8px; }
+.tfp-tester { font-size: 36px; line-height: 1.2; max-height: 4.8em; overflow: hidden; }
+.tfp-empty { padding: 24px; color: #999; font-size: 15px; }
+.tfp-info { padding: 16px 24px; font-size: 15px; color: #111; max-width: 640px; }
+.tfp-tags { display: flex; flex-wrap: wrap; gap: 4px 16px; color: #666; margin-bottom: 12px; }

@@ -30,7 +30,13 @@ collections:
   - name: "typefaces"
     label: "Typefaces"
     label_singular: "Typeface"
-    description: "How to add a typeface: 1) type the Name first, 2) fill in Designer and Year, 3) add a Preview line and a Tester text, 4) at the bottom add one Font file per style (Regular, Bold, Italic…), 5) Publish. The site rebuilds in about a minute."
+    description: |-
+      How to add a typeface:
+      1. Name — type it first. The page address and the font folder are made from it.
+      2–3. Designer and Year.
+      4–5. Preview line (one short sentence) and Tester text (the long text).
+      6. Font files — one row per style: Regular, Bold, Italic…
+      Then Publish (top right). The site updates in about a minute. Fields 7–13 are optional.
     folder: "src/content/typefaces"
     create: true
     delete: true
@@ -42,79 +48,40 @@ collections:
     summary: "{{name}} — {{designer}}, {{year}}"
     sortable_fields: ["name", "designer", "year"]
     fields:
-      # — Basics: the row above the preview (Name / Designer / Year) —
-      - label: "Name"
+      # — Required: steps 1–3 —
+      - label: "1. Name"
         name: "name"
         widget: "string"
-        hint: "Fill this in FIRST, before uploading fonts. The page address and the font folder are made from it. Example: Cutscene"
-      - label: "Designer"
+        hint: "Type this FIRST, before uploading fonts — the page address and the font folder are made from it. Example: Cutscene"
+      - label: "2. Designer"
         name: "designer"
         widget: "string"
         hint: "Full name. Several people: Name Surname, Name Surname"
-      - label: "Year"
+      - label: "3. Year"
         name: "year"
         widget: "number"
         value_type: "int"
         min: 2000
         max: 2100
-      - label: "Tags"
-        name: "tags"
-        widget: "list"
-        required: false
-        default: []
-        hint: "Comma separated, lowercase: serif, display, text…"
-      - label: "About the typeface"
-        name: "description"
-        widget: "text"
-        required: false
-        hint: "A paragraph about the typeface. Shown when the typeface is opened."
 
-      # — The two texts set in the font —
-      - label: "Preview line"
+      # — The texts set in the font —
+      - label: "4. Preview line"
         name: "mainText"
         widget: "string"
         required: false
         hint: "ONE SHORT LINE (5–10 words) shown huge in the list, scrolling sideways. Example: Born 2 be mysterious, forced to have LinkedIn. Use only characters the font has."
-      - label: "Tester text"
+      - label: "5. Tester text"
         name: "testerText"
         widget: "text"
         required: false
         hint: "The LONGER text (a paragraph or more) shown in every style when the typeface is opened. Leave empty to repeat the Preview line."
 
-      # — Sizes (can stay as they are) —
-      - label: "Preview size"
-        name: "mainSize"
-        widget: "string"
-        default: "6em"
-        required: false
-        hint: "Size of the Preview line. 4em text faces · 6em display (default) · 8em large · 10em poster."
-      - label: "Tester size"
-        name: "testerSize"
-        widget: "string"
-        default: "4em"
-        required: false
-        hint: "Starting size of the Tester text. 2em–3em for text faces, 4em display (default)."
-
-      # — Designer contact (shown under the description) —
-      - label: "Designer website"
-        name: "authorUrl"
-        widget: "string"
-        required: false
-        hint: "Full address (https://…)."
-      - label: "Designer email"
-        name: "authorEmail"
-        widget: "string"
-        required: false
-      - label: "Instagram"
-        name: "authorInstagram"
-        widget: "string"
-        required: false
-        hint: "@handle — saved, but not shown on the site yet."
-
-      # — Files —
-      - label: "Font files (.woff2)"
+      # — Font files —
+      - label: "6. Font files (.woff2)"
+        label_singular: "font file"
         name: "fonts"
         widget: "list"
+        summary: "{{fields.variant}} · {{fields.weight}} {{fields.style}}"
         required: false
         hint: "One entry per style, in the order they should appear. Only .woff2 files."
         fields:
@@ -142,6 +109,45 @@ collections:
             default: "normal"
             hint: "italic for italic styles, otherwise normal."
 
+      # — Optional extras —
+      - label: "7. Tags"
+        name: "tags"
+        widget: "list"
+        required: false
+        default: []
+        hint: "Comma separated, lowercase: serif, display, text…"
+      - label: "8. About the typeface"
+        name: "description"
+        widget: "text"
+        required: false
+        hint: "A paragraph about the typeface. Shown when the typeface is opened."
+      - label: "9. Preview size"
+        name: "mainSize"
+        widget: "string"
+        default: "6em"
+        required: false
+        hint: "Size of the Preview line. 4em text faces · 6em display (default) · 8em large · 10em poster."
+      - label: "10. Tester size"
+        name: "testerSize"
+        widget: "string"
+        default: "4em"
+        required: false
+        hint: "Starting size of the Tester text. 2em–3em for text faces, 4em display (default)."
+      - label: "11. Designer website"
+        name: "authorUrl"
+        widget: "string"
+        required: false
+        hint: "Full address (https://…)."
+      - label: "12. Designer email"
+        name: "authorEmail"
+        widget: "string"
+        required: false
+      - label: "13. Instagram"
+        name: "authorInstagram"
+        widget: "string"
+        required: false
+        hint: "@handle — saved, but not shown on the site yet."
+
       - label: "Internal notes"
         name: "body"
         widget: "markdown"
@@ -154,6 +160,13 @@ collections:
   - name: "projects"
     label: "Projects"
     label_singular: "Project"
+    description: |-
+      How to add a project:
+      1–4. Title, Author, Date, Category.
+      6. Short description — one or two sentences.
+      7. Photos — drop several at once, drag to reorder.
+      8. Article text.
+      Then Publish (top right). The site updates in about a minute.
     folder: "src/content/projects"
     create: true
     slug: "{{year}}-{{slug}}"
@@ -164,76 +177,76 @@ collections:
     sortable_fields: ["title", "date", "author"]
     fields:
       # — Basics: what appears in the list row (Title / Author / Year) —
-      - label: "Title"
+      - label: "1. Title"
         name: "title"
         widget: "string"
-        hint: "Shown in the list and as the heading of the opened article."
-      - label: "Author"
+        hint: "Shown in the list and as the heading of the article."
+      - label: "2. Author"
         name: "author"
         widget: "string"
         required: false
-        hint: "Shown next to the title in the list."
-      - label: "Date"
+        hint: "Who made it. Several people: Name Surname, Name Surname"
+      - label: "3. Date"
         name: "date"
         widget: "datetime"
-        hint: "The list shows the year; the opened article shows the full date."
-      - label: "Category"
+        hint: "When it happened. The list shows only the year."
+      - label: "4. Category"
         name: "category"
         widget: "select"
         options: ["exhibition", "workshop", "publication", "collaboration", "lecture"]
-        hint: "Shown at the top of the opened article."
-      - label: "Tags"
+        hint: "Pick one."
+      - label: "5. Tags"
         name: "tags"
         widget: "list"
+        required: false
         default: []
-        hint: "Separate with commas, e.g. zine, print. Visitors can filter the list by tags."
+        hint: "Comma separated, lowercase: zine, print… Visitors filter the list by them."
 
       # — Content —
-      - label: "Short description"
+      - label: "6. Short description"
         name: "excerpt"
         widget: "text"
         required: false
-        hint: "One or two sentences. Opens the article in a lighter colour and is included in search."
-      - label: "Photos"
+        hint: "One or two sentences. Shown at the top of the article."
+      - label: "7. Photos"
         name: "gallery"
         widget: "gallery-upload"
         required: false
         default: []
-        hint: "Drag to reorder. The first 8 form the image strip in the list; in the article all photos are placed between the paragraphs of the text."
-      - label: "Article text"
+        hint: "Drop several photos at once, drag to reorder. The first ones appear in the list; in the article they sit between the paragraphs."
+      - label: "8. Article text"
         name: "body"
         widget: "markdown"
         required: false
-        hint: "Each paragraph is a separate block — photos are spread between paragraphs."
-      - label: "Website"
+        hint: "The text of the article. Leave an empty line between paragraphs."
+      - label: "9. Website"
         name: "siteUrl"
         widget: "string"
         required: false
-        hint: "Full address (https://…). Adds a click-to-open preview of the site and a link at the end of the article."
+        hint: "Optional link, full address: https://…"
 
       # — Store —
-      - label: "Sell in Store"
+      - label: "10. Sell in Store"
         name: "purchasable"
         widget: "boolean"
         default: false
-        hint: "Turn on to list this in the Store."
-      - label: "Store cover image"
+        hint: "Turn on to show it in the Store."
+      - label: "11. Store cover image"
         name: "storeImage"
         widget: "image"
         required: false
-        hint: "Optional. Without it the Store card uses the first photo."
-      - label: "Contact"
+        hint: "Picture for the Store. Without it the first photo is used."
+      - label: "12. Contact"
         name: "contact"
         widget: "text"
         required: false
-        hint: "Email or other contact. Shown in a Contact box at the end of the article (and in the Store)."
+        hint: "Email or other contact, shown at the end of the article and in the Store."
 
-      # — Not shown on the site at the moment —
+      # Not used on the site yet — kept in the files, hidden from the form
       - label: "Featured"
         name: "featured"
-        widget: "boolean"
+        widget: "hidden"
         default: false
-        hint: "Saved, but not used anywhere on the site yet."
 
   # -------------------------------------------------------------------------
   # JOURNAL
@@ -241,6 +254,13 @@ collections:
   - name: "journal"
     label: "Journal"
     label_singular: "Entry"
+    description: |-
+      How to add a journal entry:
+      1–4. Title, Author, Date, Category.
+      6. Short description — one or two sentences.
+      7. Photos — drop several at once, drag to reorder.
+      8. Article text.
+      Then Publish (top right). The site updates in about a minute.
     folder: "src/content/journal"
     create: true
     slug: "{{year}}-{{slug}}"
@@ -251,73 +271,73 @@ collections:
     sortable_fields: ["title", "date", "author"]
     fields:
       # — Basics: what appears in the list row (Title / Author / Year) —
-      - label: "Title"
+      - label: "1. Title"
         name: "title"
         widget: "string"
-        hint: "Shown in the list and as the heading of the opened article."
-      - label: "Author"
+        hint: "Shown in the list and as the heading of the article."
+      - label: "2. Author"
         name: "author"
         widget: "string"
         required: false
-        hint: "Shown next to the title in the list."
-      - label: "Date"
+        hint: "Who made it. Several people: Name Surname, Name Surname"
+      - label: "3. Date"
         name: "date"
         widget: "datetime"
-        hint: "The list shows the year; the opened article shows the full date."
-      - label: "Category"
+        hint: "When it happened. The list shows only the year."
+      - label: "4. Category"
         name: "category"
         widget: "select"
         options: ["essay", "interview", "process", "review", "news"]
-        hint: "Shown at the top of the opened article."
-      - label: "Tags"
+        hint: "Pick one."
+      - label: "5. Tags"
         name: "tags"
         widget: "list"
+        required: false
         default: []
-        hint: "Separate with commas, e.g. zine, print. Visitors can filter the list by tags."
+        hint: "Comma separated, lowercase: zine, print… Visitors filter the list by them."
 
       # — Content —
-      - label: "Short description"
+      - label: "6. Short description"
         name: "excerpt"
         widget: "text"
         required: false
-        hint: "One or two sentences. Opens the article in a lighter colour and is included in search."
-      - label: "Photos"
+        hint: "One or two sentences. Shown at the top of the article."
+      - label: "7. Photos"
         name: "gallery"
         widget: "gallery-upload"
         required: false
         default: []
-        hint: "Drag to reorder. The first 8 form the image strip in the list; in the article all photos are placed between the paragraphs of the text."
-      - label: "Article text"
+        hint: "Drop several photos at once, drag to reorder. The first ones appear in the list; in the article they sit between the paragraphs."
+      - label: "8. Article text"
         name: "body"
         widget: "markdown"
         required: false
-        hint: "Each paragraph is a separate block — photos are spread between paragraphs."
-      - label: "Website"
+        hint: "The text of the article. Leave an empty line between paragraphs."
+      - label: "9. Website"
         name: "siteUrl"
         widget: "string"
         required: false
-        hint: "Full address (https://…). Adds a click-to-open preview of the site and a link at the end of the article."
+        hint: "Optional link, full address: https://…"
 
       # — Store —
-      - label: "Sell in Store"
+      - label: "10. Sell in Store"
         name: "purchasable"
         widget: "boolean"
         default: false
-        hint: "Turn on to list this in the Store."
-      - label: "Store cover image"
+        hint: "Turn on to show it in the Store."
+      - label: "11. Store cover image"
         name: "storeImage"
         widget: "image"
         required: false
-        hint: "Optional. Without it the Store card uses the first photo."
-      - label: "Contact"
+        hint: "Picture for the Store. Without it the first photo is used."
+      - label: "12. Contact"
         name: "contact"
         widget: "text"
         required: false
-        hint: "Email or other contact for buying. In the Journal it is shown only when Sell in Store is on."
+        hint: "Email or other contact for buying. Shown only when Sell in Store is on."
 
-      # — Not shown on the site at the moment —
+      # Not used on the site yet — kept in the files, hidden from the form
       - label: "Featured"
         name: "featured"
-        widget: "boolean"
+        widget: "hidden"
         default: false
-        hint: "Saved, but not used anywhere on the site yet."
