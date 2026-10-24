@@ -21,6 +21,7 @@ fonts:
     file: /fonts/ultraflex/3_ultraflex-v3.woff2
 classification: display
 authorInstagram: "@4rnbay"
+authorEmail: 4rnbay@gmail.com
 scripts:
   - latin
   - czech
