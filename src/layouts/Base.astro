@@ -7,6 +7,11 @@ interface Props {
   description?: string;
   image?: string;
   bodyClass?: string;
+  /** Visually hidden <h1> for search engines and screen readers (no visual change) */
+  heading?: string;
+  /** Extra JSON-LD objects for this page */
+  jsonLd?: object | object[];
+  ogType?: 'website' | 'article';
 }
 
 const {
@@ -14,9 +19,54 @@ const {
   description = 'Typography studio at UMPRUM, Prague — typefaces, projects, and journal.',
   image,
   bodyClass,
+  heading,
+  jsonLd,
+  ogType = 'website',
 } = Astro.props;
 
-const url = Astro.url.href;
+// SEO: one clean URL per page (Vercel cleanUrls → no trailing slash)
+const site = (Astro.site ?? new URL('https://typoumprum.cz')).toString().replace(/\/$/, '');
+const cleanPath = Astro.url.pathname.replace(/(index\.html)?$/, '').replace(/\/+$/, '') || '/';
+const url = site + (cleanPath === '/' ? '/' : cleanPath);
+const ogImage = image ? new URL(image, site + '/').href : undefined;
+
+const ORG_ID = `${site}/#org`;
+const siteLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': ORG_ID,
+    name: 'UMPRUM Type',
+    alternateName: ['Typo UMPRUM', 'UMPRUM Type & Typography'],
+    url: site + '/',
+    description: 'Type design and typography studio at the Academy of Arts, Architecture and Design in Prague (UMPRUM).',
+    logo: site + '/favicon.svg',
+    knowsAbout: ['type design', 'typography', 'typeface design', 'calligraphy', 'lettering', 'Czech typography', 'Cyrillic', 'blackletter'],
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: 'Kasárny Karlín',
+      addressLocality: 'Praha',
+      addressCountry: 'CZ',
+    },
+    parentOrganization: {
+      '@type': 'CollegeOrUniversity',
+      name: 'Academy of Arts, Architecture and Design in Prague (UMPRUM)',
+      alternateName: 'Vysoká škola uměleckoprůmyslová v Praze',
+      url: 'https://www.umprum.cz',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${site}/#website`,
+    name: 'UMPRUM Type',
+    url: site + '/',
+    inLanguage: 'en',
+    publisher: { '@id': ORG_ID },
+  },
+];
+const pageLd = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+const ldJson = JSON.stringify([...siteLd, ...pageLd]).replace(/</g, '\\u003c');
 const year = new Date().getFullYear();
 const pathname = Astro.url.pathname;
 const isActive = (prefix: string) =>
@@ -29,12 +79,20 @@ const isActive = (prefix: string) =>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={url} />
+    <meta property="og:site_name" content="UMPRUM Type" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={url} />
-    <meta property="og:type" content="website" />
-    {image && <meta property="og:image" content={image} />}
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content="en_US" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+    <script type="application/ld+json" set:html={ldJson} />
     <script is:inline>
       // Theme before first paint. The system decides; the nav circle is an
       // override that lasts only until the system theme changes (day ↔ night)
@@ -103,6 +161,7 @@ const isActive = (prefix: string) =>
     </script>
 
     <main id="main">
+      {heading && <h1 class="visually-hidden">{heading}</h1>}
       <slot />
     </main>
 
