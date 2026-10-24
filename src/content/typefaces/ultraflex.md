@@ -35,7 +35,7 @@ description: My font project arose from combining traditional letterpress
   database of scanned fonts and produces new variations or entirely new fonts.
   The result blends chaotic yet familiar elements, reminiscent of the original
   typeface; some letters appear out of place, adding a sense of disorder. Four
-  sets of glyphs: the original traced font, a closest copy, a more experimental
+  sets of glyphs — the original traced font, a closest copy, a more experimental
   version and a chaotic, partially unreadable one. Best for short phrases and
   headlines.
 testerText: Řeřicha roste na okně tiskárny. Sazeč skládá písmena z olověné kasy,
