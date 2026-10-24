@@ -12,7 +12,12 @@ const fontData = getAllTypefaces()
   }));
 ---
 
-<Base title="UMPRUM Type" description="Type design studio at UMPRUM, Prague." bodyClass="home-page">
+<Base
+  title="UMPRUM Type — Type Design & Typography Studio, Prague"
+  description="Type design and typography studio at UMPRUM, the Academy of Arts, Architecture and Design in Prague. Archive of typefaces, projects and writing from the studio."
+  heading="UMPRUM Type — type design and typography studio at UMPRUM, Prague"
+  bodyClass="home-page"
+>
   <div id="hero-container" style="position: fixed; top: var(--nav-h); left: 0; right: 0; bottom: 0; z-index: 1;">
     <HeroSketch client:load fontData={fontData} />
   </div>

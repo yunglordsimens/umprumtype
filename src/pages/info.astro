@@ -1,7 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 ---
-<Base title="Info — Umprum Type" description="Type design studio at UMPRUM, Prague.">
+<Base
+  title="Info — Umprum Type"
+  description="About UMPRUM Type, the type design and typography studio at the Academy of Arts, Architecture and Design in Prague (UMPRUM): typeface design, calligraphy and typographic research."
+  heading="About UMPRUM Type"
+  jsonLd={{ "@context": "https://schema.org", "@type": "AboutPage", name: "About UMPRUM Type", about: { "@id": "https://typoumprum.cz/#org" } }}
+>
   <div class="info-page">
     <div class="info-body">
       <p>UMPRUM Type is the type design studio at the Academy of Arts, Architecture and Design in Prague (UMPRUM). The class is dedicated to typeface design, calligraphy, and typographic research — from historical reconstructions to experimental display type.</p>

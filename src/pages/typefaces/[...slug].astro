@@ -2,8 +2,9 @@
 import { getAllTypefaces } from '../../lib/typefaces';
 
 export async function getStaticPaths() {
-  return getAllTypefaces().map(tf => ({ params: { slug: tf.slug } }));
+  return getAllTypefaces().map(tf => ({ params: { slug: tf.slug }, props: { slug: tf.slug } }));
 }
 
-return Astro.redirect('/typefaces', 301);
+const { slug } = Astro.props;
+return Astro.redirect(`/typefaces#${slug}`, 301);
 ---

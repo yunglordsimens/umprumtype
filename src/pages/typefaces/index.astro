@@ -20,10 +20,43 @@ const firstFonts = [...all]
   .slice(0, 4)
   .map(t => t.otfVariants[Math.min(Math.max(0, t.mainStyleNo), t.otfVariants.length - 1)]?.webPath)
   .filter(Boolean);
+
+// SEO: describe every typeface as structured data (invisible)
+const SITE = 'https://typoumprum.cz';
+const typefacesLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Typefaces — UMPRUM Type',
+  url: `${SITE}/typefaces`,
+  isPartOf: { '@id': `${SITE}/#website` },
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: all.length,
+    itemListElement: [...all]
+      .sort((a, b) => a.title.localeCompare(b.title, 'cs'))
+      .map((t, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'CreativeWork',
+          genre: 'Typeface',
+          name: t.title,
+          url: `${SITE}/typefaces#${t.slug}`,
+          ...(t.designer && t.designer !== 'Unknown' ? { creator: { '@type': 'Person', name: t.designer } } : {}),
+          ...(t.year ? { dateCreated: String(t.year) } : {}),
+          ...(t.aboutFont ? { description: t.aboutFont.replace(/\s+/g, ' ').trim().slice(0, 500) } : {}),
+          ...(t.tags?.length ? { keywords: t.tags.join(', ') } : {}),
+          sourceOrganization: { '@id': `${SITE}/#org` },
+        },
+      })),
+  },
+};
 ---
 <Base
   title="Typefaces — Umprum Type"
-  description="Archive of typefaces designed at the type class of UMPRUM, Prague."
+  description={`Archive of ${all.length} typefaces designed in the type design studio at UMPRUM, Prague — text, display and script faces, Cyrillic and blackletter, from historical revivals to experimental type.`}
+  heading="Typefaces designed at UMPRUM Type, Prague"
+  jsonLd={typefacesLd}
   bodyClass="lib-page"
 >
   {firstFonts.map(href => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}

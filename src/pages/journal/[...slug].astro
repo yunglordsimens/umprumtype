@@ -14,8 +14,34 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const d = entry.data;
 const { Content } = await render(entry);
+
+// SEO (invisible): real description, share image, Article structured data
+const SITE = 'https://typoumprum.cz';
+const plain = (entry.body || '')
+  .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+  .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+  .replace(/<[^>]+>/g, ' ')
+  .replace(/[#>*_`~|-]+/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
+const clip = (t) => (t.length > 158 ? t.slice(0, 155).replace(/\s+\S*$/, '') + '…' : t);
+const title = d.title.trim();
+const seoDescription = clip((d.excerpt || plain || `${title} — journal of the UMPRUM type design studio, Prague.`).trim());
+const shareImage = d.storeImage || d.gallery?.[0] || undefined;
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description: seoDescription,
+  datePublished: d.date.toISOString(),
+  url: `${SITE}/journal/${entry.id.replace(/\.md$/, '')}`,
+  ...(shareImage ? { image: new URL(shareImage, SITE + '/').href } : {}),
+  ...(d.author ? { author: { '@type': 'Person', name: d.author } } : { author: { '@id': `${SITE}/#org` } }),
+  publisher: { '@id': `${SITE}/#org` },
+  ...(d.tags?.length ? { keywords: d.tags.join(', ') } : {}),
+};
 ---
-<Base title={`${d.title} — Umprum Type`} description={d.excerpt || d.title}>
+<Base title={`${title} — Umprum Type`} description={seoDescription} image={shareImage} jsonLd={articleLd} ogType="article">
   <article class="post">
     <div class="container">
       <header class="post__head measure" data-reveal>
