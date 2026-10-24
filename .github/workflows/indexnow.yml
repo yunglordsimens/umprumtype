@@ -1,0 +1,30 @@
+name: IndexNow ping (Bing, Yandex, Seznam…)
+
+# After every successful Vercel production deploy, tell IndexNow search engines
+# which URLs exist so new journal posts get crawled within hours, not weeks.
+# Invisible: no change to the site. Key file: public/0f54eba29cbca803ba3b0cdb27fc8e18.txt
+
+on:
+  deployment_status:
+
+jobs:
+  ping:
+    if: github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Production'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Submit sitemap URLs to IndexNow
+        env:
+          HOST: typoumprum.cz
+          KEY: 0f54eba29cbca803ba3b0cdb27fc8e18
+        run: |
+          set -e
+          URLS=$(curl -fsSL "https://$HOST/sitemap.xml" | grep -o '<loc>[^<]*</loc>' | sed 's#</\?loc>##g')
+          [ -n "$URLS" ] || { echo "No URLs in sitemap"; exit 0; }
+          LIST=$(printf '%s\n' $URLS | jq -R . | jq -s .)
+          BODY=$(jq -n --arg host "$HOST" --arg key "$KEY" --argjson urls "$LIST" \
+            '{host: $host, key: $key, keyLocation: ("https://" + $host + "/" + $key + ".txt"), urlList: $urls}')
+          echo "Submitting $(echo "$LIST" | jq length) URLs"
+          CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST https://api.indexnow.org/indexnow \
+            -H 'Content-Type: application/json; charset=utf-8' -d "$BODY")
+          echo "IndexNow responded: $CODE"
+          # 200/202 = accepted; anything else is logged but never fails the run
