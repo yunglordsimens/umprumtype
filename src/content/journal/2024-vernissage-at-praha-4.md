@@ -9,9 +9,9 @@ excerpt: "Important visit of important vernissage at Prague 4 with Benjamín
   3/4/2024 "
 gallery:
   - /uploads/journal/1793012078555-zs558.jpg
-  - /uploads/journal/1793012082163-544ag.jpg
   - /uploads/journal/1793012084801-1f337.jpg
   - /uploads/journal/1793012088287-1gnl9.jpg
+  - /uploads/journal/1793012082163-544ag.jpg
   - /uploads/journal/1793012095457-jksbp.jpg
   - /uploads/journal/1793012099108-e5mpv.jpg
   - /uploads/journal/1793012102535-ae2sq.jpg
