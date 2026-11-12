@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, existsSync } from 'fs';
 import { join, extname, basename } from 'path';
 import { brotliDecompressSync } from 'zlib';
 import yaml from 'js-yaml';
+import { sanitizeAboutHtml } from './aboutHtml';
 
 export interface OtfVariant {
   filename: string;
@@ -262,7 +263,7 @@ export function getAllTypefaces(): TypefaceData[] {
         styleSize: md.testerSize ? String(md.testerSize) : info['styleSize']?.trim() || '4em',
         mainStyleNo,
         aboutFont: (md.description as string) || info['aboutFont']?.trim() || '',
-        aboutDesigner: info['aboutDesigner']?.trim() || mdAboutDesigner,
+        aboutDesigner: sanitizeAboutHtml(info['aboutDesigner']?.trim() || mdAboutDesigner),
         tags,
         otfVariants,
         // unknown (null) counts as "has one" — keep hyphenation as before

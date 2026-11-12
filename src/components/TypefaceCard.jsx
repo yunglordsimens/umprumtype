@@ -1,5 +1,21 @@
 import { useRef, useState, useEffect, useLayoutEffect, useMemo } from 'react';
 
+// The designer paragraph carries e-mails encoded (see src/lib/aboutHtml.ts) so
+// bots reading the HTML don't find them; here they become mailto links again.
+function revealEmails(root) {
+  if (!root) return;
+  root.querySelectorAll('.obf-mail[data-m]').forEach(el => {
+    try {
+      const bytes = Uint8Array.from(atob(el.dataset.m), c => c.charCodeAt(0));
+      const email = [...new TextDecoder().decode(bytes)].reverse().join('');
+      const a = document.createElement('a');
+      a.href = `mailto:${email}`;
+      a.textContent = email;
+      el.replaceWith(a);
+    } catch { /* keep the readable "name [at] domain" fallback */ }
+  });
+}
+
 function lineHeightFor(size) {
   return size > 96 ? 0.9 : size > 48 ? 1.05 : size > 24 ? 1.3 : 1.5;
 }
@@ -249,6 +265,7 @@ export default function TypefaceCard({ tf, isOpen, onOpen, onTagClick }) {
               )}
               {tf.aboutDesigner && (
                 <div
+                  ref={revealEmails}
                   className="tfa-about tfa-about--designer"
                   dangerouslySetInnerHTML={{ __html: tf.aboutDesigner }}
                 />
