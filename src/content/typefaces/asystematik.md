@@ -24,6 +24,7 @@ order: 7
 tags:
   - handwritten
   - calligraphic
+  - NAKI
 description: Asystematik draws inspiration from Oldřich Menhart's handwritten
   Manuskript (1943). The project focused on analyzing and defining each of his
   letterforms to better understand their construction. The final design reflects
