@@ -8,6 +8,7 @@ designer: Anna Sherlupenkova
 featured: false
 tags:
   - NAKI
+  - Anna Sherlupenkova
 description: Renegade was inspired by my admiration for Memphis, a 1920s
   typeface by Rudolf Wolf. My goal here was to honor everything that made
   Memphis special without turning it into something unrecognizable. It already
