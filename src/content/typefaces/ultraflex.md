@@ -21,16 +21,20 @@ fonts:
     file: /fonts/ultraflex/3_ultraflex-v3.woff2
 classification: display
 authorInstagram: "@4rnbay"
-authorEmail: 4rnbay@gmail.com
 scripts:
   - latin
   - czech
-name: ULTRAFLEX
+name: Ultraflex
 designer: Maria Chernobay
 year: 2025
+testerText: Řeřicha roste na okně tiskárny. Sazeč skládá písmena z olověné kasy,
+  ale stroj si je pamatuje jinak — každé třetí se vrátí cizí, povědomé a trochu
+  rozbité.
 tags:
   - display
   - experimental
+  - Maria Chernobay
+  - NAKI
 description: My font project arose from combining traditional letterpress
   typefaces with modern AI technologies. I created an AI tool that builds a
   database of scanned fonts and produces new variations or entirely new fonts.
@@ -39,8 +43,6 @@ description: My font project arose from combining traditional letterpress
   sets of glyphs — the original traced font, a closest copy, a more experimental
   version and a chaotic, partially unreadable one. Best for short phrases and
   headlines.
-testerText: Řeřicha roste na okně tiskárny. Sazeč skládá písmena z olověné kasy,
-  ale stroj si je pamatuje jinak — každé třetí se vrátí cizí, povědomé a trochu
-  rozbité.
 mainSize: 6em
+authorEmail: 4rnbay@gmail.com
 ---
