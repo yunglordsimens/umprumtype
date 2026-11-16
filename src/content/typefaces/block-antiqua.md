@@ -1,21 +1,11 @@
 ---
 mode: text
-year: 2024
 fonts:
   - variant: Medium
     file: /fonts/BlockAntiqua-Medium.woff2
     style: normal
     weight: 500
 classification: sans
-tags:
-  - sans
-  - display
-  - historical
-description: Block Antiqua is a new cut of the well-known Block font, which is
-  considered in certain literature as the height of tastelessness that should
-  rather not be shown. Yet the font was for a time quite popular to the point of
-  overuse. The original designs have several cuts, ranging from condensed to
-  bold cuts, I even found it in Block Fraktur.
 authorInstagram: "@zofkakosova"
 scripts:
   - latin
@@ -31,6 +21,17 @@ designer: Žofia Kosová
 featured: false
 tagline: Die berühmte Block familie bekommt Zuwachs!
 order: 9
+year: 2024
+tags:
+  - sans
+  - display
+  - historical
+  - NAKI
+description: Block Antiqua is a new cut of the well-known Block font, which is
+  considered in certain literature as the height of tastelessness that should
+  rather not be shown. Yet the font was for a time quite popular to the point of
+  overuse. The original designs have several cuts, ranging from condensed to
+  bold cuts, I even found it in Block Fraktur.
 authorEmail: kosovazofia@gmail.com
 purchasable: false
 ---
