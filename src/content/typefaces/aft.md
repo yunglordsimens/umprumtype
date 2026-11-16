@@ -34,6 +34,7 @@ tags:
   - serif
   - text
   - experimental
+  - NAKI
 description: Constructed. Dynamic. Primitive. Aft draws inspiration from Tyfa
   Text – its refined, simplified forms that break from traditional calligraphy.
   Its monolinear, tapering strokes, curved arches, and minimal or absent serifs
