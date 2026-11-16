@@ -1,6 +1,5 @@
 ---
 mode: text
-year: 2024
 fonts:
   - variant: Regular
     file: /fonts/Benzsch-Regular.woff2
@@ -19,19 +18,21 @@ specimens:
     und isst mit bloßen Fingern kalte Linsen aus ihrer Pompadourhaube.
 name: Benzsch
 designer: Benjamin Horváth
+featured: false
+tagline: Primal Scream
+order: 8
+year: 2024
 tags:
   - serif
   - historical
   - digitization
+  - NAKI
 description: Digitization of Genzsch Antiqua from a not-so-great photograph
   (iPhone 6, with flash) of a not particularly well-done proof of the two-cicero
   Genzsch Antiqua, stored in the basement of UMPRUM's letterpress workshop. The
   newly digitized Benzsch is special not only for its absence of other
   historically present cuts but also for the uneven darkness of characters and
   punctuation supporting only a few negligible languages.
-featured: false
-tagline: Primal Scream
-order: 8
 authorEmail: benhor2004@gmail.com
 purchasable: false
 ---
